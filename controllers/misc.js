@@ -31,8 +31,8 @@ var readHTMLFile = function (path, callback) {
 //configuring the AWS environment
 AWS.config.setPromisesDependency();
 AWS.config.update({
-  accessKeyId: "AKIA2EGFTFCXHEVTJJHC",
-  secretAccessKey: "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",
+  accessKeyId: "AKIA4XYECDTU3SEPOCU3",
+  secretAccessKey: "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",
   region: "us-east-1",
 });
 
@@ -67,7 +67,7 @@ exports.generateToken = (req, res) => {
 
 exports.uploadSingleFile = (req, res) => {
   var params = {
-    Bucket: "dailymains-answer-edizvik",
+    Bucket: "slorge",
     Body: fs.createReadStream(req.file.path),
     Key: `${Date.now()}${req.file.originalname}`,
   };
