@@ -67,6 +67,7 @@ exports.generateToken = (req, res) => {
 
 exports.uploadSingleFile = (req, res) => {
   var params = {
+    ACL: 'public-read',
     Bucket: "slorge",
     Body: fs.createReadStream(req.file.path),
     Key: `${Date.now()}${req.file.originalname}`,
@@ -94,6 +95,7 @@ exports.uploadMultipleFile = (req, res) => {
 
   file.map((item) => {
     var params = {
+      ACL: 'public-read',
       Bucket: "dailymains-answer-edizvik",
       Body: fs.createReadStream(item.path),
       Key: `${Date.now()}${item.originalname}`,
