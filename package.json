@@ -34,7 +34,7 @@
     "swagger-ui-express": "^4.1.2"
   },
   "scripts": {
-    "start": "NODE_ENV=PROD nodemon app.js",
-    "dev": "NODE_ENV=DEV nodemon app.js"
+    "start": "NODE_ENV=PROD node app.js",
+    "dev": "NODE_ENV=DEV node app.js"
   }
 }
