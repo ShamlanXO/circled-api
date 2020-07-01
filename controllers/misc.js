@@ -223,7 +223,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
 };
 
 exports.ChangePasswordMail = (req, res) => {
-  User.findOne({email: req.body.email,_id:{$not:req.userData._id}}).then((userData) => {
+  User.findOne({email: req.body.email,_id:{$ne:req.userData._id}}).then((userData) => {
     if(!userData){
       readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
         if(err){ 
@@ -273,7 +273,9 @@ const token=Math.floor(100000 + Math.random() * 900000)
     else{
       res.status(406).send({ message:"user alreaddy exists"})
     }
-  }).catch(err => res.status(500));
+  }).catch(err =>{ 
+    console.log(err)
+    res.status(500)});
       
 };
 

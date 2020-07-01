@@ -39,7 +39,7 @@ exports.SendOTP = (req, res) => {
 };
 
 exports.SendOTPUpdate = (req, res) => {
-  User.findOne({phone: req.query.phone,_id:{$not:req.userData._id}}).then((userData) => {
+  User.findOne({phone: req.query.phone,_id:{$ne:req.userData._id}}).then((userData) => {
     if(!userData){
 
     sendOTPReg.send(req.query.phone, "FIGGSS", function(error, data) {
@@ -68,7 +68,7 @@ exports.SendOTPUpdate = (req, res) => {
 
 
 exports.VerifyOTP = (req, res) => {
- 
+ console.log(req.query.phone,req.query.otp)
         sendOtp.verify(req.query.phone, req.query.otp, function(error, data) {
           if (error) {
             return res.status(500).send({

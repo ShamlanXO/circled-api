@@ -2,7 +2,7 @@ const express = require("express");
 const miscController = require("../controllers/misc");
 const multer = require("multer");
 const router = express.Router();
-
+const checkAuth = require("../middleware/CheckAuth");
 router.route("/generate-hash").get(miscController.generatePasswordHash);
 router.route("/generate-token").get(miscController.generateToken);
 router
@@ -22,5 +22,5 @@ router.route("/download-file").get(miscController.downloadFile);
 router.route("/send-mail").post(miscController.SendMail);
 router.route("/send-verify-mail").post(miscController.SendVerifyMail);
 router.route("/verify-mail").post(miscController.VerifyMail);
-router.route("/change-password-mail").post(miscController.ChangePasswordMail);
+router.route("/change-password-mail").post(checkAuth,miscController.ChangePasswordMail);
 module.exports = router;

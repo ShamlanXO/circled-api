@@ -39,7 +39,7 @@ exports.CreateUser = (req, res) => {
 
   const decoded = jwt.verify(req.body.token, "s3cr3t")
 console.log(decoded)
-        bcrypt.hash(req.body.password, 10, function (err, hash) {
+    bcrypt.hash(req.body.password, 10, function (err, hash) {
           if (err) {
             return res
               .status(500)
@@ -50,7 +50,8 @@ console.log(decoded)
          
           delete req.body.email
         delete req.body.phone
-          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid});
+        delete req.body.password
+          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid,password:hash});
           User.save()
             .then((result) => {
               const token = jwt.sign(
@@ -102,8 +103,8 @@ exports.UserLogin = (req, res) => {
 
             return res.status(200).send({
               message: "User Auth Successful",
-              AuthToken: token,
-              ...result[0]
+              token: token,
+              userData:result[0]
             });
           } else {
             return res.status(401).send({
@@ -123,6 +124,7 @@ exports.UserUpdate = (req, res) => {
   delete req.body._id
   delete req.body.phone
   delete req.body.email
+  delete req.body.password
   user
     .updateOne({ _id: req.userData._id}, req.body, function (err, result) {
       if (err) {

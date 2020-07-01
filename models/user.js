@@ -2,29 +2,22 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
-    EmailIsVerified: { type: Boolean, default: false },
-    Email: { type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/ },
-    Password: { type: String },
-    FirstName: { type: String, default: null },
-    LastName: { type: String, default: null },
-    UserType: {
-      type: String,
-      enum: ["Student", "Faculty", "Manager"],
-      default: "Student"
-    },
-    Bio: { type: String, default: null },
-    Phone: { type: String, maxlength: 12, default: null, unique: true },
-    IsActive: { type: Boolean, default: true },
-    Centre: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "centre"
-    },
-    Address: { type: String, default: null },
-    ProfilePicture: {
-      type: String,
-      default:
-        "1581684886277computer-icons-user-profile-clip-art-portable-network-graphics-png-favpng-YEj6NsJygkt6nFTNgiXg9fg9w.jpg"
-    }
+
+   uuid:{ type: String},
+   type:{ type: String},
+    email: { type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/ ,unique:true,sparse: true, index:true},
+    password: { type: String },
+    name: { type: String, default: null },
+    bio: { type: String, default: null },
+phone:{ type: String,unique:true,sparse: true,index:true},
+  DOB:{ type: Date, default: null},
+    isActive: { type:Boolean,default:true},
+    location: { type: String},
+   profilePic:{ type: String},
+   banner:{ type: String},
+   privatePlan:{type:Boolean},
+   privatePlanMessage:{type:String},
+   category:[{ type: String}]
   },
   { timestamps: true }
 );
