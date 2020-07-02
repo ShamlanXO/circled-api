@@ -51,6 +51,8 @@ console.log(decoded)
           delete req.body.email
         delete req.body.phone
         delete req.body.password
+
+        console.log(req.body)
           const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid,password:hash});
           User.save()
             .then((result) => {
@@ -202,46 +204,28 @@ exports.CheckUserExistence = (req, res) => {
 };
 
 exports.ChangePassword = (req, res) => {
-  user
-    .findOne({ _id: req.params.Id })
-    .then((result) => {
-      if (result) {
-        bcrypt
-          .compare(req.body.OldPassword, result.Password)
-          .then((resultON) => {
-            if (resultON === true) {
-              return res
-                .status(409)
-                .send({ message: "Old Password cant be the new password" });
-            } else {
-              bcrypt
-                .hash(req.body.NewPassword, 10)
-                .then((hash) => {
-                  user.updateOne(
-                    { _id: req.params.Id },
-                    { Password: hash },
-                    function (err, doc) {
-                      if (err) {
-                        return res.status(500).send({ ErrorOccured: err });
-                      }
-                      if (doc) {
-                        return res.status(200).send({ message: doc });
-                      }
-                    }
-                  );
-                })
-                .catch((error) => {
+  const decoded = jwt.verify(req.body.token, "s3cr3t")
+
+  bcrypt
+  .hash(req.body.password, 10)
+  .then((hash) => {
+    user
+    .updateOne({[decoded.type]: decoded.uuid},{password:hash} ,function (err, result) {
+        if (err) {
+          return res.status(500).send({ ErrorOccured: err });
+        }
+        if (result) {
+          if(result.nModified > 0)
+          return res.status(200).send({ message: result });
+          else
+          return res.status(500)
+        }
+      }
+    )
+  }).catch((error) => {
                   return res.status(500).send({ ErrorOccured: error });
                 });
-            }
-          });
-      } else {
-        return res.status(404).send({ message: "User Not Found" });
-      }
-    })
-    .catch((error) => {
-      return res.status(500).send({ ErrorOccured: error });
-    });
+        
 };
 
 exports.ChangePasswordEmail = (req, res) => {

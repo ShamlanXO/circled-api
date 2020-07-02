@@ -279,6 +279,69 @@ const token=Math.floor(100000 + Math.random() * 900000)
       
 };
 
+
+exports.ChangePasswordMail2 = (req, res) => {
+  User.findOne({email: req.body.email}).then((userData) => {
+    if(userData){
+      readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
+        if(err){ 
+          return res.status(500).send({ ErrorOccured: err })
+      
+      }
+      else{
+const token=Math.floor(100000 + Math.random() * 900000)
+        Verify.updateOne({ email:req.body.email},{token:token},{upsert: true}).then(resultUpdate=>{
+          console.log(resultUpdate)
+          if(resultUpdate.nModified>0){
+            var template = handlebars.compile(html);
+            var replacements = {
+             token:token,
+              email: req.body.email,
+              
+            };
+            var htmlToSend = template(replacements);
+           
+              smtpTransport
+                .sendMail({
+                  from: `figgs@vilabs.tech`,
+                  to: req.body.email,
+                  subject: "Email verification",
+                  html: htmlToSend,
+                })
+                .then((result) => {
+                  return res.status(200).send({ message: "mail sent", ServerResponse: result });
+                }).catch(err => console.log(err));
+          }
+        }).catch(err => console.log(err));
+
+       
+       
+      }
+
+     
+     
+          
+                
+              
+            
+          
+      
+      })
+    }
+    else{
+      res.status(404).send({ message:"user alreaddy exists"})
+    }
+  }).catch(err =>{ 
+    console.log(err)
+    res.status(500)});
+      
+};
+
+
+
+
+
+
 exports.VerifyMail = (req, res) => {
   console.log(req.body);
   Verify.findOne({ email: req.body.email,token:req.body.token }).then((response) => {

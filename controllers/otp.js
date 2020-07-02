@@ -38,6 +38,34 @@ exports.SendOTP = (req, res) => {
   
 };
 
+exports.SendOTPPasswordReset = (req, res) => {
+  User.findOne({phone: req.query.phone}).then((userData) => {
+    if(userData){
+
+    sendOTPReg.send(req.query.phone, "FIGGSS", function(error, data) {
+      if (error) {
+        return res.status(500).send({
+          ErrorOccured: error
+        });
+      } else {
+        return res.status(200).send({
+          message: "OTP SENT",
+          data
+        });
+      }
+
+    });
+
+  }
+  else{
+    return res.status(404).send({ message:"not found"})
+  }
+
+}).catch((err)=>res.status(500))
+  
+};
+
+
 exports.SendOTPUpdate = (req, res) => {
   User.findOne({phone: req.query.phone,_id:{$ne:req.userData._id}}).then((userData) => {
     if(!userData){
@@ -58,10 +86,12 @@ exports.SendOTPUpdate = (req, res) => {
 
   }
   else{
-    return res.status(406)
+    return res.status(406).send({
+      message: "already exists"
+    })
   }
 
-}).catch((err)=>res.status(500))
+}).catch((err)=>res.status(500).send({ ErrorOccured: err}))
   
 };
 

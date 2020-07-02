@@ -5,6 +5,7 @@ const checkAuth = require("../middleware/CheckAuth");
 router.route("/send").get(otpController.SendOTP);
 router.route("/verify").get(otpController.VerifyOTP);
 router.route("/retry").get(otpController.RetryOTP);
+router.route("/resetPassword").get(otpController.SendOTPPasswordReset);
 router.route("/SendOTPUpdate").get(checkAuth,otpController.SendOTPUpdate);
 
 module.exports = router;
