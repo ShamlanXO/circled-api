@@ -1,28 +1,21 @@
 const userRoutes = require("./user");
 const otpRoutes = require("./otp");
-const dailyMainsRoutes = require("./DailyMains");
-const practiceTestSetRoutes = require("./TestSet");
-const candidateRoutes = require("./Candidate");
-const testSeriesRoutes = require("./TestSeries");
-const NotificationRoutes = require("./Notification");
-const paymentRoutes = require("./Payment");
 const miscRoutes = require("./misc");
-const cartRoutes = require("./Cart");
-const centreRoutes = require("./Centre");
-const orderRoutes = require("./Order");
-const batchRoutes = require("./Batch");
+const programRoutes=require("./Programs");
+const libraryRoutes=require("./Library")
+
 module.exports = function(app) {
   app.use("/api/user", userRoutes);
   app.use("/api/otp", otpRoutes);
-  app.use("/api/dailymains", dailyMainsRoutes);
-  app.use("/api/test-set", practiceTestSetRoutes);
-  app.use("/api/candidate", candidateRoutes);
-  app.use("/api/test-series", testSeriesRoutes);
-  app.use("/api/payment", paymentRoutes);
+app.use("/api/library",libraryRoutes)
+
+  // app.use("/api/candidate", candidateRoutes);
+app.use("/api/program",programRoutes)
+  // app.use("/api/payment", paymentRoutes);
   app.use("/api/misc", miscRoutes);
-  app.use("/api/cart", cartRoutes);
-  app.use("/api/order", orderRoutes);
-  app.use("/api/centre", centreRoutes);
-  app.use("/api/batch", batchRoutes);
-  app.use("/api/notification", NotificationRoutes);
+
+  // app.use("/api/order", orderRoutes);
+
+
+  // app.use("/api/notification", NotificationRoutes);
 };

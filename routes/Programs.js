@@ -1,0 +1,10 @@
+const express = require("express");
+const ProgramRoute = require("../controllers/Programs");
+const router = express.Router();
+const checkAuth = require("../middleware/CheckAuth");
+router.route("/get/:Id").get(checkAuth,ProgramRoute.FetchSpecificProgram);
+router.route("/get").get(checkAuth,ProgramRoute.ProgramsInstructor);
+router.route("/create").post(checkAuth, ProgramRoute.CreateProgram);
+router.route("/update").patch(checkAuth, ProgramRoute.UpdateProgram);
+router.route("/delete/:Id").delete(checkAuth, ProgramRoute.DeleteProgram);
+module.exports = router;

@@ -1,0 +1,10 @@
+const express = require("express");
+const LibraryRoute = require("../controllers/Library");
+const router = express.Router();
+const checkAuth = require("../middleware/CheckAuth");
+router.route("/get/:parent").get(checkAuth,LibraryRoute.FetchLibrary);
+router.route("/get").get(checkAuth,LibraryRoute.FetchRoot);
+router.route("/create").post(checkAuth, LibraryRoute.CreateLibrary);
+router.route("/update").patch(checkAuth, LibraryRoute.UpdateLibrary);
+router.route("/delete").post(checkAuth, LibraryRoute.DeleteLibrary);
+module.exports = router;

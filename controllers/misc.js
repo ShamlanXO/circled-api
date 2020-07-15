@@ -70,10 +70,11 @@ exports.uploadSingleFile = (req, res) => {
     ACL: 'public-read',
     Bucket: "slorge",
     Body: fs.createReadStream(req.file.path),
-    Key: `${Date.now()}${req.file.originalname}`,
+    Key: `${Date.now()}${"-"}${req.file.originalname}`,
   };
   s3.upload(params, (err, data) => {
     if (err) {
+      console.log(err)
       return res.status(500).send({ ErrorOccured: err });
     }
     if (data) {

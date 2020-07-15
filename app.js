@@ -1,17 +1,18 @@
 const express = require("express");
-const Admin = require("./controllers/admin");
+
 const morgan = require("morgan");
 const app = express();
 const rateLimit = require("express-rate-limit");
 const mongoose = require("mongoose");
-app.use("/admin", Admin.AdminController);
+
 const bodyParser = require("body-parser");
 const config = require("./config/config");
 const helmet = require("helmet");
 const Routes = require("./routes/index");
-const swaggerUi = require("swagger-ui-express");
+
 //const swaggerDocument = require("./documentation/swagger.json");
-const swaggerSpec = require('./config/swagger')
+
+
 const cors = require("cors");
 const compression = require("compression");
 const path = require("path");
@@ -53,11 +54,7 @@ app.get("/robots.txt", function(req, res) {
 app.get("/favicon.ico", (req, res) => res.status(204));
 Routes(app);
 
-app.use(
-  "/api/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, { showExplorer: true })
-);
+
 mongoose.connect(
   config.db,
   {
