@@ -31,10 +31,10 @@ exports.SendOTP = (req, res) => {
 
   }
   else{
-    return res.status(406)
+    return res.status(406).send({ message:"already exist"})
   }
 
-}).catch((err)=>res.status(500))
+}).catch((err)=>res.status(500).send({ message:"server error"}))
   
 };
 

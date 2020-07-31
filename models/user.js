@@ -18,9 +18,22 @@ phone:{ type: String,unique:true,sparse: true},
    privatePlan:{type:Boolean},
    gender:{ type: String},
    privatePlanMessage:{type:String},
-   category:[{ type: String}]
+   category:[{ type: String}],
+   healthGoals:{ type: String,default:null},
+   healthInfo:{
+    height:{ type: String,default:null},
+    weight:{ type: String,default:null},
+    blood:{ type: String,default:null},
+    bodyFat:{ type: String,default:null},
+    medicalCondition:{ type: String,default:null},
+    medicalNotes:{ type: String,default:null},
+    allergiesAndReactions:{ type: String,default:null},
+    medications:{ type: String,default:null},
+    healthDocuments:[{ type: String}]
+   },
+   bodyImages:[{ type: String}]
   },
   { timestamps: true }
 );
-
+userSchema.index({name:'text',bio:'text',category:'text'})
 module.exports = mongoose.model("user", userSchema);

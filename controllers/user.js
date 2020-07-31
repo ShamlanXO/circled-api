@@ -35,6 +35,22 @@ exports.FetchUser = (req, res) => {
     });
 };
 
+exports.SearchUser=(req,res) => {
+  user.aggregate([
+    { "$match":{ $text: { $search: req.params.qry } }  },
+    { $sort: { score: { $meta: "textScore" } } },
+  ]) .then((result) => {
+   if(result.length < 1)
+   return res.status(404).send({result})
+else
+return res.status(200).send({result});
+
+  }).catch((error) => {
+    console.log(error);
+    return res.status(500).send({error})
+  })
+}
+
 exports.CreateUser = (req, res) => {
 
   const decoded = jwt.verify(req.body.token, "s3cr3t")
