@@ -5,7 +5,7 @@ const checkAuth = require("../middleware/CheckAuth");
 router.route("/client").get(checkAuth, OrderController.SearchOrder);
 
 router.route("/get/:id").get(checkAuth, OrderController.GetOrder)
- router.route("/new").post(OrderController.CreateOrder)
+ router.route("/new").post(checkAuth,OrderController.CreateOrder)
 // router.route("/new").post(checkAuth, OrderController.CreateOrder);
 // router.route("/newBulk").post(checkAuth, OrderController.CreateOrderBulk);
 router.route("/update/").patch(checkAuth, OrderController.UpdateOrder);

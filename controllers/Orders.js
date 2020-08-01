@@ -26,7 +26,7 @@ Order.find({UserId:req.userData._id}).populate("Program.createdBy","name profile
 
 exports.CreateOrder=(req, res)=>{
   console.log("Sdsd")
-  const order = new Order(req.body);
+  const order = new Order({...req.body,UserId:req.userData._id});
   order
     .save()
     .then(result => {

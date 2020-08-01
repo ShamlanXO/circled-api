@@ -69,7 +69,7 @@ console.log(decoded)
         delete req.body.password
 
         console.log(req.body)
-          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid,password:hash});
+          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid.toLowerCase(),password:hash});
           User.save()
             .then((result) => {
               const token = jwt.sign(
@@ -95,7 +95,7 @@ console.log(decoded)
 
 exports.UserLogin = (req, res) => {
   user
-    .find({$or:[{email: req.body.email},{phone: req.body.phone}] })
+    .find({$or:[{email: req.body.email.toLowerCase()},{phone: req.body.phone.toLowerCase()}] })
     .then((result) => {
       if (result.length < 1) {
         return res

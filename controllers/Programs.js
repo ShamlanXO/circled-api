@@ -49,9 +49,9 @@ exports.ProgramsInstructor = (req, res) => {
 
 
   exports.FetchSpecificProgram = (req, res) => {
-    console.log("fetching all instructors program")
+ 
       Program.findOne({createdBy:req.userData._id,_id:req.params.Id}).populate("createdBy","name profilePic").then(result => {
-          if (result.length < 1) {
+          if (!result) {
             return res.status(404).send({ message: "No Program Found" });
           } else {
             return res
