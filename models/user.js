@@ -31,7 +31,8 @@ phone:{ type: String,unique:true,sparse: true},
     medications:{ type: String,default:null},
     healthDocuments:[{ type: String}]
    },
-   bodyImages:[{ type: String}]
+   bodyImages:[{ type: String}],
+   links:[{ type: String}]
   },
   { timestamps: true }
 );
