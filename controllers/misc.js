@@ -155,7 +155,7 @@ exports.SendMail = (req, res) => {
   smtpTransport
     .sendMail({
       from: "figgs@vilabs.tech",
-      to: req.body.Email,
+      to: req.body.Email.toLowerCase(),
       subject: req.body.Subject,
       html: req.body.MailBody,
     })
@@ -170,7 +170,7 @@ exports.SendMail = (req, res) => {
 };
 
 exports.SendVerifyMail = (req, res) => {
-  User.findOne({email: req.body.email}).then((userData) => {
+  User.findOne({email: req.body.email.toLowerCase()}).then((userData) => {
     if(!userData){
       readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
         if(err){ 
@@ -179,13 +179,13 @@ exports.SendVerifyMail = (req, res) => {
       }
       else{
 const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ email:req.body.email},{token:token},{upsert: true}).then(resultUpdate=>{
+        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
           console.log(resultUpdate)
           if(resultUpdate.nModified>0){
             var template = handlebars.compile(html);
             var replacements = {
              token:token,
-              email: req.body.email,
+              email: req.body.email.toLowerCase(),
               
             };
             var htmlToSend = template(replacements);
@@ -194,7 +194,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
               smtpTransport
               .sendMail({
                 from: `Figgs <infos@figgs.co>`,
-                to: req.body.email,
+                to: req.body.email.toLowerCase(),
                 subject: "Email verification",
                 html: htmlToSend,
               })
@@ -231,7 +231,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
 };
 
 exports.ChangePasswordMail = (req, res) => {
-  User.findOne({email: req.body.email,_id:{$ne:req.userData._id}}).then((userData) => {
+  User.findOne({email: req.body.email.toLowerCase(),_id:{$ne:req.userData._id}}).then((userData) => {
     if(!userData){
       readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
         if(err){ 
@@ -240,13 +240,13 @@ exports.ChangePasswordMail = (req, res) => {
       }
       else{
 const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ email:req.body.email},{token:token},{upsert: true}).then(resultUpdate=>{
+        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
           console.log(resultUpdate)
           if(resultUpdate.nModified>0){
             var template = handlebars.compile(html);
             var replacements = {
              token:token,
-              email: req.body.email,
+              email: req.body.email.toLowerCase(),
               
             };
             var htmlToSend = template(replacements);
@@ -254,7 +254,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
               smtpTransport
                 .sendMail({
                   from: `figgs@vilabs.tech`,
-                  to: req.body.email,
+                  to: req.body.email.toLowerCase(),
                   subject: "Email verification",
                   html: htmlToSend,
                 })
@@ -289,7 +289,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
 
 
 exports.ChangePasswordMail2 = (req, res) => {
-  User.findOne({email: req.body.email}).then((userData) => {
+  User.findOne({email: req.body.email.toLowerCase()}).then((userData) => {
     if(userData){
       readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
         if(err){ 
@@ -298,13 +298,13 @@ exports.ChangePasswordMail2 = (req, res) => {
       }
       else{
 const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ email:req.body.email},{token:token},{upsert: true}).then(resultUpdate=>{
+        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
           console.log(resultUpdate)
           if(resultUpdate.nModified>0){
             var template = handlebars.compile(html);
             var replacements = {
              token:token,
-              email: req.body.email,
+              email: req.body.email.toLowerCase(),
               
             };
             var htmlToSend = template(replacements);
@@ -312,7 +312,7 @@ const token=Math.floor(100000 + Math.random() * 900000)
               smtpTransport
                 .sendMail({
                   from: `figgs@vilabs.tech`,
-                  to: req.body.email,
+                  to: req.body.email.toLowerCase(),
                   subject: "Email verification",
                   html: htmlToSend,
                 })
@@ -352,13 +352,13 @@ const token=Math.floor(100000 + Math.random() * 900000)
 
 exports.VerifyMail = (req, res) => {
   console.log(req.body);
-  Verify.findOne({ email: req.body.email,token:req.body.token }).then((response) => {
+  Verify.findOne({ email: req.body.email.toLowerCase(),token:req.body.token }).then((response) => {
    
 
     if (!response) return res.status(404).send({ error: "no user found" });
 
     jwt.sign(
-      { uuid: req.body.email, type:"email"},
+      { uuid: req.body.email.toLowerCase(), type:"email"},
       "s3cr3t",
       { expiresIn: "1d" },
       function (err, token) {

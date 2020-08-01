@@ -245,7 +245,7 @@ exports.ChangePassword = (req, res) => {
 };
 
 exports.ChangePasswordEmail = (req, res) => {
-  user.findOne({ Email: req.body.Email }).then((userData) => {
+  user.findOne({ Email: req.body.Email.toLowerCase() }).then((userData) => {
     if (!userData) {
       return res.status(404).send({ message: "No  Data Found" });
     } else {
