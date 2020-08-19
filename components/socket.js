@@ -15,17 +15,12 @@ class SocketService {
       if (socket.handshake.query && socket.handshake.query.token) {
         console.log(socket.handshake.query.token);
         socket.userId = socket.handshake.query.token;
+        console.log("userId is",socket.userId)
         next();
       }
     });
 
-    this.io.engine.generateId = function (req) {
-      // generate a new custom id here
-      console.log(req._query);
-
-      return req._query.token;
-    };
-
+   
     //    this.io.on('connection', socket => {
 
     //      this.io.to(socket.id).emit('hey', 'I just met you'+socket.id);
@@ -34,15 +29,26 @@ class SocketService {
 
     const workspaces = this.io.of(/^\/\w+$/);
 
+
+   workspaces.use(function (socket, next) {
+      if (socket.handshake.query && socket.handshake.query.token) {
+        console.log(socket.handshake.query.token);
+        socket.userId = socket.handshake.query.token;
+        console.log("userId is",socket.userId)
+        next();
+      }
+    });
+
     workspaces.on("connection", (socket) => {
+      console.log("hwt adks ",socket.userId)
       const workspace = socket.nsp;
       console.log("connecting");
       console.log(socket.nsp.name.split("/")[1]);
       //workspace.emit('hey',"Sdsd");
 
-      if (socket.nsp.name.split("/")[1] == socket.id.split("#")[1]) {
+      if (socket.nsp.name.split("/")[1] == socket.userId) {
         socket.nsp.emit("status", "connected");
-        redis.set(socket.id.split("#")[1], true, (err, data) => {
+        redis.set(socket.userId, true, (err, data) => {
 
           console.log("setting",data);
         });
@@ -66,12 +72,12 @@ class SocketService {
       socket.on("disconnect", (data) => {
         console.log("disconnecting");
 
-        if(socket.nsp.name.split("/")[1] == socket.id.split("#")[1])
+        if(socket.nsp.name.split("/")[1] ==socket.userId)
         {
           socket.nsp.emit("status", "disconnected");
 
         //workspace.emit('hey',"Sdsd");
-        redis.del(socket.id.split("#")[1], (err, reply) => {})}
+        redis.del(socket.userId, (err, reply) => {})}
       });
 
       socket.on("getStatus", (data, callback) => {
