@@ -6,11 +6,14 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, "s3cr3t");
     req.userData = decoded;
     user
-      .find({ Email: decoded.Email })
+      .find({ _id: decoded._id })
       .then(result => {
         if (result.length < 1 || result[0].IsActive == false) {
           throw "invalid";
-        } else return next();
+        } else{ 
+          
+          req.userData={_id:result[0]._id,email:result[0].email,figgsId:result[0].figgsId}
+          return next()};
       })
       .catch(err => {
         return res.status(401).json({

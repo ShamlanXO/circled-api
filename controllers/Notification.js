@@ -6,11 +6,27 @@ exports.FetchNotification = (req, res) => {
   req.app.get("socketService").emiter('message', req.body);
   
   const { filter, skip, limit, sort, projection } = aqp(req.query);
-  Notification.find(filter)
+  console.log(req.userData)
+  Notification.find({$or:[
+{
+  To:req.userData.email
+},
+
+{
+  To:req.userData.figgsId
+},
+
+{
+  UserId:req.userData._id
+}
+
+
+  ],...filter})
     .skip(skip)
     .limit(limit)
-    .sort(sort)
-    .select(projection)
+    .sort({createdAt:-1})
+   .populate("Sender","name _id profilePic")
+   .populate("SentProgramId","Title")
     .then(result => {
       if (result.length < 1) {
         return res.status(404).send({ message: "No Notifications Found" });
@@ -24,6 +40,40 @@ exports.FetchNotification = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+
+exports.GetUnreadCount=(req,res) =>{
+
+   
+
+  Notification.find({$or:[
+{
+  To:req.userData.email
+},
+
+{
+  To:req.userData.figgsId
+},
+
+{
+  UserId:req.userData._id
+}
+
+
+  ],IsRead:false}).count().then(data => {
+res.status(200).send({count:data})
+  })
+  .catch(err =>{
+    res.status(500).send()
+  }
+    
+    
+    )
+
+
+}
+
+
 
 exports.CreateNotification = (req, res) => {
   const notification = new Notification(req.body);

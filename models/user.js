@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
   {
 
    uuid:{ type: String},
+   figgsId:{ type: String},
    type:{ type: String},
     email: { type: String,unique:true,sparse: true},
     password: { type: String },

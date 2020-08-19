@@ -53,6 +53,13 @@ return res.status(200).send({result});
 
 exports.CreateUser = (req, res) => {
 
+
+req.app.get("redis").incr("figgsId",(err,figgsId) => {
+
+  if(err){
+    return res.status(500).send()
+  }
+
   const decoded = jwt.verify(req.body.token, "s3cr3t")
 console.log(decoded)
     bcrypt.hash(req.body.password, 10, function (err, hash) {
@@ -69,7 +76,7 @@ console.log(decoded)
         delete req.body.password
 
         console.log(req.body)
-          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid.toLowerCase(),password:hash});
+          const User = new user({...req.body,uuid:decoded.uuid,[decoded.type]: decoded.uuid.toLowerCase(),password:hash,figgsId:"fg-"+figgsId});
           User.save()
             .then((result) => {
               const token = jwt.sign(
@@ -89,6 +96,14 @@ console.log(decoded)
             });
         });
      
+
+
+
+})
+
+
+
+
        
  
 };

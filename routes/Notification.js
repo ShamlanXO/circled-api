@@ -11,5 +11,5 @@ router
 router
   .route("/delete/:Id")
   .get(checkAuth, NotificationController.DeleteNotification);
-
+router.route("/count").get(checkAuth, NotificationController.GetUnreadCount)
 module.exports = router;

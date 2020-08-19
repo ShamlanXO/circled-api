@@ -17,7 +17,7 @@ const objectSchema = new mongoose.Schema(
       enum: ["folder", "file"],
       default: "folder",
     },
-
+     recent: {type:Boolean, default:false},
     title: { type: String },
     ancestors: [{ type: mongoose.Schema.Types.ObjectId }],
     parent: { type: mongoose.Schema.Types.ObjectId, default: null },
