@@ -12,6 +12,7 @@ router.route("/update/").patch(checkAuth, OrderController.UpdateOrder);
 router.route("/switchProgram").patch(checkAuth, OrderController.SwitchProgram)
 router.route("/getclients").get(checkAuth,OrderController.GetClients)
 router.route("/getSpecificClient/:Id").get(checkAuth,OrderController.GetSpecificClients)
+router.route("/getStats/:id").get(checkAuth,OrderController.GetStats)
 // router
 //   .route("/check-order")
 //   .get(checkAuth, OrderController.CheckOrderExistence);

@@ -8,5 +8,6 @@ router.route("/public/:Id").get(ProgramRoute.FetchSpecificProgramPublic);
 router.route("/get").get(checkAuth,ProgramRoute.ProgramsInstructor);
 router.route("/create").post(checkAuth, ProgramRoute.CreateProgram);
 router.route("/update").patch(checkAuth, ProgramRoute.UpdateProgram);
-router.route("/delete/:Id").delete(checkAuth, ProgramRoute.DeleteProgram);
+router.route("/send").post(checkAuth, ProgramRoute.SendProgram)
+router.route("/delete/:id").delete(checkAuth, ProgramRoute.DeleteProgram);
 module.exports = router;

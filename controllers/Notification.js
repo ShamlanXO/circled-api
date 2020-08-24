@@ -3,7 +3,7 @@ const aqp = require("api-query-params");
 
 exports.FetchNotification = (req, res) => {
 
-  req.app.get("socketService").emiter('message', req.body);
+  
   
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   console.log(req.userData)
@@ -94,6 +94,7 @@ console.log("new update notification")
 
   Notification.update({ _id: req.params.Id }, req.body)
     .then(result => {
+   
       return res.status(200).send({ message: "Notification Updated" });
     })
     .catch(error => {

@@ -1,9 +1,11 @@
 const Program = require("../models/Programs");
 const aqp = require("api-query-params");
+const User=require("../models/user")
 const SentProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
+
 exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   Program.find(filter, { ExercisePlan: 0 })
@@ -86,8 +88,8 @@ exports.FetchSpecificProgramPublic = (req, res) => {
 
 exports.CreateProgram = async (req, res) => {
   let isSuccess = true;
-
-  const session = await mongoose.startSession();
+if(req.body.SendTo.length>0)
+ { const session = await mongoose.startSession();
   session.startTransaction();
   try {
     // always pass session to find queries when the data is needed for the transaction session
@@ -150,6 +152,116 @@ exports.CreateProgram = async (req, res) => {
     session.endSession();
 
     if (isSuccess) {
+
+       User.find({$or:[{email:{$in:req.body.SendTo} },{figgsId:{$in:req.body.SendTo} }]},{_id:1}).then(userData=>{
+console.log(userData);
+        userData.map(item=>{
+          req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification"});
+          console.log(userData);
+        }
+        
+        )
+
+       })
+      return res.status(201).send();
+
+
+    } else {
+      return res.status(500).send();
+    }
+  }}
+else
+{
+  const ProgramCon = new Program({...req.body,createdBy:req.userData._id});
+  ProgramCon
+    .save()
+    .then(result => {
+      return res
+        .status(201)
+        .send({ Message: "Program Created", item: result });
+    })
+    .catch(error => {
+      return res.status(500).send({ ErrorOccured: error });
+    });}
+};
+
+
+
+
+exports.SendProgram = async (req, res) => {
+  let isSuccess = true;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    // always pass session to find queries when the data is needed for the transaction session
+
+   const program= await Program.findOne({ _id:req.body._id, createdBy: req.userData._id }).session(session);
+
+  
+
+   const sentProgram= await SentProgram.create(
+      [{ Program: {...program,...req.body} ,
+         Amount:req.body.Price, 
+         SendTo:req.body.SendTo, 
+         SenderId:req.userData._id,
+         Title:program.Title
+      }],
+      { session: session }
+    );
+
+
+
+
+    await Notification.create([{
+
+   
+      To:req.body.SendTo,
+     
+      Type:"SentProgram",
+      Sender:sentProgram[0].SenderId,
+      SentProgramId:sentProgram[0]._id
+ 
+
+
+    }], {
+      session: session,
+    });
+
+    
+    // save the sender updated balance
+    // do not pass the session here
+    // mongoose uses the associated session here from the find query return
+    // more about the associated session ($session) later on
+
+    // commit the changes if everything was successful
+    await session.commitTransaction();
+  } catch (error) {
+    console.log(error);
+    // if anything fails above just rollback the changes here
+    isSuccess = false;
+
+    // this will rollback any changes made in the database
+    await session.abortTransaction();
+    return res.status(500).send({ ErrorOccured: error });
+    // logging the error
+
+    // rethrow the error
+  } finally {
+    // ending the session
+    session.endSession();
+
+    if (isSuccess) {
+      User.find({$or:[{email:{$in:req.body.SendTo} },{figgsId:{$in:req.body.SendTo} }]},{_id:1}).then(userData=>{
+        console.log(userData);
+                userData.map(item=>{
+                  req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification"});
+                  console.log(userData);
+                }
+                
+                )
+        
+               })
       return res.status(201).send();
     } else {
       return res.status(500).send();
@@ -170,6 +282,21 @@ exports.CreateProgram = async (req, res) => {
   //   });
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.UpdateProgram = (req, res) => {
   console.log(req.body);
   delete req.body.createdBy;
@@ -187,7 +314,7 @@ exports.UpdateProgram = (req, res) => {
 };
 
 exports.DeleteProgram = (req, res) => {
-  Program.deleteOne({ _id: req.params.Id, createdBy: req.userData._id })
+  Program.deleteOne({ _id: req.params.id, createdBy: req.userData._id })
     .then((result) => {
       return res.status(200).send({ message: "Program  Deleted" });
     })

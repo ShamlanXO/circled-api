@@ -36,7 +36,7 @@ console.log("fetching main")
 
 exports.FetchRoot = (req, res) => {
   console.log("fetching root")
-    Library.find({createdBy:req.userData._id,parent:null}).then(result => {
+    Library.find({createdBy:req.userData._id,parent:null,recent:false}).then(result => {
         if (result.length < 1) {
           return res.status(404).send({ message: "No Libraryes Found" });
         } else {

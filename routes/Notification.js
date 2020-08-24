@@ -6,7 +6,7 @@ router.route("/all").get(checkAuth, NotificationController.FetchNotification);
 router.route("/new").post(checkAuth, NotificationController.CreateNotification);
 router
   .route("/update/:Id")
-  .post(checkAuth, NotificationController.UpdateNotification);
+  .patch(checkAuth, NotificationController.UpdateNotification);
 
 router
   .route("/delete/:Id")

@@ -34,7 +34,7 @@ global.appRoot = path.resolve(__dirname);
 require("dotenv").config();
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
-// app.set("socketService", new SocketService(server));
+ app.set("socketService", new SocketService(server));
 app.use(helmet());
 
 //Security headers in every response to tackle cors errors
@@ -87,7 +87,7 @@ mongoose.connect(
       redis.auth(rtg.auth.split(":")[1]);
       app.set("redis", redis);
       redis.on('connect', function() {
-        app.set("socketService", new SocketService(server,redis));
+     
         console.log('connected');
         User.findOne({}).sort({createdAt:-1}).then((user) =>{
 let figgsId=user.figgsId

@@ -1,92 +1,128 @@
 const socketIo = require("socket.io");
 
 class SocketService {
-  constructor(server, redis) {
-    var rtg = require("url").parse(
-      "redis://redistogo:c6e217b1af8286546da4e15fc25afea0@scat.redistogo.com:9459/"
-    );
-    var redis = require("redis").createClient(rtg.port, rtg.hostname);
-
-    redis.auth(rtg.auth.split(":")[1]);
-
+  constructor(server) {
     this.io = socketIo(server);
 
     this.io.use(function (socket, next) {
       if (socket.handshake.query && socket.handshake.query.token) {
-        console.log(socket.handshake.query.token);
+    
         socket.userId = socket.handshake.query.token;
-        console.log("userId is",socket.userId)
+      
         next();
       }
     });
 
-   
-    //    this.io.on('connection', socket => {
+    this.io.engine.generateId = function (req) {
+      // generate a new custom id here
+     
 
-    //      this.io.to(socket.id).emit('hey', 'I just met you'+socket.id);
-    //      console.log('user connected')
-    //  });
+      return req._query.token;
+    };
 
-    const workspaces = this.io.of(/^\/\w+$/);
+    this.io.on("connection", (socket) => {
+
+      this.io.emit(socket.id+"", {type:"status",isConnected:true})
+
+      
 
 
-   workspaces.use(function (socket, next) {
-      if (socket.handshake.query && socket.handshake.query.token) {
-        console.log(socket.handshake.query.token);
-        socket.userId = socket.handshake.query.token;
-        console.log("userId is",socket.userId)
-        next();
-      }
-    });
+     
 
-    workspaces.on("connection", (socket) => {
-      console.log("hwt adks ",socket.userId)
-      const workspace = socket.nsp;
-      console.log("connecting");
-      console.log(socket.nsp.name.split("/")[1]);
-      //workspace.emit('hey',"Sdsd");
 
-      if (socket.nsp.name.split("/")[1] == socket.userId) {
-        socket.nsp.emit("status", "connected");
-        redis.set(socket.userId, true, (err, data) => {
 
-          console.log("setting",data);
-        });
 
-      } else {
+      socket.on("disconnect",(data) => {
 
-        console.log("view other staus");
-        redis.get(socket.nsp.name.split("/")[1], (err, data) => {
-          console.log(data);
-          if (data) {
-            console.log("viewing",socket.nsp.name.split("/")[1])
-            socket.nsp.emit("status", "connected");
+        if (this.io.sockets.sockets[socket.id]&&this.io.sockets.sockets[socket.id].connected) {
+           
+          this.io.emit(socket.id, {type:"status",isConnected:true})
+                    }
+                    else{
+                    
+                      this.io.emit(socket.id+"", {type:"status",isConnected:false})
+                    }
+     
+
+
+      })
+
+     
+      socket.on("getStatus",(data,callback) => {
+      
+          if (this.io.sockets.sockets[data]&&this.io.sockets.sockets[data].connected) {
+           
+callback({type:"status",isConnected:true})
           }
-        });
-      }
+          else{
+            callback({type:"status",isConnected:false})
+          }
 
-   
 
-  
 
-      socket.on("disconnect", (data) => {
-        console.log("disconnecting");
 
-        if(socket.nsp.name.split("/")[1] ==socket.userId)
-        {
-          socket.nsp.emit("status", "disconnected");
+        
+      })
 
-        //workspace.emit('hey',"Sdsd");
-        redis.del(socket.userId, (err, reply) => {})}
-      });
 
-      socket.on("getStatus", (data, callback) => {
-        console.log("getting staus");
-        callback("sai hai");
-      });
+
+
+
     });
 
- 
+    //   const workspaces = this.io.of(/^\/\w+$/);
+
+    //  workspaces.use(function (socket, next) {
+    //     if (socket.handshake.query && socket.handshake.query.token) {
+    //       console.log(socket.handshake.query.token);
+    //       socket.userId = socket.handshake.query.token;
+    //       console.log("userId is",socket.userId)
+    //       next();
+    //     }
+    //   });
+
+    //   workspaces.on("connection", (socket) => {
+    //     console.log("hwt adks ",socket.userId)
+    //     const workspace = socket.nsp;
+    //     console.log("connecting");
+    //     console.log(socket.nsp.name.split("/")[1]);
+    //     //workspace.emit('hey',"Sdsd");
+
+    //     if (socket.nsp.name.split("/")[1] == socket.userId) {
+    //       socket.nsp.emit("status", "connected");
+    //       redis.set(socket.userId, true, (err, data) => {
+
+    //         console.log("setting",data);
+    //       });
+
+    //     } else {
+
+    //       console.log("view other staus");
+    //       redis.get(socket.nsp.name.split("/")[1], (err, data) => {
+    //         console.log(data);
+    //         if (data) {
+    //           console.log("viewing",socket.nsp.name.split("/")[1])
+    //           socket.nsp.emit("status", "connected");
+    //         }
+    //       });
+    //     }
+
+    //     socket.on("disconnect", (data) => {
+    //       console.log("disconnecting");
+
+    //       if(socket.nsp.name.split("/")[1] ==socket.userId)
+    //       {
+    //         socket.nsp.emit("status", "disconnected");
+
+    //       //workspace.emit('hey',"Sdsd");
+    //       redis.del(socket.userId, (err, reply) => {})}
+    //     });
+
+    //     socket.on("getStatus", (data, callback) => {
+    //       redis.get(socket.nsp.name.split("/")[1], (err, data) => {})
+    //       callback("sai hai");
+    //     });
+    //   });
 
     // this middleware will be assigned to each namespace
 
@@ -99,6 +135,10 @@ class SocketService {
 
   emiter(event, body) {
     if (body) this.io.emit(event, body);
+  }
+
+  sendTo(id,event, body) {
+    if (body) this.io.to(id).emit(event, body);
   }
 }
 
