@@ -200,12 +200,12 @@ const token=Math.floor(100000 + Math.random() * 900000)
               })
               .then((result) => {
                 return res.status(200).send({ message: "mail sent", ServerResponse: result });
-              }).catch(err => console.log(err));
+              }).catch(err =>res.status(500));
               
             })
              
           }
-        }).catch(err => console.log(err));
+        }).catch(err => res.status(500));
 
        
        
