@@ -5,7 +5,7 @@ const SentProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
-
+const Chat =require("../models/Chat")
 exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   Program.find(filter, { ExercisePlan: 0 })
@@ -87,20 +87,23 @@ exports.FetchSpecificProgramPublic = (req, res) => {
 };
 
 exports.CreateProgram = async (req, res) => {
+
   let isSuccess = true;
+  let program=null 
+  let sentProgram=null
 if(req.body.SendTo.length>0)
  { const session = await mongoose.startSession();
   session.startTransaction();
   try {
     // always pass session to find queries when the data is needed for the transaction session
 
-   const program= await Program.create([{ ...req.body, createdBy: req.userData._id }], {
+    program= await Program.create([{ ...req.body, createdBy: req.userData._id }], {
       session: session,
     });
 
   
 
-   const sentProgram= await SentProgram.create(
+    sentProgram= await SentProgram.create(
       [{ Program: program[0] ,
          Amount:req.body.Price, 
          SendTo:req.body.SendTo, 
@@ -155,12 +158,27 @@ if(req.body.SendTo.length>0)
 
        User.find({$or:[{email:{$in:req.body.SendTo} },{figgsId:{$in:req.body.SendTo} }]},{_id:1}).then(userData=>{
 console.log(userData);
+let dataChat=[]
         userData.map(item=>{
-          req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification"});
+
+         dataChat.push({
+          ReceiverId:item._id,
+          SenderId:req.userData._id,
+          SentProgramId:sentProgram[0]._id
+         })
+
+
+     
+
+         req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification",data:{name:req.userData.name,type:"sent-program"}});
           console.log(userData);
         }
         
         )
+
+        Chat.create(dataChat)
+
+
 
        })
       return res.status(201).send();
@@ -190,17 +208,18 @@ else
 
 exports.SendProgram = async (req, res) => {
   let isSuccess = true;
-
+  let program=null 
+  let sentProgram=null
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     // always pass session to find queries when the data is needed for the transaction session
 
-   const program= await Program.findOne({ _id:req.body._id, createdBy: req.userData._id }).session(session);
+    program= await Program.findOne({ _id:req.body._id, createdBy: req.userData._id }).session(session);
 
   
 
-   const sentProgram= await SentProgram.create(
+    sentProgram= await SentProgram.create(
       [{ Program: {...program,...req.body} ,
          Amount:req.body.Price, 
          SendTo:req.body.SendTo, 
@@ -254,12 +273,20 @@ exports.SendProgram = async (req, res) => {
     if (isSuccess) {
       User.find({$or:[{email:{$in:req.body.SendTo} },{figgsId:{$in:req.body.SendTo} }]},{_id:1}).then(userData=>{
         console.log(userData);
+        let dataChat=[]
                 userData.map(item=>{
-                  req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification"});
+                  
+         dataChat.push({
+          ReceiverId:item._id,
+          SenderId:req.userData._id,
+          SentProgramId:sentProgram[0]._id
+         })
+                  req.app.get("socketService").sendTo(item._id,item._id,{type:"new-notification",data:{name:req.userData.name,type:"sent-program"}});
                   console.log(userData);
                 }
                 
                 )
+                Chat.create(dataChat)
         
                })
       return res.status(201).send();

@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
           throw "invalid";
         } else{ 
           
-          req.userData={_id:result[0]._id,email:result[0].email,figgsId:result[0].figgsId}
+          req.userData={_id:result[0]._id,email:result[0].email,figgsId:result[0].figgsId,name:result[0].name}
           return next()};
       })
       .catch(err => {
