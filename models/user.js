@@ -20,6 +20,7 @@ phone:{ type: String,unique:true,sparse: true},
    gender:{ type: String},
    privatePlanMessage:{type:String},
    category:[{ type: String}],
+   expertise:{ type: String,default:null},
    healthGoals:{ type: String,default:null},
    healthInfo:{
     height:{ type: String,default:null},
