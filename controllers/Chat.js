@@ -5,8 +5,19 @@ exports.FetchChats = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   console.log(filter);
   Chat.find({
-    ReceiverId: { $in: [req.userData._id, filter.id] },
-    SenderId: { $in: [req.userData._id, filter.id] },
+
+    $or:[
+{
+  ReceiverId: filter.id ,
+  SenderId: req.userData._id ,
+}
+,
+{
+  ReceiverId: req.userData._id,
+  SenderId: filter.id ,
+}
+    ]
+
   })
     .sort({ createdAt: -1 })
     .skip(skip)
