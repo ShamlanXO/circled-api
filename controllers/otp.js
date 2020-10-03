@@ -1,5 +1,11 @@
 const SendOtp = require("../components/sendOtp");
 const User = require("../models/user");
+
+const Verify = require("../models/Verify");
+
+const client = require('twilio')(process.env.twillio_SID, process.env.twillio_CRED);
+
+
 const sendOtp = new SendOtp(
   "295956Ayx1TlMrGo5d8c4054",
   "{{otp}} is your Secret OTP for completing password reset process. Do not Share it with Anyone."
@@ -15,26 +21,40 @@ exports.SendOTP = (req, res) => {
   User.findOne({phone: req.query.phone}).then((userData) => {
     if(!userData){
 
-    sendOTPReg.send(req.query.phone, "FIGGSS", function(error, data) {
-      if (error) {
-        return res.status(500).send({
-          ErrorOccured: error
-        });
-      } else {
-        return res.status(200).send({
-          message: "OTP SENT",
-          data
-        });
-      }
 
-    });
+      const token=Math.floor(100000 + Math.random() * 900000)
+        Verify.updateOne({ mobile:req.query.phone.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
+
+          if(resultUpdate.nModified>0){
+
+            client.messages
+            .create({body: 'You secret verification code for fiigs is '+token, from: '+18564315487', to:"+"+req.query.phone})
+            .then(message => {
+console.log(message)
+              return res.status(200).send({
+                message: "OTP SENT",
+              
+              });
+            }).catch((err)=>{
+              console.log(err)
+              res.status(500).send({})})
+
+          }
+         
+        }).catch((err)=>{
+          console.log(err)
+          res.status(500).send({ message:"server error"})})
+
+ 
 
   }
   else{
     return res.status(406).send({ message:"already exist"})
   }
 
-}).catch((err)=>res.status(500).send({ message:"server error"}))
+}).catch((err)=>{
+  console.log(err)
+  res.status(500).send({ message:"server error"})})
   
 };
 
@@ -42,19 +62,29 @@ exports.SendOTPPasswordReset = (req, res) => {
   User.findOne({phone: req.query.phone}).then((userData) => {
     if(userData){
 
-    sendOTPReg.send(req.query.phone, "FIGGSS", function(error, data) {
-      if (error) {
-        return res.status(500).send({
-          ErrorOccured: error
-        });
-      } else {
-        return res.status(200).send({
-          message: "OTP SENT",
-          data
-        });
-      }
+      const token=Math.floor(100000 + Math.random() * 900000)
+      Verify.updateOne({ mobile:req.query.phone.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
 
-    });
+        if(resultUpdate.nModified>0){
+
+          client.messages
+          .create({body: 'You secret verification code for fiigs is '+token, from: '+18564315487', to: req.query.phone})
+          .then(message => {
+
+            return res.status(200).send({
+              message: "OTP SENT",
+           
+            });
+          });
+
+        }
+        else{
+          return res.status(500).send({
+            ErrorOccured: error
+          });
+        }
+      }).catch((err)=>res.status(500).send({ message:"server error"}))
+
 
   }
   else{
@@ -70,19 +100,30 @@ exports.SendOTPUpdate = (req, res) => {
   User.findOne({phone: req.query.phone,_id:{$ne:req.userData._id}}).then((userData) => {
     if(!userData){
 
-    sendOTPReg.send(req.query.phone, "FIGGSS", function(error, data) {
-      if (error) {
-        return res.status(500).send({
-          ErrorOccured: error
-        });
-      } else {
-        return res.status(200).send({
-          message: "OTP SENT",
-          data
-        });
-      }
+      const token=Math.floor(100000 + Math.random() * 900000)
+      Verify.updateOne({ mobile:req.query.phone.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
 
-    });
+        if(resultUpdate.nModified>0){
+
+          client.messages
+          .create({body: 'You secret verification code for fiigs is '+token, from: '+18564315487', to: req.query.phone})
+          .then(message => {
+console.log(message)
+            return res.status(200).send({
+              message: "OTP SENT",
+       
+            });
+          }).catch((err)=>{
+            
+            res.status(500)})
+
+        }
+        else{
+          return res.status(500).send({
+            ErrorOccured: error
+          });
+        }
+      }).catch((err)=>res.status(500).send({ message:"server error"}))
 
   }
   else{

@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const verifySchema = new mongoose.Schema(
   {
     token: { type: String, },
-    email: { type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/ },
+    email: { type: String },
+    mobile:{ type: String}
   },
   { timestamps: true }
 );
