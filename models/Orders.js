@@ -55,14 +55,17 @@ const DietPlanSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema(
   {
-    PaymentId: { type: String, default: null },
+    PaymentId: { type: mongoose.Schema.Types.ObjectId, ref: "payment"  },
     UserId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-    ActualAmount: { type: Number, default: 0 },
-    AmountPaid: { type: Number, default: 0 },
-    ReceiptNumber: { type: String, default: null },
-    Receipt: { type: String, default: null },
+    Status: {
+      type: String,
+      enum: ["Inactive", "Pending", "Active"],
+      default: "Inactive"
+    },
     isActive:{ type:Boolean, default: false},
-    Program: ProgramSchema
+    Program: ProgramSchema,
+    SubscriptionId:{ type: String},
+    SentProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" }
   },
   { timestamps: true }
 );

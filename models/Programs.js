@@ -44,6 +44,8 @@ const ProgramSchema = new mongoose.Schema(
    BannerVideo:{ type: String, default: null },
     IsPublished:{type:Boolean, default:true},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    PlanId:{ type: String, default: null},
+    ProductId:{ type: String, default: null}
     
   },
   { timestamps: true }

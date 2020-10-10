@@ -4,18 +4,24 @@ const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema(
   {
-    TransactionId: { type: String, default: null },
+   
     Amount: { type: Number },
-    Mobile: { type: Number },
-    Email: { type: String },
-    PayeeName: { type: String },
+   User:{ type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    SubscriptionId: { type: String },
+    OrderId:{ type: String},
+    ProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "program" },
+    SendProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
     Status: {
       type: String,
-      enum: ["Inactive", "Pending", "Active"],
+      enum: ["Inactive", "Pending", "Active","Unsubscribed","Terminated"],
       default: "Inactive"
     },
+    Type:{  
+      type: String,
+      enum: ["Subscription", "OneTime"],
+      default: "OneTime"},
     Mode: { type: String },
-    Signature: { type: String }
+    paymentDetails:{}
   },
   { timestamps: true }
 );

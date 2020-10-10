@@ -59,7 +59,9 @@ const SentProgramSchema = new mongoose.Schema(
     SendTo: [{ type: String}],
     Amount: { type: Number, default: 0 },
     Program: ProgramSchema,
-    Title: { type:String, default: null}
+    Title: { type:String, default: null},
+    ProductId: { type:String, default: null},
+    SubscriptionId:{ type:String, default: null},
   },
   { timestamps: true }
 );

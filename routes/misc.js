@@ -24,4 +24,6 @@ router.route("/send-verify-mail").post(miscController.SendVerifyMail);
 router.route("/verify-mail").post(miscController.VerifyMail);
 router.route("/change-password-mail").post(checkAuth,miscController.ChangePasswordMail);
 router.route("/change-password-mail2").post(miscController.ChangePasswordMail2);
+router.route("/webhook").get(miscController.GetWebhook);
+router.route("/webhook").post(miscController.GetWebhook);
 module.exports = router;

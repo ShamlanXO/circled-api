@@ -7,6 +7,7 @@ const http = require("http");
 var handlebars = require("handlebars");
 const User = require("../models/user");
 const Verify = require("../models/Verify");
+const axios = require("axios");
 require("dotenv").config();
 var smtpTransport = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -378,3 +379,9 @@ exports.VerifyMail = (req, res) => {
  
   }).catch(err => {return res.status(500)})
 };
+
+
+exports.GetWebhook=(req,res) => {
+console.log(req.body)
+res.send({ email:""})
+}

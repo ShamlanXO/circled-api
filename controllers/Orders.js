@@ -5,7 +5,7 @@ var ObjectID = require("mongodb").ObjectID;
 
 exports.SearchOrder = (req, res) => {
   console.log(req.userData._id);
-  Order.find({ UserId: req.userData._id })
+  Order.find({ UserId: req.userData._id,Status:"Active" })
     .populate("Program.createdBy", "name profilePic _id")
     .then((result) => {
       if (result.length < 1) {
@@ -90,8 +90,10 @@ exports.GetSpecificClients = (req, res) => {
 };
 
 exports.GetOrder = (req, res) => {
-  Order.findOne({ UserId: req.userData._id, "Program._id": req.params.id })
+  console.log("getting order")
+  Order.findOne({ UserId: req.userData._id, _id: req.params.id ,Status: "Active"})
     .populate("Program.createdBy", "name profilePic _id")
+    .populate("SentProgramId")
     .then((result) => {
       if (!result) {
         return res.status(404).send({
@@ -189,7 +191,7 @@ exports.SwitchProgram = (req, res) => {
   let { _id, isActive } = req.body;
 
   Order.updateOne(
-    { "Program._id": _id, UserId: req.userData._id },
+    { _id: _id, UserId: req.userData._id },
     { isActive },
     function (err, response) {
       if (err) {
