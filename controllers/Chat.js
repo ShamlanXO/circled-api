@@ -166,6 +166,7 @@ exports.GetChatUsersRecent = (req, res) => {
         unread: 1,
         name: 1,
         profilePic: 1,
+        figgsId:1,
         SenderId: 1,
         ReceiverId: 1,
         IsRead: 1,

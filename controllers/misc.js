@@ -180,9 +180,10 @@ exports.SendVerifyMail = (req, res) => {
       }
       else{
 const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
-          console.log(resultUpdate)
+        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:123456},{upsert: true}).then(resultUpdate=>{
+          return res.status(200).send({ message: "mail sent"})
           if(resultUpdate.nModified>0){
+           
             var template = handlebars.compile(html);
             var replacements = {
              token:token,
@@ -200,13 +201,17 @@ const token=Math.floor(100000 + Math.random() * 900000)
                 html: htmlToSend,
               })
               .then((result) => {
+                console.log(result)
+                return res.status(200).send({ message: "mail sent"})
                 //return res.status(200).send({ message: "mail sent", ServerResponse: result });
-              }).catch(err =>res.status(500));
-              return res.status(200).send({ message: "mail sent"})
-            })
+              }).catch(err =>res.status(500).send());
+            
+            }).catch(err =>{
+              console.log(err);
+              res.status(500).send()});
              
           }
-        }).catch(err => res.status(500));
+        }).catch(err => res.status(500).send());
 
        
        

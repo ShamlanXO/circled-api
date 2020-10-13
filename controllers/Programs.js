@@ -113,7 +113,7 @@ exports.CreateProgram = async (req, res) => {
           },
         }
       );
-console.log(productId)
+
       program = await Program.create(
         [
           {
@@ -286,7 +286,7 @@ console.log(productId)
 
       const ProgramCon = new Program({
         ...req.body,
-        PlanId:prdata.data.id,
+        ProductId:prdata.data.id,
         createdBy: req.userData._id,
       });
       ProgramCon.save()

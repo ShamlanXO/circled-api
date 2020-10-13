@@ -226,7 +226,7 @@ exports.GetStats = (req, res) => {
             $group: {
 
               _id: 1,
-              totalAmount: { $sum: "$AmountPaid" },
+              totalAmount: { $sum: "$Program.Price" },
               count: { $sum: 1 },
             },
           },
@@ -236,7 +236,7 @@ exports.GetStats = (req, res) => {
           {
             $group: {
               _id: 1,
-              totalAmount: { $sum: "$AmountPaid" },
+              totalAmount: { $sum: "$Program.Price" },
               count: { $sum: 1 },
             },
           },
