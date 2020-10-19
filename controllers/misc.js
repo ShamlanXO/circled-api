@@ -38,6 +38,7 @@ AWS.config.update({
   accessKeyId: "AKIA4XYECDTU3SEPOCU3",
   secretAccessKey: "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",
   region: "us-east-1",
+
 });
 
 var s3 = new AWS.S3();
@@ -53,6 +54,28 @@ exports.generatePasswordHash = (req, res) => {
     }
   });
 };
+
+exports.getSignatureUrl = (req, res) => {
+  const S3 = new AWS.S3({
+    endpoint: 's3-us-east-1.amazonaws.com',   // Put you region
+    accessKeyId: "AKIA4XYECDTU3SEPOCU3",
+    secretAccessKey: "HXxdEiiyeHmhvtXPVQG4zJGqZ1migz0EOMP/QS6A",
+    region: "us-east-1",
+    Bucket: 'slorge',         // Put your bucket name
+    signatureVersion: 'v4',
+            // Put you region
+ });
+  var params = {
+    ACL: 'public-read',
+    Bucket: "slorge",
+    Key: `${Date.now()}${"-"}figgsVideo-${req.body.name}`,
+    Expires:24 * 3600,
+    ContentType: req.body.type,
+};
+var signedUrlPut = S3.getSignedUrl('putObject', params);
+
+res.send(signedUrlPut)
+}
 
 exports.generateToken = (req, res) => {
   jwt.sign(

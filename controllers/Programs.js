@@ -9,7 +9,7 @@ const Chat = require("../models/Chat");
 const axios = require("axios");
 exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
-  Program.find(filter, { ExercisePlan: 0 })
+  Program.find({...filter,IsPublished:true}, { ExercisePlan: 0 })
     .skip(skip)
     .limit(limit)
     .sort(sort)
@@ -243,7 +243,7 @@ exports.CreateProgram = async (req, res) => {
           console.log(userData);
           let dataChat = [];
           userData.map((item) => {
-            dataChat.push({
+           if(item._id!==req.userData._id){dataChat.push({
               ReceiverId: item._id,
               SenderId: req.userData._id,
               SentProgramId: sentProgram[0]._id,
@@ -255,7 +255,7 @@ exports.CreateProgram = async (req, res) => {
                 type: "new-notification",
                 data: { name: req.userData.name, type: "sent-program" },
               });
-            console.log(userData);
+            console.log(userData);}
           });
 
           Chat.create(dataChat);
@@ -455,7 +455,7 @@ exports.SendProgram = async (req, res) => {
         console.log(userData);
         let dataChat = [];
         userData.map((item) => {
-          dataChat.push({
+          if(item._id!==req.userData._id){ dataChat.push({
             ReceiverId: item._id,
             SenderId: req.userData._id,
             SentProgramId: sentProgram[0]._id,
@@ -466,7 +466,7 @@ exports.SendProgram = async (req, res) => {
               type: "new-notification",
               data: { name: req.userData.name, type: "sent-program" },
             });
-          console.log(userData);
+         }
         });
         Chat.create(dataChat);
       });
