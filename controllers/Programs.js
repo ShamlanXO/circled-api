@@ -334,7 +334,7 @@ exports.SendProgram = async (req, res) => {
       "https://api.sandbox.paypal.com/v1/billing/plans",
 
       {
-        product_id:program.PlanId,
+        product_id:program.ProductId,
         name:program.Title,
         billing_cycles:[{
           frequency:{
