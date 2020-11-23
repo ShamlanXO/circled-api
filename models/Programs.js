@@ -38,6 +38,7 @@ const ProgramSchema = new mongoose.Schema(
     Price:{ type:Number},
     Discount:{ type:Number},
     GreetingMessage:{ type:String},
+    IsDraft:{ type:Boolean,default:false},
     DietPlan:DietPlanSchema,
     ExercisePlan:[[ExercisePlanSchema]],
    BannerImage:{ type: String,default:null},

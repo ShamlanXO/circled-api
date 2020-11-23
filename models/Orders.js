@@ -13,6 +13,8 @@ const DietPlanSchema = new mongoose.Schema({
  note: { type: String, default: null},
  rest: { type: Number, default: null},
  banner:{ type: String, default: null},
+ 
+ isAttempted:{ type: Boolean, default: false}
  })
  
  
@@ -65,7 +67,9 @@ const orderSchema = new mongoose.Schema(
     isActive:{ type:Boolean, default: false},
     Program: ProgramSchema,
     SubscriptionId:{ type: String},
-    SentProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" }
+    SentProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
+    currentWeek:0,
+    currentDay:0
   },
   { timestamps: true }
 );

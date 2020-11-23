@@ -9,13 +9,13 @@ const bodyParser = require("body-parser");
 const config = require("./config/config");
 const helmet = require("helmet");
 const Routes = require("./routes/index");
-
+const Orders= require("./models/Orders")
 //const swaggerDocument = require("./documentation/swagger.json");
 //redist
+const axios=require("axios");
 
 
-
-
+var ObjectID = require("mongodb").ObjectID;
 
 const cors = require("cors");
 const compression = require("compression");
@@ -107,12 +107,77 @@ redis.set("figgsId",id,(err,data) =>{
       
 
 
+      Orders.updateOne(
+        {
+          "_id" : ObjectID("5f84061d49e13628a2468067") 
 
+      },
+      {
+     
+          "Program.ExercisePlan.0.0.Title":"conditionEdit-server"
+        
+  
+      }
+      ).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
 
 
     }
   }
 );
+
+// const saveData=(firstName,lastName,displayName,email)=>{
+//   new Contact({firstName,lastName,displayName,email}).save((err,newUser)=>{
+
+//     console.log(err)
+//     console.log(newUser)
+//   })
+// }
+
+// const fetchMore=(link)=>{
+//   axios.get(link,{headers:{Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6Il83MTI4WDNXeGN6M2R1S1JNYllSU3JCTEYzNkdJTVh4MEdhT05Od3BvSm8iLCJhbGciOiJSUzI1NiIsIng1dCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCIsImtpZCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC84Njk1YjgzZC1jNjkyLTQ3ZWYtYWQ3YS0zNzZjYmNlMzY2NGYvIiwiaWF0IjoxNjA0NjQ3Mjc2LCJuYmYiOjE2MDQ2NDcyNzYsImV4cCI6MTYwNDY1MTE3NiwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkUyUmdZR2dYMEZoL3ZrZDlwcnlML3g4VHh0K2hvZmNUQk5SMnZEMVlxTjMvOHJ0dDJUa0EiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6InNsb3JnZSIsImFwcGlkIjoiZDlmYTExYWMtZDE5Mi00Y2U4LTk4NjYtYmIyZDJjNjg2ZGZmIiwiYXBwaWRhY3IiOiIwIiwiZmFtaWx5X25hbWUiOiJKYWluIiwiZ2l2ZW5fbmFtZSI6IkFtYW4iLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxNzEuNzkuMTQ2LjE1MSIsIm5hbWUiOiJBbWFuIEphaW4iLCJvaWQiOiI2NDMwNjg5Yi05MjYzLTQ1YjctYTM5Yy0yYWU3NzU3MzkwYjciLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkY5QTZGOTI4QyIsInJoIjoiMC5BQUFBUGJpVmhwTEc3MGV0ZWpkc3ZPTm1UNndSLXRtUzBlaE1tR2E3TFN4b2JmODlBSkUuIiwic2NwIjoiVXNlci5SZWFkIFVzZXIuUmVhZEJhc2ljLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInN1YiI6ImlEVWtHUHUyWGxJeW9lUkdqa3RDNWluRmhWZGVWZE5iandoVW04VnFFSUkiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiQVMiLCJ0aWQiOiI4Njk1YjgzZC1jNjkyLTQ3ZWYtYWQ3YS0zNzZjYmNlMzY2NGYiLCJ1bmlxdWVfbmFtZSI6ImFtYW5qYWluQGprbHUuZWR1LmluIiwidXBuIjoiYW1hbmphaW5AamtsdS5lZHUuaW4iLCJ1dGkiOiJMSjBFQmg3RFYwbWlMVEJzUEw1SkFRIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6IkVVSENPd003MlloTl9DazFKN0o0U19aSFdRV1NfR0c3LU1QUGg4SkxXYXMifSwieG1zX3RjZHQiOjEzNjE1MjY0Mjl9.hn8CFsqw0hfGYGQ2DBsvtOJpNFLp0ug8CvSO2-al_uIsFZmOoULr1OdK7W_lOtOCA1jSr37DW-9RayMSAr41MO-BFdqP3wvlTId0k0X47kbBJRoz5tu_SlezRF7XeHQe08g4R0wFfQrh_71mi8uHPGFTHdey8rM_1jARKZjDo9HomzlEOyHL5dclO5be4TV6udcEKl1Rso005QEgd6HWOARfbbM5Rwwk7ZfFIKNF3O9IE_RYKSgVN9prQ2bNmf5ifzpPuGcXK7p81ibkuuwfzJNwlu2QG72NXFBxc3K_hqq24xXLsvRq-EZLDUp4ujyu-kmEv-lligKJGWhRbUb9zA"}}).then((data)=>{
+
+//     data.data.value.map(item=>{
+//       saveData(item.givenName,item.surname,item.displayName,item.mail)
+//     })
+
+//     if(data.data["@odata.nextLink"]){
+//       fetchMore(data.data["@odata.nextLink"])
+//     }
+
+
+
+
+//     })
+
+
+// }
+
+
+// app.get('/getUsers', (request, response) => {
+//   console.log("hey")
+ 
+//   axios.get("https://graph.microsoft.com/v1.0/users",{headers:{Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6Il83MTI4WDNXeGN6M2R1S1JNYllSU3JCTEYzNkdJTVh4MEdhT05Od3BvSm8iLCJhbGciOiJSUzI1NiIsIng1dCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCIsImtpZCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC84Njk1YjgzZC1jNjkyLTQ3ZWYtYWQ3YS0zNzZjYmNlMzY2NGYvIiwiaWF0IjoxNjA0NjQ3Mjc2LCJuYmYiOjE2MDQ2NDcyNzYsImV4cCI6MTYwNDY1MTE3NiwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkUyUmdZR2dYMEZoL3ZrZDlwcnlML3g4VHh0K2hvZmNUQk5SMnZEMVlxTjMvOHJ0dDJUa0EiLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6InNsb3JnZSIsImFwcGlkIjoiZDlmYTExYWMtZDE5Mi00Y2U4LTk4NjYtYmIyZDJjNjg2ZGZmIiwiYXBwaWRhY3IiOiIwIiwiZmFtaWx5X25hbWUiOiJKYWluIiwiZ2l2ZW5fbmFtZSI6IkFtYW4iLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxNzEuNzkuMTQ2LjE1MSIsIm5hbWUiOiJBbWFuIEphaW4iLCJvaWQiOiI2NDMwNjg5Yi05MjYzLTQ1YjctYTM5Yy0yYWU3NzU3MzkwYjciLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzNGRkY5QTZGOTI4QyIsInJoIjoiMC5BQUFBUGJpVmhwTEc3MGV0ZWpkc3ZPTm1UNndSLXRtUzBlaE1tR2E3TFN4b2JmODlBSkUuIiwic2NwIjoiVXNlci5SZWFkIFVzZXIuUmVhZEJhc2ljLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInN1YiI6ImlEVWtHUHUyWGxJeW9lUkdqa3RDNWluRmhWZGVWZE5iandoVW04VnFFSUkiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiQVMiLCJ0aWQiOiI4Njk1YjgzZC1jNjkyLTQ3ZWYtYWQ3YS0zNzZjYmNlMzY2NGYiLCJ1bmlxdWVfbmFtZSI6ImFtYW5qYWluQGprbHUuZWR1LmluIiwidXBuIjoiYW1hbmphaW5AamtsdS5lZHUuaW4iLCJ1dGkiOiJMSjBFQmg3RFYwbWlMVEJzUEw1SkFRIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6IkVVSENPd003MlloTl9DazFKN0o0U19aSFdRV1NfR0c3LU1QUGg4SkxXYXMifSwieG1zX3RjZHQiOjEzNjE1MjY0Mjl9.hn8CFsqw0hfGYGQ2DBsvtOJpNFLp0ug8CvSO2-al_uIsFZmOoULr1OdK7W_lOtOCA1jSr37DW-9RayMSAr41MO-BFdqP3wvlTId0k0X47kbBJRoz5tu_SlezRF7XeHQe08g4R0wFfQrh_71mi8uHPGFTHdey8rM_1jARKZjDo9HomzlEOyHL5dclO5be4TV6udcEKl1Rso005QEgd6HWOARfbbM5Rwwk7ZfFIKNF3O9IE_RYKSgVN9prQ2bNmf5ifzpPuGcXK7p81ibkuuwfzJNwlu2QG72NXFBxc3K_hqq24xXLsvRq-EZLDUp4ujyu-kmEv-lligKJGWhRbUb9zA"}}).then((data)=>{
+// console.log(data)
+//   data.data.value.map(item=>{
+//     saveData(item.givenName,item.surname,item.displayName,item.mail)
+//   })
+//   fetchMore(data.data["@odata.nextLink"])
+
+
+
+
+//   })
+
+
+
+
+// });
+
+
 
 //Middlewares for error handling and presentation.
 app.use((req, res, next) => {

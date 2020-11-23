@@ -170,6 +170,7 @@ exports.CheckExist = (req, res) => {
 
 exports.UpdateOrder = (req, res) => {
   console.log(req.body.Program);
+
   Order.updateOne(
     { _id: req.body._id, "Program.createdBy": req.userData._id },
     { Program: req.body.Program },
@@ -186,6 +187,27 @@ exports.UpdateOrder = (req, res) => {
     return res.status(500).send({ ErrorOccured: error });
   });
 };
+
+exports.updateStatus = (req,res)=>{
+let {Program,currentWeek,currentDay}=req.body;
+
+console.log(req.body)
+  Order.updateOne(
+    { _id: req.body._id, "UserId": req.userData._id },
+    {"Program.ExercisePlan":Program,currentWeek,currentDay },
+    function (err, response) {
+      if (err) {
+        return res.status(500).send({ ErrorOccured: error });
+      }
+      if (response) {
+        // console.log(response);
+        return res.status(200).send({ message: "Order Details Updated" });
+      }
+    }
+  ).catch((error) => {
+    return res.status(500).send({ ErrorOccured: error });
+  });
+}
 
 exports.SwitchProgram = (req, res) => {
   let { _id, isActive } = req.body;
