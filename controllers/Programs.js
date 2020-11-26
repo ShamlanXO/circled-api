@@ -36,7 +36,7 @@ exports.ProgramsAll = (req, res) => {
 exports.ProgramsInstructor = (req, res) => {
   console.log("fetching all instructors program");
   console.log(req.userData._id);
-  Program.find({ createdBy: req.userData._id }, { ExercisePlan: 0 })
+  Program.find({ createdBy: req.userData._id }, { ExercisePlan: 0 }).sort({IsDraft:-1,createdAt:-1})
     .populate("createdBy", "_id name profilePic")
     .then((result) => {
       if (result.length < 1) {
