@@ -189,6 +189,7 @@ exports.UpdateOrder = (req, res) => {
 };
 
 exports.updateStatus = (req,res)=>{
+
 let {Program,currentWeek,currentDay}=req.body;
 
 console.log(req.body)
@@ -200,7 +201,7 @@ console.log(req.body)
         return res.status(500).send({ ErrorOccured: error });
       }
       if (response) {
-        // console.log(response);
+        console.log(response);
         return res.status(200).send({ message: "Order Details Updated" });
       }
     }

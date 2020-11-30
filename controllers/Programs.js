@@ -506,6 +506,21 @@ exports.UpdateProgram = (req, res) => {
     });
 };
 
+
+exports.ShareProgram=(req,res) => {
+  const token = jwt.sign(
+        {  _id:req.params.Id},
+        process.env.jwtSecret,
+        { expiresIn:"7d" }
+      );
+res.status(200).send({token});
+}
+
+
+
+
+
+
 exports.DeleteProgram = (req, res) => {
   Program.deleteOne({ _id: req.params.id, createdBy: req.userData._id })
     .then((result) => {

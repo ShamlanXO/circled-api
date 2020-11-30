@@ -68,8 +68,8 @@ const orderSchema = new mongoose.Schema(
     Program: ProgramSchema,
     SubscriptionId:{ type: String},
     SentProgramId:{ type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
-    currentWeek:0,
-    currentDay:0
+    currentWeek:{type:Number, default: 0},
+    currentDay:{type:Number, default: 0}
   },
   { timestamps: true }
 );

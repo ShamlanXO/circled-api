@@ -35,7 +35,7 @@ const ProgramSchema = new mongoose.Schema(
     Requirements:{ type: String, default: null},
     Type:{ type: String, default: null},
     PaymentType:{ type: String},
-    Price:{ type:Number},
+    Price:{ type:Number,default: 0},
     Discount:{ type:Number},
     GreetingMessage:{ type:String},
     IsDraft:{ type:Boolean,default:false},
