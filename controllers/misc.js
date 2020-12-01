@@ -57,10 +57,10 @@ exports.generatePasswordHash = (req, res) => {
 
 exports.getSignatureUrl = (req, res) => {
   const S3 = new AWS.S3({
-    endpoint: 's3-us-east-1.amazonaws.com',   // Put you region
+    endpoint: 's3-us-east-2.amazonaws.com',   // Put you region
     accessKeyId: "AKIA4XYECDTU3SEPOCU3",
     secretAccessKey: "HXxdEiiyeHmhvtXPVQG4zJGqZ1migz0EOMP/QS6A",
-    region: "us-east-1",
+    region: "us-east-2",
     Bucket: 'slorge',         // Put your bucket name
     signatureVersion: 'v4',
             // Put you region
