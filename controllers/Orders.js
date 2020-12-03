@@ -5,7 +5,7 @@ var ObjectID = require("mongodb").ObjectID;
 
 exports.SearchOrder = (req, res) => {
   console.log(req.userData._id);
-  Order.find({ UserId: req.userData._id,Status:"Active" })
+  Order.find({ UserId: req.userData._id,Status:"Active" },"_id isActive Program.Title Program.createdBy Program.BannerImage")
     .populate("Program.createdBy", "name profilePic _id")
     .then((result) => {
       if (result.length < 1) {
@@ -212,22 +212,29 @@ console.log(req.body)
 
 exports.SwitchProgram = (req, res) => {
   let { _id, isActive } = req.body;
-
-  Order.updateOne(
-    { _id: _id, UserId: req.userData._id },
-    { isActive },
-    function (err, response) {
-      if (err) {
-        return res.status(500).send({ ErrorOccured: error });
+if(isActive)
+  Order.findOne({ _id: _id, UserId: req.userData._id}).populate("Program.createdBy").then((order) => {
+    console.log(order)
+    Order.updateMany({UserId: req.userData._id},{isActive:false}).then(res => {
+      Order.updateOne({ _id: _id,UserId: req.userData._id},{isActive}).then(response =>{
+        
       }
-      if (response) {
-        console.log(response);
-        return res.status(200).send({ message: "Order Details Updated" });
-      }
+  
+        )
+    })
+   
+    return res.status(200).send({ data: order });
+  }).catch((error)=>res.status(500))
+  else
+  Order.updateMany({UserId: req.userData._id},{isActive:false}).then(res1 => {
+    Order.updateOne({ _id: _id,UserId: req.userData._id},{isActive}).then(res2 =>{
+      return res.status(200).send({ data: "updated" });
     }
-  ).catch((error) => {
-    return res.status(500).send({ ErrorOccured: error });
-  });
+
+      )
+  })
+
+  
 };
 
 exports.GetStats = (req, res) => {
