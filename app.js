@@ -46,9 +46,7 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 app.use(morgan("dev"));
 app
-app.get("/", (req, res) => {
-  res.redirect("/api/welcome");
-});
+
 app.get("/api/welcome", (req, res) => {
   return res
     .status(200)
@@ -128,6 +126,14 @@ redis.set("figgsId",id,(err,data) =>{
     }
   }
 );
+
+app.use(express.static(path.join(__dirname, 'build')));
+    
+// Handle React routing, return all requests to React app
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 
 // const saveData=(firstName,lastName,displayName,email)=>{
 //   new Contact({firstName,lastName,displayName,email}).save((err,newUser)=>{

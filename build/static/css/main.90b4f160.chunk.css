@@ -1,0 +1,21 @@
+/*!
+
+=========================================================
+* Now UI Kit PRO React - v1.0.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/now-ui-kit-pro-react
+* Copyright 2020 Creative Tim (http://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+/*!
+ * react-flags-select v1.1.13 - https://github.com/ekwonye-richard/react-flags-select#readme
+ * MIT Licensed
+ */.flag-select{position:relative;display:inline-block;width:100%;vertical-align:inherit;border-bottom:.5px solid #d4d7dc}.flag-select__btn{padding:0 0 15px;color:#172a44;border:none;background:transparent;outline:none}.flag-select__btn:before{content:" ";display:block;width:100%;height:100%;position:absolute;z-index:999}.flag-select__option{cursor:pointer;padding:0 8px 3px 0;margin:4px 0;white-space:nowrap}.flag-select__options{position:absolute;z-index:999999;border:1px solid #bdbbbb;border-radius:3px;background:#fff;margin-top:8px;padding:8px 0;max-height:260px;overflow:auto;width:100%}.flag-select__options.to--left{right:10px}.flag-select__option--placeholder{height:inherit;width:inherit;display:inline-block;vertical-align:middle}.flag-select__option:not(.flag-select__option--placeholder):focus,.flag-select__option:not(.flag-select__option--placeholder):hover{outline:none;background:#eaeaea}.flag-select__option.has-label{padding:0 20px 3px 8px}.flag-select__option__label{font-size:1em;position:relative;padding-left:9px}.flag-select__option__icon{width:1.3em;height:1.3em;position:relative;top:.3em}.flag-select .filterBox{width:90%}.flag-select .filterBox input{width:90%;padding:12px;border-radius:8px;margin:0 4% 15px}.flag-select .filterBox input:focus{outline:none}.flag-select .hidden{display:none}.flag-select .no--focus{pointer-events:none}@font-face{font-family:"Proxima Nova";src:url(/static/media/ProximaNova-Regular.410504d4.otf);font-weight:400}@font-face{font-family:"Proxima Nova";src:url("/static/media/Proxima Nova Bold.62d4d7d3.otf");font-weight:700}@font-face{font-family:"ProximaBold";src:url("/static/media/Proxima Nova Extrabold.b4f9eb8c.otf")}
+/*# sourceMappingURL=main.90b4f160.chunk.css.map */

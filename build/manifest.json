@@ -1,0 +1,27 @@
+{
+  "short_name": "Figgs",
+  "orientation": "portrait",
+  "serviceworker": {
+    "src": "serviceWorker.js",
+    "scope": "/"
+  },
+  "name": "Figgs App",
+  "icons": [
+    {
+      "src": "manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#007EA0",
+  "background_color": "#fff"
+}
