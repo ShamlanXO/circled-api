@@ -44,7 +44,7 @@
     "url": "^0.11.0"
   },
   "scripts": {
-    "start": "set NODE_ENV=PROD && nodemon app.js",
+    "start": "node app.js",
     "dev": " set NODE_ENV=DEV && nodemon app.js"
   }
 }
