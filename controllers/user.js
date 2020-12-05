@@ -1,7 +1,7 @@
 const user = require("../models/user");
 const Verify=require("../models/Verify")
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const SendOtp = require("../components/sendOtp");
 const aqp = require("api-query-params");
 const sendOtp = new SendOtp(
