@@ -10,14 +10,12 @@ const Verify = require("../models/Verify");
 const axios = require("axios");
 require("dotenv").config();
 var smtpTransport = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: process.env.Smtphost,
   port: 465,
   secure: true,
   auth: {
-    type:"OAuth2",
-    user: "infos@figgs.co",
-    serviceClient:"112776113917962319629",
-    privateKey:"-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCW0tHV9o8QTFH3\nTgzO/1y8S18rGvedpfXW8V6CgqGpPiw1d3ZzlwI+XxwTpwdmxjcRp3UfxqiJK0K6\n1xnrX1wmkrBbgs1DFnWc+ia5n6cin5HSixA02rLTUCewoxS2uAGPwOi+N7mZEqbc\nfkZohS3zK/oMxVS4rGUAch+CoBbup0Nz3C6fQFn9/uBH23sXjq/cNUYhYDwCus2A\nwinKrekzrFtP9PIXTdDhm3irMloqnrHlDQurTaXwURWijm2ETXz4CvlA3ZJFg+aT\nYen0e1uaaLBfGKtLdlPT3HHSDagh81tgNaQSAs6ShPskUgQSEJSRbCmi7fOJ3Oh1\nWl6rlNVHAgMBAAECggEARr+ButI7bbO/RziPfZH/2Duq2rd9q6+r0DXM1X+dgZwu\ndK4jHDmbzdIjg3x4VldogZmBsXQonp9yX96CxAwpV9a7b1G+I1gnt4kIHU6swesE\nJjUhVwm3lLQmyg7VqphJ8zrUclYFc65yI0AAmwrN8SGR2+e8xBvqDPl7mnSqDSwk\nbcU563WigaHYHiWRBzDE2PpVVu0NOt8h39AgkLoPBHa13l5rCsc7rBwdIpDqvN7J\n04KZp3dANTmT8I+J6TEmUmafKtAIYhU+sy323ODpBO1X6RU4Ep4We+j1yl6TCarO\nPJRVVLYeiQciSImky1eIJeJunrHyp0Gs+uhkCyeCMQKBgQDI17B5KsUVcH6WblWl\nsMGbt4afFhkDEe1MM0jfYRw8O9gnPP7aKCGoUSsPU2k3ZDKqDCuC3zv2HYPh1Uau\nZGeJro4ncGQEVYf4wNC/JC4chzju16wKw+wYcUCxNpU1gk4bsI/QAjjM92OD+xay\n5RGgwAbNMkCWFib/WvkPBIsa6wKBgQDAPoYliSMZDoF9XOXjayZQgI59VIF+/blL\n8xrr+Q+jOIBk3QwqekmInhkHxhbvmMq9iACE5j4oXdIKB9e5DmKhu4gIJZZS6X3p\np8JD2vq000d/p+zK1XdWGXLiVrd5ZmvOsFevYRXf+HMyLguoI3u75W1AUUuB2WbU\n9m2C2lrgFQKBgCFHM9Nv1cYOpLryPzi8B+hwSVsUw0Ix9zq4CKwSoCYO2Grv/V5S\nZflIsbTRYk6uSILKj28Y5AuMqmyB9TsyIcG7bYx1X+0j6uq5sBzrtsQ9V56jl7sU\n6YrHQSvb2m9KTvzhjYKuy5CSsSeONB2iPQCAsN/RIsh7lSyce0YUv6PPAoGAY0qn\nzJFFEHb+iHpHviskceXEMpVIAQgZAVJBsGlGG15eajoFQ5c/jZFiijJUvFFlPXkW\nE447wmuaxVWBpPH6HWCXhOWs+4vfXaQo4RUj8etB/XwFAEo6xbyFKsPxJYGx4uIP\nl+SEANb44I0JtkEFcmmwAM08O4fG5e2VaEVRNHUCgYA9YGo/ywj3YdVQ6HlMSIAb\ncHIxXrrrCP0pZXzF7az+mp9jZClXQ7NLTH+tdMPr45zZ2j6shVKUpAY5SQH6+Bvg\nVH12ithK1BQZ6FA0flbyzA2UTq76GYdbf4fu0CwdgqGKJEs0FBfj79F9StsCyalf\nOe7ZzYw7i0IC355dCIO0Aw==\n-----END PRIVATE KEY-----\n",
+    user: process.env.smtpUser,
+    pass: process.env.smtpPass
     
   },
 });
@@ -178,7 +176,7 @@ exports.downloadFile = (req, res) => {
 exports.SendMail = (req, res) => {
   smtpTransport
     .sendMail({
-      from: "figgs@vilabs.tech",
+      from: "infos@figgs.co",
       to: req.body.Email.toLowerCase(),
       subject: req.body.Subject,
       html: req.body.MailBody,
@@ -203,8 +201,8 @@ exports.SendVerifyMail = (req, res) => {
       }
       else{
 const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:123456},{upsert: true}).then(resultUpdate=>{
-          return res.status(200).send({ message: "mail sent"})
+        Verify.updateOne({ email:req.body.email.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
+        //  return res.status(200).send({ message: "mail sent"})
           if(resultUpdate.nModified>0){
            
             var template = handlebars.compile(html);

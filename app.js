@@ -139,8 +139,8 @@ console.log('runnning')
     }
 
     data = data
-      .replace(/__TITLE__/g, "Home Page")
-      .replace(/__DESCRIPTION__/g, "Home page description.");
+      .replace(/__TITLE__/g, "Figgs")
+      .replace(/__DESCRIPTION__/g, "Fitness on demand");
 
     res.send(data)
   });
