@@ -46,20 +46,20 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 
 app.use(morgan("dev"));
-app
-app.get("/", (req, res) => {
-  res.redirect("/api/welcome");
-});
-app.get("/api/welcome", (req, res) => {
-  return res
-    .status(200)
-    .send({ message: `LMS API IS UP AND RUNNING SINCE ${process.uptime()}` });
-});
-app.get("/robots.txt", function(req, res) {
-  res.type("text/plain");
-  res.send("User-agent: *\nDisallow: /");
-});
-app.get("/favicon.ico", (req, res) => res.status(204));
+// app
+// app.get("/", (req, res) => {
+//   res.redirect("/api/welcome");
+// });
+// app.get("/api/welcome", (req, res) => {
+//   return res
+//     .status(200)
+//     .send({ message: `LMS API IS UP AND RUNNING SINCE ${process.uptime()}` });
+// });
+// app.get("/robots.txt", function(req, res) {
+//   res.type("text/plain");
+//   res.send("User-agent: *\nDisallow: /");
+// });
+// app.get("/favicon.ico", (req, res) => res.status(204));
 Routes(app);
 
 
