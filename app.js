@@ -1,5 +1,5 @@
 const express = require("express");
-const Program = require("./models/Programs");
+
 const morgan = require("morgan");
 const app = express();
 const rateLimit = require("express-rate-limit");
@@ -14,6 +14,7 @@ const Orders= require("./models/Orders")
 //redist
 const axios=require("axios");
 const fs = require("fs");
+const Program = require("./models/Programs");
 
 var ObjectID = require("mongodb").ObjectID;
 
@@ -33,7 +34,7 @@ const server = require('http').Server(app);
 global.appRoot = path.resolve(__dirname);
 require("dotenv").config();
 app.use(compression());
-
+server.listen(config.port, () => console.log("Express server is running"));
  app.set("socketService", new SocketService(server));
 app.use(helmet());
 
@@ -46,7 +47,9 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 app.use(morgan("dev"));
 app
-
+app.get("/", (req, res) => {
+  res.redirect("/api/welcome");
+});
 app.get("/api/welcome", (req, res) => {
   return res
     .status(200)
@@ -105,113 +108,13 @@ redis.set("figgsId",id,(err,data) =>{
       
 
 
-      Orders.updateOne(
-        {
-          "_id" : ObjectID("5f84061d49e13628a2468067") 
-
-      },
-      {
-     
-          "Program.ExercisePlan.0.0.Title":"conditionEdit-server"
-        
-  
-      }
-      ).then(res=>{
-        console.log(res)
-      }).catch(err=>{
-        console.log(err)
-      })
+    
 
 
     }
   }
 );
 
-    
-
-
-app.get('/', function(req, res) {
-console.log('runnning')
-  const filePath = path.resolve(__dirname, "build", "index.html");
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      return console.log(err);
-    }
-
-    data = data
-      .replace(/__TITLE__/g, "Figgs")
-      .replace(/__DESCRIPTION__/g, "Fitness on demand");
-
-    res.send(data)
-  });
-
- 
-  //res.sendFile(path.join(__dirname, 'build', 'index.html'));
-
-
-
-
-});
-
-
-app.get('/public/sharedProgram/:id', function(req, res) {
-
-  Program.findById(req.params.id).then((program) => {
-    if(program)
-{
-  const filePath = path.resolve(__dirname, "build", "index.html");
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      return console.log(err);
-    }
-
-  
-    data = data
-      .replace(/__TITLE__/g, program.Title)
-      .replace(/__DESCRIPTION__/g, program.Description)
-      .replace(/__IMAGE__/g, program.BannerImage?program.BannerImage: "https://img.freepik.com/free-photo/athletes-floor-dumbbell-lift-with-one-hand_94347-858.jpg?size=626&ext=jpg")
-      .replace(/__URL__/g,"https://figgs.co/public/sharedProgram/"+req.params.id)
-    res.send(data)
-  });
-}
-else
-{
-
-  res.sendFile(path.join(__dirname, 'build', 'index.html'))
-}
-  })
-  
-
-    
-  
-   
-    //res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  
-  
-  
-  
-  });
-
-
-
-app.use(express.static(path.join(__dirname, "build")));
-app.get("*", (req, res) =>
-	res.sendFile(path.join(__dirname, "build/index.html"))
-);
-
-
-// app.get('*', function(req, res) {
-  
-   
-//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  
-  
-  
-  
-//   });
-
-
-//app.use(express.static(__dirname+'/build'))
 // const saveData=(firstName,lastName,displayName,email)=>{
 //   new Contact({firstName,lastName,displayName,email}).save((err,newUser)=>{
 
@@ -260,10 +163,78 @@ app.get("*", (req, res) =>
 
 // });
 
+app.get('/', function(req, res) {
+  console.log('runnning')
+    const filePath = path.resolve(__dirname, "build", "index.html");
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        return console.log(err);
+      }
+  
+      data = data
+        .replace(/__TITLE__/g, "Figgs")
+        .replace(/__DESCRIPTION__/g, "Fitness on demand");
+  
+      res.send(data)
+    });
+  
+   
+    //res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  
+  
+  
+  
+  });
+  
+  
+  app.get('/public/sharedProgram/:id', function(req, res) {
+  
+    Program.findById(req.params.id).then((program) => {
+      if(program)
+  {
+    const filePath = path.resolve(__dirname, "build", "index.html");
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        return console.log(err);
+      }
+  
+    
+      data = data
+        .replace(/__TITLE__/g, program.Title)
+        .replace(/__DESCRIPTION__/g, program.Description)
+        .replace(/__IMAGE__/g, program.BannerImage?program.BannerImage: "https://img.freepik.com/free-photo/athletes-floor-dumbbell-lift-with-one-hand_94347-858.jpg?size=626&ext=jpg")
+        .replace(/__URL__/g,"https://figgs.co/public/sharedProgram/"+req.params.id)
+      res.send(data)
+    });
+  }
+  else
+  {
+  
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
+  }
+    })
+    
+  
+      
+    
+     
+      //res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    
+    
+    
+    
+    });
+  
+  
+  
+  app.use(express.static(path.join(__dirname, "build")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.join(__dirname, "build/index.html"))
+  );
+  
 
 
 //Middlewares for error handling and presentation.
-
 app.use((req, res, next) => {
   const error = new Error("Not found");
   error.status(404);
@@ -276,5 +247,5 @@ app.use((error, req, res, next) => {
     message: error.message
   });
 });
-app.listen(config.port, () => console.log("Express server is running"));
+
 module.exports = app;
