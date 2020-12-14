@@ -3,6 +3,7 @@ const aqp = require("api-query-params");
 const User = require("../models/user");
 const SentProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
+const {sendPromoMain}=require("../script/sendPromoMail")
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 const Chat = require("../models/Chat");
@@ -455,11 +456,17 @@ exports.SendProgram = async (req, res) => {
         console.log(userData);
         let dataChat = [];
         userData.map((item) => {
+
+
+          sendPromoMain(item.email)
+
           if(item._id!==req.userData._id){ dataChat.push({
             ReceiverId: item._id,
             SenderId: req.userData._id,
             SentProgramId: sentProgram[0]._id,
           });
+
+
           req.app
             .get("socketService")
             .sendTo(item._id, item._id, {

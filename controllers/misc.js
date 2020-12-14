@@ -5,6 +5,7 @@ const fs = require("fs");
 const nodemailer = require("nodemailer");
 const http = require("http");
 var handlebars = require("handlebars");
+const {sendPromoMain}=require("../script/sendPromoMail")
 const User = require("../models/user");
 const Verify = require("../models/Verify");
 const axios = require("axios");
@@ -52,6 +53,10 @@ exports.generatePasswordHash = (req, res) => {
     }
   });
 };
+
+exports.Promotional=(req,res) => {
+  sendPromoMain("amanjain.3331@gmail.com")
+}
 
 exports.getSignatureUrl = (req, res) => {
   const S3 = new AWS.S3({
