@@ -4,6 +4,7 @@ const User = require("../models/user");
 const SentProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 const {sendPromoMain}=require("../script/sendPromoMail")
+
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 const Chat = require("../models/Chat");
@@ -244,11 +245,25 @@ exports.CreateProgram = async (req, res) => {
           console.log(userData);
           let dataChat = [];
           userData.map((item) => {
-           if(item._id!==req.userData._id){dataChat.push({
+           if(item._id!==req.userData._id){
+             
+            dataChat.push({
               ReceiverId: item._id,
               SenderId: req.userData._id,
               SentProgramId: sentProgram[0]._id,
             });
+            sendPromoMain({
+              email:item.email,
+              name:req.userData.name, 
+              BannerImage:req.body.BannerImage?req.body.BannerImage:"https://figgs.co/static/media/fitness.98b4fedb.jpg",
+              profileImg:req.userData.profilePic?req.userData.profilePic:"https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+              Title:req.body.Title,
+              GreetingMessage: req.body.GreetingMessage?req.body.GreetingMessage:"No message from instructor",
+              Price:req.body.Price?req.body.Price:"N/A",
+              PaymentType:req.body.PaymentType?req.body.PaymentType:"N/A",
+              Link:"https://figgs.co/athlete/payment/"+ sentProgram[0]._id
+              })
+  
 
             req.app
               .get("socketService")
@@ -256,7 +271,10 @@ exports.CreateProgram = async (req, res) => {
                 type: "new-notification",
                 data: { name: req.userData.name, type: "sent-program" },
               });
-            console.log(userData);}
+            console.log(userData);
+          
+          
+          }
           });
 
           Chat.create(dataChat);
@@ -451,14 +469,24 @@ exports.SendProgram = async (req, res) => {
             { figgsId: { $in: req.body.SendTo } },
           ],
         },
-        { _id: 1 }
+        { _id: 1,email:1 }
       ).then((userData) => {
         console.log(userData);
         let dataChat = [];
         userData.map((item) => {
 
-
-          sendPromoMain(item.email)
+console.log(item)
+          sendPromoMain({
+            email:item.email,
+            name:req.userData.name, 
+            BannerImage:req.body.BannerImage?req.body.BannerImage:"https://figgs.co/static/media/fitness.98b4fedb.jpg",
+            profileImg:req.userData.profilePic?req.userData.profilePic:"https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+            Title:req.body.Title,
+            GreetingMessage: req.body.GreetingMessage?req.body.GreetingMessage:"No message from instructor",
+            Price:req.body.Price?req.body.Price:"N/A",
+            PaymentType:req.body.PaymentType?req.body.PaymentType:"N/A",
+            Link:"https://figgs.co/athlete/payment/"+ sentProgram[0]._id
+            })
 
           if(item._id!==req.userData._id){ dataChat.push({
             ReceiverId: item._id,

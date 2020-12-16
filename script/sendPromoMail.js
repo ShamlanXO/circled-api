@@ -5,7 +5,7 @@ var handlebars = require("handlebars");
 var inlineCss = require('inline-css');
 
 
-exports.sendPromoMain=(email)=>{
+exports.sendPromoMain=(data)=>{
     var smtpTransport = nodemailer.createTransport({
         host: process.env.Smtphost,
         port: 465,
@@ -43,7 +43,15 @@ exports.sendPromoMain=(email)=>{
         var template = handlebars.compile(html);
         var replacements = {
          token:"token",
-          email: email.toLowerCase(),
+          email: data.email.toLowerCase(),
+          avatar:data.profileImg,
+          sender:data.name,
+          banner:data.BannerImage,
+          title:data.Title,
+          message:data.GreetingMessage,
+          price:data.Price,
+          type:data.PaymentType,
+          Link:data.Link
           
         };
 
@@ -53,7 +61,7 @@ exports.sendPromoMain=(email)=>{
           smtpTransport
           .sendMail({
             from: `Figgs <infos@figgs.co>`,
-            to: email.toLowerCase(),
+            to: data.email.toLowerCase(),
             subject: "Email verification",
             html: htmlToSend,
           })
