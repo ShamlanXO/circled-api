@@ -18,11 +18,7 @@ SentProgram.find({_id:req.params.id,$or:[
 {SendTo:req.userData.figgsId},
 {SendTo:req.userData.email}
 
-  ]})
-  
-  
-   
-    .then((result) => {
+  ]}).populate("Program.createdBy").then((result) => {
       if (result.length < 1) {
         return res.status(404).send([]);
       } else {
