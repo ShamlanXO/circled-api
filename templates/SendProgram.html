@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Proxima+Nova&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      @media only screen and (max-width: 600px) {
+        .main {
+          width: 320px !important;
+        }
+
+        .top-image {
+          width: 100% !important;
+        }
+        .inside-footer {
+          width: 320px !important;
+        }
+        table[class="contenttable"] {
+          width: 320px !important;
+          text-align: left !important;
+        }
+        td[class="force-col"] {
+          display: block !important;
+        }
+        td[class="rm-col"] {
+          display: none !important;
+        }
+        .mt {
+          margin-top: 15px !important;
+        }
+        *[class].width300 {
+          width: 255px !important;
+        }
+        *[class].block {
+          display: block !important;
+        }
+        *[class].blockcol {
+          display: none !important;
+        }
+        .emailButton {
+          width: 100% !important;
+        }
+
+        .emailButton a {
+          display: block !important;
+          font-size: 18px !important;
+        }
+      }
+    </style>
+  </head>
+
+  <style>
+    /* This styles you should add to your html as inline-styles */
+    /* You can easily do it with http://inlinestyler.torchboxapps.com/ */
+    /* Copy this html-window code converter and click convert button */
+    /* After that you can remove this style from your code */
+
+    body {
+      margin: 0;
+      padding: 0;
+    
+      min-width: 100%;
+      font-family: "Proxima Nova";
+    }
+
+    .wrapper {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+      min-width: 620px;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      font-family: "Proxima Nova";
+    }
+
+    body,
+    .wrapper {
+      background-color: #ffffff;
+    }
+
+    /* Basic */
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      font-family: "Proxima Nova";
+    }
+    table.center {
+      margin: 0 auto;
+      width: 602px;
+      font-family: "Proxima Nova";
+    }
+    td {
+      padding: 0;
+      vertical-align: top;
+      font-family: "Proxima Nova";
+    }
+
+    .spacer,
+    .border {
+      font-size: 1px;
+      line-height: 1px;
+      font-family: "Proxima Nova";
+    }
+    .spacer {
+      width: 100%;
+      line-height: 16px;
+      font-family: "Proxima Nova";
+    }
+    .border {
+      background-color: #e0e0e0;
+      width: 1px;
+      font-family: "Proxima Nova";
+    }
+
+    .padded {
+  
+      font-family: "Proxima Nova";
+    }
+    img {
+      border: 0;
+      -ms-interpolation-mode: bicubic;
+    }
+    .image {
+      font-size: 12px;
+    }
+    .image img {
+      display: block;
+    }
+    strong,
+    .strong {
+      font-weight: 700;
+    }
+    h1,
+    h2,
+    h3,
+    p,
+    ol,
+    ul,
+    li {
+      margin-top: 0;
+      font-family: "Proxima Nova";
+    }
+    ol,
+    ul,
+    li {
+      padding-left: 0;
+    }
+
+    a {
+      text-decoration: none;
+      color: #616161;
+      font-family: "Proxima Nova";
+    }
+    .btn {
+      background-color: #2196f3;
+      border: 1px solid #2196f3;
+      border-radius: 2px;
+      color: #ffffff;
+      display: inline-block;
+    
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 36px;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      width: 200px;
+      font-family: "Proxima Nova";
+      height: 36px;
+      padding: 0 8px;
+      margin: 0;
+      outline: 0;
+      outline-offset: 0;
+   
+    }
+
+    /* Top panel */
+    .title {
+      text-align: left;
+      font-family: "Proxima Nova";
+    }
+
+    .subject {
+      text-align: right;
+      font-family: "Proxima Nova";
+    }
+
+    .title,
+    .subject {
+      width: 300px;
+      padding: 8px 0;
+      font-family: "Proxima Nova";
+      color: #616161;
+      font-family: Roboto, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+ 
+    @media only screen and (min-width: 0) {
+      .wrapper {
+        text-rendering: optimizeLegibility;
+      }
+    }
+    @media only screen and (max-width: 620px) {
+      [class="wrapper"] {
+        min-width: 302px !important;
+        width: 100% !important;
+      }
+      [class="wrapper"] .block {
+        display: block !important;
+      }
+      [class="wrapper"] .hide {
+        display: none !important;
+      }
+
+      [class="wrapper"] .top-panel,
+      [class="wrapper"] .header,
+      [class="wrapper"] .main,
+      [class="wrapper"] .footer {
+        width: 302px !important;
+      }
+
+      [class="wrapper"] .title,
+      [class="wrapper"] .subject,
+      [class="wrapper"] .signature,
+      [class="wrapper"] .subscription {
+        display: block;
+        float: left;
+        width: 300px !important;
+        text-align: center !important;
+      }
+      [class="wrapper"] .signature {
+        padding-bottom: 0 !important;
+      }
+      [class="wrapper"] .subscription {
+        padding-top: 0 !important;
+      }
+    }
+
+    /* Header */
+    .logo {
+      padding: 16px 0;
+    }
+
+    /* Logo */
+ 
+    /* Main */
+  
+
+    /* Content */
+    .columns {
+      margin: 0 auto;
+      width: 600px;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+
+    .column {
+      text-align: left;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+
+    .column-top {
+      font-size: 24px;
+      line-height: 24px;
+    }
+
+    .content {
+      width: 100%;
+    }
+
+    .column-bottom {
+      font-size: 8px;
+      line-height: 8px;
+    }
+
+    .content h1 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #212121;
+      font-family: Proxima Nova;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .content p {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #212121;
+      font-family:Proxima Nova;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+    }
+    .content .caption {
+      color: #616161;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    /* Footer */
+    .signature,
+    .subscription {
+      vertical-align: bottom;
+      width: 300px;
+      padding-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .signature {
+      text-align: left;
+    }
+    .subscription {
+      text-align: right;
+    }
+
+    .signature p,
+    .subscription p {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #616161;
+      font-family: Proxima Nova;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .figgsIcon{
+        font-size:20px;
+        color: #172A44;
+        margin-top: 20px;
+        display:flex;
+        flex-direction:row;
+        justify-content:flex-start;
+        align-items: center;
+        font-family: "Proxima Nova";
+    }
+    .icoon{
+        width:40px;
+        height:auto;
+        margin-right:5px
+    }
+
+    .userTitle{
+        font-family: "Proxima Nova";
+        font-size:16px;
+        font-weight:bold;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        margin-top: 10px;
+    }
+
+    .avatar{
+        widows: 40px;
+        height: 40px;
+        border-radius:50%;
+        margin-right:10px
+
+    }
+    .contentInside{
+        padding-left:30px;
+        padding-top:20px
+    }
+
+    .imageBanner{
+       width: 150px;
+       height: 100px;
+        position: relative;
+     
+        background:red;
+   
+        border-radius: 12px;
+    }
+    .ProgramTitle{
+        font-size:18px;
+        margin-top: 10px;
+    }
+    .subTitle{
+        font-weight: bold;
+        font-size:18px;
+        color: #172A44;
+        margin-top: 25px;
+    }
+
+    .text{
+        font-size:16px;
+        color: #172A44;
+        line-height:28px;
+        margin-top: 10px;
+    }
+    .primary{
+        color: #007EA0;
+    }
+    .buttonAccept{
+        background:#007EA0;
+        border-radius:6px;
+        color:#ffffff;
+        padding:10px 60px 10px 60px;
+        border:none;
+        font-weight:bold;
+        margin-top:25px;
+        font-size: 18px;
+    }
+  </style>
+
+  <center class="wrapper">
+    <table
+      class="top-panel center"
+      width="602"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tbody>
+        <tr>
+         
+          <td class="subject" width="300">
+            <div class="strong figgsIcon"  href="#" target="_blank">
+                <img src="https://figgs.co/manifest-icon-192.png" class="icoon"/>
+                
+                figgs</div>
+          </td>
+        </tr>
+      
+       
+      </tbody>
+    </table>
+
+
+
+    <table
+      class="main center"
+      width="602"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tbody>
+        <tr>
+          <td class="column">
+         
+            <table class="content" border="0" cellspacing="0" cellpadding="0">
+              <tbody>
+
+<tr>
+    <div class="userTitle">
+        <img src="https://images.vexels.com/media/users/3/145908/preview2/52eabf633ca6414e60a7677b0b917d92-male-avatar-maker.jpg" class="avatar"/>
+        Nick created a program for you
+    </div>
+</tr>
+
+                <tr >
+                  <td class="contentInside">
+                  
+                <div class="imageBanner"></div>
+
+
+                    <div class="ProgramTitle">25 days body pump</div>
+
+                    <div class="subTitle">Messages</div>
+                
+<div class="text">Hey Jabi i have build the program based on what we discussed. All the best!!! sister and good luck.</div>
+
+<div class="subTitle">Payments</div>
+<div class="text">
+
+    Price: <span class="primary">$39.66</span> <br>
+    Type: <span class="primary">Subscription</div></span>
+
+</div>
+
+<button class="buttonAccept">Accept</button>
+
+                
+                   
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="column-bottom">&nbsp;</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="spacer">&nbsp;</div>
+
+    <table
+      class="footer center"
+      width="602"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tbody>
+        <tr>
+          <td class="border" colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="signature" width="300">
+            <p>
+              With best regards,<br />
+              Figgs Inc.<br />
+              <span style="color:#007EA0">300 West hollywood, Los angeles CA
+                94103</span>
+<br />
+            </p>
+            <p>
+              Support:
+              <a class="strong" href="mailto:support@figgs.co" target="_blank"
+                >  <span style="color:#007EA0">support@figgs.co</span></a
+              >
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </center>
+</html>
