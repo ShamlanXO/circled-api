@@ -76,11 +76,9 @@ exports.SearchUser = (req, res) => {
     });
 };
 
-exports.CreateUser = (req, res) => {
-  req.app.get("redis").incr("figgsId", async (err, figgsId) => {
-    if (err) {
-      return res.status(500).send();
-    }
+exports.CreateUser = async(req, res) => {
+ let userData=await user.findOne({}).sort({createdAt:-1})
+    let figgsId=userData.figgsId
     if (req.body.type == "gmail") {
       let userData = await user.findOne({ email: req.body.email });
       if (userData) {
@@ -158,7 +156,7 @@ exports.CreateUser = (req, res) => {
           });
       });
     }
-  });
+  
 };
 
 exports.UserLogin = (req, res) => {
