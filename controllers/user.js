@@ -329,13 +329,14 @@ exports.ChangePassword = (req, res) => {
   const decoded = jwt.verify(req.body.token, "s3cr3t");
 
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(req.body.Password, 10)
     .then((hash) => {
       user.updateOne(
         { [decoded.type]: decoded.uuid },
         { password: hash },
         function (err, result) {
           if (err) {
+            console.log(err)
             return res.status(500).send({ ErrorOccured: err });
           }
           if (result) {
@@ -352,21 +353,25 @@ exports.ChangePassword = (req, res) => {
 };
 
 exports.ChangePasswordEmail = (req, res) => {
-  user.findOne({ Email: req.body.Email.toLowerCase() }).then((userData) => {
+console.log(req.body.Email)
+
+  user.findOne({ email: req.body.Email.toLowerCase() }).then((userData) => {
     if (!userData) {
+      console.log(":errin us data")
       return res.status(404).send({ message: "No  Data Found" });
     } else {
       jwt.verify(
         req.body.token,
-        "s3cr3t" + userData.Secret.reset,
+        "s3cr3t" ,
         function (err, decoded) {
           console.log(decoded);
           user
-            .find({ Email: decoded.Email })
+            .find({ email: decoded.Email })
 
             .then((result) => {
               console.log(result);
               if (result.length < 1) {
+                console.log(":errin us data n o record")
                 return res.status(404).send({ message: "No  Data Found" });
               } else {
                 if (result[0].IsDeleted == true) {
