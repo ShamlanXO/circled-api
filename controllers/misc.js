@@ -402,3 +402,30 @@ exports.uploadImageSign=(req,res)=>{
 var authenticationParameters = imagekit.getAuthenticationParameters();
 res.status(200).send(authenticationParameters)
 }
+
+
+exports.uploadVideo=(req,res)=>{
+  const headerPost = {
+    Accept: 'application/vnd.vimeo.*+json;version=3.4',
+    Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
+    'Content-Type': 'application/json'
+  };
+
+
+   axios({
+    method: 'post',
+    url: `https://api.vimeo.com/me/videos`,
+    headers: headerPost,
+    data: {
+      upload: {
+        approach: 'tus',
+        size: req.query.fileSize
+      }
+    }
+  }).then(response=>{
+    res.status(200).send({data:response.data})
+  }).catch(err=>{
+    res.status(500).send({err:err})
+  })
+
+}

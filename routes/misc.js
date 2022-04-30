@@ -18,6 +18,7 @@ router
     miscController.uploadMultipleFile
   );
   router.route("/upload-image").get(miscController.uploadImageSign)
+  router.route("/upload-video").get(miscController.uploadVideo)
 router.route("/upload-string").post(miscController.uploadString);
 router.route("/download-file").get(miscController.downloadFile);
 router.route("/getSignedUrl").post(miscController.getSignatureUrl);
