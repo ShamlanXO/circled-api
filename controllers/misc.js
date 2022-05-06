@@ -432,20 +432,21 @@ exports.uploadVideo=(req,res)=>{
 
 exports.deleteVideo=(req,res)=>{
   const headerPost = {
-    Accept: 'application/vnd.vimeo.*+json;version=3.4',
+   
     Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
-    'Content-Type': 'application/json'
+    
   };
 
 
    axios({
     method: 'delete',
-    url: `api.vimeo.com/videos/${req.params.video_id}`,
+    url: `https://api.vimeo.com/videos/${req.params.video_id}`,
     headers: headerPost,
    
   }).then(response=>{
     res.status(200).send({data:response.data})
   }).catch(err=>{
-    res.status(500).send({err:err})
+
+    res.status(err.response.status).send({err:err})
   })
 }
