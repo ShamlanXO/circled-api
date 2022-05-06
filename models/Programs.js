@@ -13,6 +13,7 @@ const ExerciseSchema = new mongoose.Schema({
   note: { type: String, default: null },
   rest: { type: Number, default: null },
   banner: { type: String, default: null },
+
   triggerMuscle:[{type:String}]
 });
 
