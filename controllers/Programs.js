@@ -84,7 +84,7 @@ exports.ProgramsInstructor = (req, res) => {
         Title: 1,
         _id: 1,
         clients: { $size: "$clients" },
-        weeks: { $size: "$ExercisePlan" },
+        weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
         IsDeleted: 1,
         BannerImage: 1,
@@ -412,7 +412,7 @@ exports.CreateProgram = async (req, res) => {
           });
       })
       .catch((err) => {
-        return res.status(500).send({ ErrorOccured: error });
+        return res.status(500).send({ ErrorOccured: err });
       });
   }
 };
