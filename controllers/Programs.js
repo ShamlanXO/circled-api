@@ -86,6 +86,7 @@ exports.ProgramsInstructor = (req, res) => {
         clients: { $size: "$clients" },
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
+        Price:1,
         IsDeleted: 1,
         BannerImage: 1,
         createdAt: 1,
