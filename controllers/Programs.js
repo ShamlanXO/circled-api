@@ -133,7 +133,7 @@ exports.FetchSpecificProgramPublic = (req, res) => {
   Program.findOne({ _id: req.params.Id })
     .populate("createdBy", "name profilePic")
     .then((result) => {
-      if (result.length < 1) {
+      if (result?.length < 1) {
         return res.status(404).send({ message: "No Program Found" });
       } else {
         return res
@@ -142,6 +142,7 @@ exports.FetchSpecificProgramPublic = (req, res) => {
       }
     })
     .catch((error) => {
+      console.log(error)
       return res.status(500).send({ ErrorOccured: error });
     });
 };
@@ -568,7 +569,7 @@ exports.SendProgram = async (req, res) => {
                   ? req.body.PaymentType
                   : "N/A",
                 Link:
-                  "https://figgs.co/public/payment/" +
+                  "https://figgs-v2.herokuapp.com/program/instructorSend/" +
                   sentProgram[0]._id +
                   "/" +
                   item.email,
