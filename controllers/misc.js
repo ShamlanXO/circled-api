@@ -8,6 +8,7 @@ var handlebars = require("handlebars");
 const { sendPromoMain } = require("../script/sendPromoMail");
 const User = require("../models/user");
 const Verify = require("../models/Verify");
+const Media=require("../models/MediaUploads")
 const axios = require("axios");
 var ImageKit = require("imagekit");
 require("dotenv").config();
@@ -423,11 +424,38 @@ exports.uploadVideo=(req,res)=>{
       }
     }
   }).then(response=>{
+    new Media({
+      size:response.data.upload.size,
+      url:response.data.link,
+      created_time:response.data.created_time
+    }).save()
     res.status(200).send({data:response.data})
   }).catch(err=>{
     res.status(500).send({err:err})
   })
 
+}
+
+
+exports.getVideoStatus=(req,res)=>{
+  const headerPost = {
+   
+    Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
+    
+  };
+
+
+   axios({
+    method: 'get',
+    url: `https://api.vimeo.com/videos/${req.params.video_id}?fields=uri,upload.status,transcode.status`,
+    headers: headerPost,
+   
+  }).then(response=>{
+    res.status(200).send({data:response.data})
+  }).catch(err=>{
+
+    res.status(err.response.status).send({err:err})
+  })
 }
 
 exports.deleteVideo=(req,res)=>{

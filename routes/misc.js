@@ -20,6 +20,7 @@ router
   router.route("/upload-image").get(miscController.uploadImageSign)
   router.route("/upload-video").get(miscController.uploadVideo)
   router.route("/delete-video/:video_id").delete(miscController.deleteVideo)
+  router.route("/get-video-status/:video_id").get(miscController.getVideoStatus)
 router.route("/upload-string").post(miscController.uploadString);
 router.route("/download-file").get(miscController.downloadFile);
 router.route("/getSignedUrl").post(miscController.getSignatureUrl);
