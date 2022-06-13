@@ -306,10 +306,10 @@ exports.CreateProgram = async (req, res) => {
                     name: req.userData.name,
                     BannerImage: req.body.BannerImage
                       ? req.body.BannerImage
-                      : "https://figgs.co/static/media/fitness.98b4fedb.jpg",
+                      : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
                     profileImg: req.userData.profilePic
                       ? req.userData.profilePic
-                      : "https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+                      : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
                     Title: req.body.Title,
                     description: req.body.Description,
                     GreetingMessage: req.body.GreetingMessage
@@ -320,7 +320,7 @@ exports.CreateProgram = async (req, res) => {
                       ? req.body.PaymentType
                       : "N/A",
                     Link:
-                      "https://figgs.co/public/payment/" +
+                      "https://figgs-v2.herokuapp.com/program/instructorSend/" +
                       sentProgram[0]._id +
                       "/" +
                       item.email,
@@ -348,10 +348,10 @@ exports.CreateProgram = async (req, res) => {
                   description: req.body.Description,
                   BannerImage: req.body.BannerImage
                     ? req.body.BannerImage
-                    : "https://figgs.co/static/media/fitness.98b4fedb.jpg",
+                    : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
                   profileImg: req.userData.profilePic
                     ? req.userData.profilePic
-                    : "https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+                    : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
                   Title: req.body.Title,
                   GreetingMessage: req.body.GreetingMessage
                     ? req.body.GreetingMessage
@@ -556,10 +556,10 @@ exports.SendProgram = async (req, res) => {
                 description: req.body.Description,
                 BannerImage: req.body.BannerImage
                   ? req.body.BannerImage
-                  : "https://figgs.co/static/media/fitness.98b4fedb.jpg",
+                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
                 profileImg: req.userData.profilePic
                   ? req.userData.profilePic
-                  : "https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+                  : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
                 Title: req.body.Title,
                 GreetingMessage: req.body.GreetingMessage
                   ? req.body.GreetingMessage
@@ -625,10 +625,10 @@ exports.SendProgram = async (req, res) => {
                 description: req.body.Description,
                 BannerImage: req.body.BannerImage
                   ? req.body.BannerImage
-                  : "https://figgs.co/static/media/fitness.98b4fedb.jpg",
+                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
                 profileImg: req.userData.profilePic
                   ? req.userData.profilePic
-                  : "https://thumbs.dreamstime.com/b/creative-vector-illustration-default-avatar-profile-placeholder-isolated-background-art-design-grey-photo-blank-template-mo-118822720.jpg",
+                  : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
                 Title: req.body.Title,
                 GreetingMessage: req.body.GreetingMessage
                   ? req.body.GreetingMessage
@@ -638,7 +638,7 @@ exports.SendProgram = async (req, res) => {
                   ? req.body.PaymentType
                   : "N/A",
                 Link:
-                  "https://figgs.co/public/payment/" +
+                  "https://figgs-v2.herokuapp.com/program/instructorSend/" +
                   sentProgram[0]._id +
                   "/" +
                   item +
