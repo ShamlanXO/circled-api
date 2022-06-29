@@ -94,7 +94,7 @@ exports.CreateUser = async(req, res) => {
         ...req.body,
         uuid: req.body.email,
 
-        figgsId: "fg-" + figgsId,
+        figgsId: "fg-" +( Number(figgsId.split("-")[1])+1),
       });
       User.save()
         .then((result) => {
@@ -134,7 +134,7 @@ exports.CreateUser = async(req, res) => {
           uuid: decoded.uuid,
           [decoded.type]: decoded.uuid.toLowerCase(),
           password: hash,
-          figgsId: "fg-" + figgsId,
+        figgsId: "fg-" +( Number(figgsId.split("-")[1])+1),
         });
         User.save()
           .then((result) => {
