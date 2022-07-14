@@ -431,6 +431,7 @@ exports.uploadVideo=(req,res)=>{
     }).save()
     res.status(200).send({data:response.data})
   }).catch(err=>{
+    console.log(err.response.data)
     res.status(500).send({err:err})
   })
 
