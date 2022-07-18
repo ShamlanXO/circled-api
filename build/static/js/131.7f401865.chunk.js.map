@@ -1,1 +1,0 @@
-{"version":3,"sources":["components/animate/features.js"],"names":["domMax"],"mappings":"mJAAA,qBAEeA,YAAf","file":"static/js/131.7f401865.chunk.js","sourcesContent":["import { domMax } from 'framer-motion';\n\nexport default domMax;\n"],"sourceRoot":""}
