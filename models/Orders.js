@@ -55,6 +55,7 @@ const ProgramSchema = new mongoose.Schema(
     BannerImage: { type: String, default: null },
     BannerVideo: { type: String, default: null },
     IsPublished: { type: Boolean, default: true },
+    Notes:{type:String,default:null},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   },
   { timestamps: true }

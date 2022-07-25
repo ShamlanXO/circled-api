@@ -60,6 +60,7 @@ const ProgramSchema = new mongoose.Schema(
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     PlanId: { type: String, default: null },
     ProductId: { type: String, default: null },
+    Notes:{type:String,default:null},
   },
   { timestamps: true }
 );

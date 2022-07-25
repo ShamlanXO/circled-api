@@ -183,12 +183,12 @@ exports.GetClientsSpecificProgram = (req, res) => {
   Order.find(
     {
       "Program.createdBy": req.userData._id,
-      isActive: true,
+      //isActive: true,
       "Program._id": req.params.id,
     },
     { UserId: 1 }
   )
-    .populate("UserId", "name profilePic _id")
+    .populate("UserId", "name profilePic _id createdAt")
     .then((result) => {
       if (result.length < 1) {
         return res.status(404).send({
