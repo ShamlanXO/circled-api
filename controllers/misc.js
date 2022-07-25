@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const Program = require("../models/Programs");
 const jwt = require("jsonwebtoken");
 const AWS = require("aws-sdk");
 const fs = require("fs");
@@ -459,23 +460,31 @@ exports.getVideoStatus=(req,res)=>{
   })
 }
 
-exports.deleteVideo=(req,res)=>{
+exports.deleteVideo=async(req,res)=>{
+
+ let item=await  Program.find({
+    "ExercisePlan.weeks.days.Exercise.media":"https://vimeo.com/"+req.params.video_id
+  })
+
+  console.log(item?.length)
+
+
   const headerPost = {
    
     Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
     
   };
+res.status(200).send({data:item?.length})
 
-
-   axios({
-    method: 'delete',
-    url: `https://api.vimeo.com/videos/${req.params.video_id}`,
-    headers: headerPost,
+  //  axios({
+  //   method: 'delete',
+  //   url: `https://api.vimeo.com/videos/${req.params.video_id}`,
+  //   headers: headerPost,
    
-  }).then(response=>{
-    res.status(200).send({data:response.data})
-  }).catch(err=>{
+  // }).then(response=>{
+  //   res.status(200).send({data:response.data})
+  // }).catch(err=>{
 
-    res.status(err.response.status).send({err:err})
-  })
+  //   res.status(err.response.status).send({err:err})
+  // })
 }

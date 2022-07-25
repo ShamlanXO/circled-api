@@ -80,12 +80,34 @@ exports.ProgramsInstructor = (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: "payment",
+        let: { program: "$_id" },
+        pipeline: [
+          // {
+          //   $match: {
+          //     $expr: { $and: [{ $eq: ["$SendProgramId", "$$program"] }] },
+          //   },
+          // },
+          {
+            $group: {
+              _id: "$SendProgramId",
+
+              count: { $sum: "$Amount" },
+            },
+          },
+        ],
+        as: "payment",
+      },
+    },
+    {
       $project: {
         Title: 1,
         _id: 1,
         clients: { $size: "$clients" },
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
+        payment:1,
         Price:1,
         IsDeleted: 1,
         BannerImage: 1,
