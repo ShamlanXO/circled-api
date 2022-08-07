@@ -1,6 +1,6 @@
 const Order = require("../models/Orders");
 const aqp = require("api-query-params");
-
+const BodyImageModel = require("../models/BodyImages");
 var ObjectID = require("mongodb").ObjectID;
 
 exports.SearchOrder = (req, res) => {
@@ -208,7 +208,9 @@ exports.GetClientsSpecificProgram = (req, res) => {
     });
 };
 
-exports.GetSpecificClients = (req, res) => {
+exports.GetSpecificClients = async(req, res) => {
+
+  const Biresult = await BodyImageModel.find({ createdBy: req.params.Id });
   Order.findOne({
     $or: [{ _id: req.params.Id }, { UserId: req.params.Id }],
     isActive: true,
@@ -224,6 +226,7 @@ exports.GetSpecificClients = (req, res) => {
         return res.status(200).send({
           message: "List of users",
           clientData: result,
+          bodyImages:Biresult
         });
       }
     })
