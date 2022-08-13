@@ -230,7 +230,7 @@ exports.UserLogin = (req, res) => {
 exports.UserUpdate = (req, res) => {
   console.log(req.userData);
   delete req.body._id;
-  delete req.body.phone;
+ 
   delete req.body.email;
   delete req.body.password;
   user
@@ -442,7 +442,7 @@ exports.CheckUser = (req, res) => {
 };
 
 exports.ChangePasswordPhone = (req, res) => {
-  console.log(req.body);
+  
 
   sendOtp.verify(req.body.phone, req.body.otp, function (error, data) {
     if (error) {
