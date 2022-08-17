@@ -7,7 +7,7 @@ exports.SearchOrder = (req, res) => {
   console.log(req.userData._id);
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
-    "_id isActive Program.Title Program.createdBy Program.BannerImage"
+    "_id isActive Program.Title Program.createdBy Program.BannerImage createdAt"
   )
     .populate("Program.createdBy", "name profilePic _id")
     .then((result) => {

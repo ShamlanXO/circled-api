@@ -17,7 +17,7 @@ router
     multer({ dest: "temp/" }).array("rsfile"),
     miscController.uploadMultipleFile
   );
-  router.route("/upload-image").get(checkAuth,miscController.uploadImageSign)
+  router.route("/upload-image").get(miscController.uploadImageSign)
   router.route("/upload-video").get(miscController.uploadVideo)
   router.route("/delete-video/:video_id").delete(miscController.deleteVideo)
   router.route("/get-video-status/:video_id").get(miscController.getVideoStatus)
