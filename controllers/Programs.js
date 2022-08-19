@@ -611,18 +611,18 @@ exports.SendProgram = async (req, res) => {
                   SentProgramId: sentProgram[0]._id,
                 },
               ]).then((createdChats) => {
-                createdChats.map((chatItem) => {
-                  req.app.get("socketService").sendTo(item._id, item._id, {
-                    type: "new-message",
-                    data: {
-                      name: req.userData.name,
-                      ReceiverId: item._id,
-                      _id: chatItem._id,
-                      SenderId: req.userData._id,
-                      SentProgramId: sentProgram[0],
-                    },
-                  });
-                });
+                // createdChats.map((chatItem) => {
+                //   req.app.get("socketService").sendTo(item._id, item._id, {
+                //     type: "new-message",
+                //     data: {
+                //       name: req.userData.name,
+                //       ReceiverId: item._id,
+                //       _id: chatItem._id,
+                //       SenderId: req.userData._id,
+                //       SentProgramId: sentProgram[0],
+                //     },
+                //   });
+                // });
               });
 
               req.app.get("socketService").sendTo(item._id, item._id, {

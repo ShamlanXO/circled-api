@@ -3,6 +3,7 @@ const aqp = require("api-query-params");
 const axios = require("axios");
 const Order = require("../models/Orders");
 const SendProgram = require("../models/SentPrograms");
+const Notification = require("../models/Notifications");
 const mongoose = require("mongoose");
 exports.createSubscription = (req, res) => {
   Order.findOne({
@@ -232,7 +233,24 @@ exports.ApproveOrder = (req, res) => {
                 { upsert: true }
               )
 
-                .then((result) => {
+                .then(async(result) => {
+
+
+                  await Notification.create(
+                    [
+                      {
+                       UserId:paymentData.SendProgramId.SenderId,
+            
+                        Type: "SubscribedProgram",
+                        Sender: req.userData._id,
+                        SentProgramId: paymentData.SendProgramId._id,
+                      },
+                    ]
+                  );
+                  req.app.get("socketService").sendTo(paymentData.SendProgramId.SenderId, paymentData.SendProgramId.SenderId, {
+                    type: "new-notification",
+                    data: { name: req.userData.name, type: "sent-program" },
+                  });
                   return res.status(201).send({ message: "Order Created" });
                 })
                 .catch((error) => {
@@ -288,7 +306,18 @@ exports.AddFreeOrder = (req, res) => {
               order
                 .save()
   
-                .then((result) => {
+                .then(async (result) => {
+                  await Notification.create(
+                    [
+                      {
+                        UserId: data.SenderId,
+            
+                        Type: "SubscribedProgram",
+                        Sender: req.userData._id,
+                        SentProgramId: data._id,
+                      },
+                    ]
+                  );
                   return res.status(201).send({ message: "Order Created" });
                 })
                 .catch((error) => {
