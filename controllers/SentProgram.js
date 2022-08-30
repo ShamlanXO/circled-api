@@ -11,9 +11,7 @@ const mongoose = require("mongoose");
 
 
 exports.GetProgram = (req, res) => {
-console.log("gerring")
 
-console.log(req.userData,req.params._id)
 SentProgram.find({_id:req.params.id,$or:[
 
 {SendTo:req.userData.figgsId},
