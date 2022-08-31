@@ -79,7 +79,7 @@ exports.SearchUser = (req, res) => {
 exports.CreateUser = async(req, res) => {
  let userData=await user.findOne({}).sort({createdAt:-1})
     let figgsId=userData.figgsId
-    if (req.body.type == "gmail") {
+    if (req.body.authType == "gmail") {
       let userData = await user.findOne({ email: req.body.email });
       if (userData) {
         const token = jwt.sign({ _id: userData._id }, "s3cr3t", {
