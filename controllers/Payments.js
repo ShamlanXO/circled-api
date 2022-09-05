@@ -318,6 +318,10 @@ exports.AddFreeOrder = (req, res) => {
                       },
                     ]
                   );
+                  req.app.get("socketService").sendTo(data.SenderId, data.SenderId, {
+                    type: "new-notification",
+                    data: { name: req.userData.name, type: "sent-program" },
+                  });
                   return res.status(201).send({ message: "Order Created" });
                 })
                 .catch((error) => {
