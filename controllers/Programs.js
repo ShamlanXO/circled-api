@@ -35,6 +35,7 @@ exports.ProgramsAll = (req, res) => {
             BannerImage: i.BannerImage,
             createdAt: i.createdAt,
             Price: i.Price,
+            Duration: i.Duration,
             weeks: i.ExercisePlan.length,
           })),
         });
@@ -107,8 +108,8 @@ exports.ProgramsInstructor = (req, res) => {
         clients: { $size: "$clients" },
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
-        payment:1,
-        Price:1,
+        payment: 1,
+        Price: 1,
         IsDeleted: 1,
         BannerImage: 1,
         createdAt: 1,
@@ -164,7 +165,7 @@ exports.FetchSpecificProgramPublic = (req, res) => {
       }
     })
     .catch((error) => {
-      console.log(error)
+      console.log(error);
       return res.status(500).send({ ErrorOccured: error });
     });
 };
