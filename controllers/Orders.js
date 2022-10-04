@@ -4,7 +4,6 @@ const BodyImageModel = require("../models/BodyImages");
 var ObjectID = require("mongodb").ObjectID;
 
 exports.SearchOrder = (req, res) => {
-  console.log(req.userData._id);
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
     "_id isActive Program.Title Program.createdBy Program.BannerImage createdAt"
@@ -208,8 +207,7 @@ exports.GetClientsSpecificProgram = (req, res) => {
     });
 };
 
-exports.GetSpecificClients = async(req, res) => {
-
+exports.GetSpecificClients = async (req, res) => {
   const Biresult = await BodyImageModel.find({ createdBy: req.params.Id });
   Order.findOne({
     $or: [{ _id: req.params.Id }, { UserId: req.params.Id }],
@@ -226,7 +224,7 @@ exports.GetSpecificClients = async(req, res) => {
         return res.status(200).send({
           message: "List of users",
           clientData: result,
-          bodyImages:Biresult
+          bodyImages: Biresult,
         });
       }
     })
