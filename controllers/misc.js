@@ -9,7 +9,7 @@ var handlebars = require("handlebars");
 const { sendPromoMain } = require("../script/sendPromoMail");
 const User = require("../models/user");
 const Verify = require("../models/Verify");
-const Media=require("../models/MediaUploads")
+const Media = require("../models/MediaUploads");
 const axios = require("axios");
 var ImageKit = require("imagekit");
 require("dotenv").config();
@@ -182,7 +182,7 @@ exports.downloadFile = (req, res) => {
 exports.SendMail = (req, res) => {
   smtpTransport
     .sendMail({
-      from: "helloempengage@gmail.com",
+      from: "noreply@figgs.co",
       to: req.body.Email.toLowerCase(),
       subject: req.body.Subject,
       html: req.body.MailBody,
@@ -226,7 +226,7 @@ exports.SendVerifyMail = (req, res) => {
                     .then((result) => {
                       smtpTransport
                         .sendMail({
-                          from: `helloempengage@gmail.com`,
+                          from: `noreply@figgs.co`,
                           to: req.body.email.toLowerCase(),
                           subject: "Email verification",
                           html: htmlToSend,
@@ -284,7 +284,7 @@ exports.ChangePasswordMail = (req, res) => {
 
                   smtpTransport
                     .sendMail({
-                      from: `helloempengage@gmail.com`,
+                      from: `noreply@figgs.co`,
                       to: req.body.email.toLowerCase(),
                       subject: "Email verification",
                       html: htmlToSend,
@@ -336,7 +336,7 @@ exports.ChangePasswordMail2 = (req, res) => {
 
                   smtpTransport
                     .sendMail({
-                      from: `helloempengage@gmail.com`,
+                      from: `noreply@figgs.co`,
                       to: req.body.email.toLowerCase(),
                       subject: "Email verification",
                       html: htmlToSend,
@@ -394,97 +394,89 @@ exports.GetWebhook = (req, res) => {
   res.send({ email: "" });
 };
 
-exports.uploadImageSign=(req,res)=>{
+exports.uploadImageSign = (req, res) => {
   var imagekit = new ImageKit({
-    publicKey : "public_gIxrOrTfHfefLxpNRZvE1dG7tc4=",
-    privateKey : "private_JTZUFEU34I2VmYdieOvLxspUkHU=",
-    urlEndpoint : "https://ik.imagekit.io/figgs"
-});
+    publicKey: "public_gIxrOrTfHfefLxpNRZvE1dG7tc4=",
+    privateKey: "private_JTZUFEU34I2VmYdieOvLxspUkHU=",
+    urlEndpoint: "https://ik.imagekit.io/figgs",
+  });
 
-var authenticationParameters = imagekit.getAuthenticationParameters();
-res.status(200).send(authenticationParameters)
-}
+  var authenticationParameters = imagekit.getAuthenticationParameters();
+  res.status(200).send(authenticationParameters);
+};
 
-
-exports.uploadVideo=(req,res)=>{
+exports.uploadVideo = (req, res) => {
   const headerPost = {
-    Accept: 'application/vnd.vimeo.*+json;version=3.4',
+    Accept: "application/vnd.vimeo.*+json;version=3.4",
     Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   };
 
-
-   axios({
-    method: 'post',
+  axios({
+    method: "post",
     url: `https://api.vimeo.com/me/videos`,
     headers: headerPost,
     data: {
       upload: {
-        approach: 'tus',
-        size: req.query.fileSize
-      }
-    }
-  }).then(response=>{
-    new Media({
-      size:response.data.upload.size,
-      url:response.data.link,
-      created_time:response.data.created_time
-    }).save()
-    res.status(200).send({data:response.data})
-  }).catch(err=>{
-    console.log(err.response.data)
-    res.status(500).send({err:err})
+        approach: "tus",
+        size: req.query.fileSize,
+      },
+    },
   })
+    .then((response) => {
+      new Media({
+        size: response.data.upload.size,
+        url: response.data.link,
+        created_time: response.data.created_time,
+      }).save();
+      res.status(200).send({ data: response.data });
+    })
+    .catch((err) => {
+      console.log(err.response.data);
+      res.status(500).send({ err: err });
+    });
+};
 
-}
-
-
-exports.getVideoStatus=(req,res)=>{
+exports.getVideoStatus = (req, res) => {
   const headerPost = {
-   
     Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
-    
   };
 
-
-   axios({
-    method: 'get',
+  axios({
+    method: "get",
     url: `https://api.vimeo.com/videos/${req.params.video_id}?fields=uri,upload.status,transcode.status`,
     headers: headerPost,
-   
-  }).then(response=>{
-    res.status(200).send({data:response.data})
-  }).catch(err=>{
-
-    res.status(err.response.status).send({err:err})
   })
-}
+    .then((response) => {
+      res.status(200).send({ data: response.data });
+    })
+    .catch((err) => {
+      res.status(err.response.status).send({ err: err });
+    });
+};
 
-exports.deleteVideo=async(req,res)=>{
+exports.deleteVideo = async (req, res) => {
+  let item = await Program.find({
+    "ExercisePlan.weeks.days.Exercise.media":
+      "https://vimeo.com/" + req.params.video_id,
+  });
 
- let item=await  Program.find({
-    "ExercisePlan.weeks.days.Exercise.media":"https://vimeo.com/"+req.params.video_id
-  })
-
-  console.log(item?.length)
-
+  console.log(item?.length);
 
   const headerPost = {
-   
     Authorization: `bearer f2ec513dec720d7e60f1a2304fac5946`,
-    
   };
-res.status(200).send({data:item?.length})
+  res.status(200).send({ data: item?.length });
 
   //  axios({
   //   method: 'delete',
   //   url: `https://api.vimeo.com/videos/${req.params.video_id}`,
   //   headers: headerPost,
-   
+
   // }).then(response=>{
   //   res.status(200).send({data:response.data})
   // }).catch(err=>{
 
   //   res.status(err.response.status).send({err:err})
   // })
-}
+};

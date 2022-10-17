@@ -53,7 +53,7 @@ exports.sendPromoMain = (data) => {
         .then((result) => {
           smtpTransport
             .sendMail({
-              from: `helloempengage@gmail.com`,
+              from: `noreply@figgs.co`,
               to: data.email.toLowerCase(),
               subject: `${data.name} sent you a fitness program`,
               html: htmlToSend,
