@@ -9,6 +9,7 @@ router.route("/new").post(checkAuth, OrderController.CreateOrder);
 // router.route("/new").post(checkAuth, OrderController.CreateOrder);
 // router.route("/newBulk").post(checkAuth, OrderController.CreateOrderBulk);
 router.route("/update/").patch(checkAuth, OrderController.UpdateOrder);
+router.route("/updateTodo/").patch(checkAuth, OrderController.UpdateTodo);
 router.route("/updateStatus/").patch(checkAuth, OrderController.updateStatus);
 router.route("/switchProgram").patch(checkAuth, OrderController.SwitchProgram);
 router.route("/allclients").get(checkAuth, OrderController.GetAllClients);

@@ -319,11 +319,31 @@ exports.CheckExist = (req, res) => {
 // };
 
 exports.UpdateOrder = (req, res) => {
-  console.log(req.body.Program);
+  console.log(req.body);
 
   Order.updateOne(
     { _id: req.body._id, "Program.createdBy": req.userData._id },
-    { Program: req.body.Program },
+    req.body?.Program
+      ? { Program: req.body?.Program }
+      : { todo: req.body.todo || [] },
+    function (err, response) {
+      if (err) {
+        return res.status(500).send({ ErrorOccured: error });
+      }
+      if (response) {
+        console.log(response);
+        return res.status(200).send({ message: "Order Details Updated" });
+      }
+    }
+  ).catch((error) => {
+    return res.status(500).send({ ErrorOccured: error });
+  });
+};
+
+exports.UpdateTodo = (req, res) => {
+  Order.updateOne(
+    { _id: req.body._id, UserId: req.userData._id },
+    { todo: req.body.todo || [] },
     function (err, response) {
       if (err) {
         return res.status(500).send({ ErrorOccured: error });

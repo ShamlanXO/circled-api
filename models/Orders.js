@@ -6,14 +6,14 @@ const DietPlanSchema = new mongoose.Schema({
 });
 
 const ExerciseSchema = new mongoose.Schema({
-  media: [{type:String}],
+  media: [{ type: String }],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },
   note: { type: String, default: null },
   rest: { type: Number, default: null },
   banner: { type: String, default: null },
-  triggerMuscle:[{type:String}],
+  triggerMuscle: [{ type: String }],
   isAttempted: { type: Boolean, default: false },
 });
 
@@ -23,16 +23,12 @@ const ExercisePlanSchema = new mongoose.Schema({
   Exercise: [ExerciseSchema],
   Cover: { type: String, default: null },
 });
-const  Day=new mongoose.Schema(
-  {
-    days:[ExercisePlanSchema]
-  }
-)
-const Week=new mongoose.Schema(
-  {
-    weeks:[Day]
-  }
-)
+const Day = new mongoose.Schema({
+  days: [ExercisePlanSchema],
+});
+const Week = new mongoose.Schema({
+  weeks: [Day],
+});
 
 const ProgramSchema = new mongoose.Schema(
   {
@@ -49,17 +45,22 @@ const ProgramSchema = new mongoose.Schema(
     Discount: { type: Number },
     GreetingMessage: { type: String },
     Type: { type: String },
-    Duration: {type: Number},
+    Duration: { type: Number },
     DietPlan: DietPlanSchema,
     ExercisePlan: Week,
     BannerImage: { type: String, default: null },
     BannerVideo: { type: String, default: null },
     IsPublished: { type: Boolean, default: true },
-    Notes:{type:String,default:null},
+    Notes: { type: String, default: null },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   },
   { timestamps: true }
 );
+
+const todoSchema = new mongoose.Schema({
+  value: { type: String, required: true },
+  isDone: { type: Boolean, default: false },
+});
 
 const orderSchema = new mongoose.Schema(
   {
@@ -75,6 +76,7 @@ const orderSchema = new mongoose.Schema(
     SubscriptionId: { type: String },
     SentProgramId: { type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
     stats: {},
+    todo: [todoSchema],
     currentWeek: { type: Number, default: 0 },
     currentDay: { type: Number, default: 0 },
   },
