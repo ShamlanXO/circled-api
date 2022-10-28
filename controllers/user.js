@@ -76,25 +76,65 @@ exports.SearchUser = (req, res) => {
     });
 };
 
-exports.CreateUser = async(req, res) => {
- let userData=await user.findOne({}).sort({createdAt:-1})
-    let figgsId=userData.figgsId
-    if (req.body.authType == "gmail") {
-      let userData = await user.findOne({ email: req.body.email });
-      if (userData) {
-        const token = jwt.sign({ _id: userData._id }, "s3cr3t", {
+exports.CreateUser = async (req, res) => {
+  let userData = await user.findOne({}).sort({ createdAt: -1 });
+  let figgsId = userData?.figgsId || 1000;
+  if (req.body.authType == "gmail") {
+    let userData = await user.findOne({ email: req.body.email });
+    if (userData) {
+      const token = jwt.sign({ _id: userData._id }, "s3cr3t", {
+        expiresIn: "30d",
+      });
+
+      return res
+        .status(201)
+        .send({ userData: userData, message: "User Created", token: token });
+    }
+    const User = new user({
+      ...req.body,
+      uuid: req.body.email,
+
+      figgsId: Number(figgsId + 1),
+    });
+    User.save()
+      .then((result) => {
+        const token = jwt.sign({ _id: result._id }, "s3cr3t", {
           expiresIn: "30d",
         });
 
         return res
           .status(201)
-          .send({ userData: userData, message: "User Created", token: token });
+          .send({ userData: result, message: "User Created", token: token });
+      })
+      .catch((error) => {
+        console.log(error);
+        return res
+          .status(500)
+          .send({ message: "Error Creating User", ErrorOccured: error });
+      });
+  } else {
+    const decoded = jwt.verify(req.body.token, "s3cr3t");
+    console.log(decoded);
+    bcrypt.hash(req.body.password, 10, function (err, hash) {
+      if (err) {
+        return res
+          .status(500)
+          .send({ message: "Password Hash error", Error: err });
       }
+
+      let time = new Date();
+
+      delete req.body.email;
+      delete req.body.phone;
+      delete req.body.password;
+
+      console.log(req.body);
       const User = new user({
         ...req.body,
-        uuid: req.body.email,
-
-        figgsId: "fg-" +( Number(figgsId.split("-")[1])+1),
+        uuid: decoded.uuid,
+        [decoded.type]: decoded.uuid.toLowerCase(),
+        password: hash,
+        figgsId: "fg-" + (Number(figgsId.split("-")[1]) + 1),
       });
       User.save()
         .then((result) => {
@@ -102,9 +142,11 @@ exports.CreateUser = async(req, res) => {
             expiresIn: "30d",
           });
 
-          return res
-            .status(201)
-            .send({ userData: result, message: "User Created", token: token });
+          return res.status(201).send({
+            userData: result,
+            message: "User Created",
+            token: token,
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -112,51 +154,8 @@ exports.CreateUser = async(req, res) => {
             .status(500)
             .send({ message: "Error Creating User", ErrorOccured: error });
         });
-    } else {
-      const decoded = jwt.verify(req.body.token, "s3cr3t");
-      console.log(decoded);
-      bcrypt.hash(req.body.password, 10, function (err, hash) {
-        if (err) {
-          return res
-            .status(500)
-            .send({ message: "Password Hash error", Error: err });
-        }
-
-        let time = new Date();
-
-        delete req.body.email;
-        delete req.body.phone;
-        delete req.body.password;
-
-        console.log(req.body);
-        const User = new user({
-          ...req.body,
-          uuid: decoded.uuid,
-          [decoded.type]: decoded.uuid.toLowerCase(),
-          password: hash,
-        figgsId: "fg-" +( Number(figgsId.split("-")[1])+1),
-        });
-        User.save()
-          .then((result) => {
-            const token = jwt.sign({ _id: result._id }, "s3cr3t", {
-              expiresIn: "30d",
-            });
-
-            return res.status(201).send({
-              userData: result,
-              message: "User Created",
-              token: token,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-            return res
-              .status(500)
-              .send({ message: "Error Creating User", ErrorOccured: error });
-          });
-      });
-    }
-  
+    });
+  }
 };
 
 exports.UserLogin = (req, res) => {
@@ -230,7 +229,7 @@ exports.UserLogin = (req, res) => {
 exports.UserUpdate = (req, res) => {
   console.log(req.userData);
   delete req.body._id;
- 
+
   delete req.body.email;
   delete req.body.password;
   user
@@ -336,7 +335,7 @@ exports.ChangePassword = (req, res) => {
         { password: hash },
         function (err, result) {
           if (err) {
-            console.log(err)
+            console.log(err);
             return res.status(500).send({ ErrorOccured: err });
           }
           if (result) {
@@ -353,77 +352,71 @@ exports.ChangePassword = (req, res) => {
 };
 
 exports.ChangePasswordEmail = (req, res) => {
-console.log(req.body.Email)
+  console.log(req.body.Email);
 
   user.findOne({ email: req.body.Email.toLowerCase() }).then((userData) => {
     if (!userData) {
-      console.log(":errin us data")
+      console.log(":errin us data");
       return res.status(404).send({ message: "No  Data Found" });
     } else {
-      jwt.verify(
-        req.body.token,
-        "s3cr3t" ,
-        function (err, decoded) {
-          console.log(decoded);
-          user
-            .find({ email: decoded.Email })
+      jwt.verify(req.body.token, "s3cr3t", function (err, decoded) {
+        console.log(decoded);
+        user
+          .find({ email: decoded.Email })
 
-            .then((result) => {
-              console.log(result);
-              if (result.length < 1) {
-                console.log(":errin us data n o record")
-                return res.status(404).send({ message: "No  Data Found" });
-              } else {
-                if (result[0].IsDeleted == true) {
-                  return res.status(406).send({ message: "Deleted" });
-                }
-
-                if (result[0].IsActive == true) {
-                  return res.status(406).send({ message: "Disable" });
-                }
-
-                console.log(result);
-                bcrypt
-                  .compare(req.body.Password, result[0].Password)
-                  .then((result) => {
-                    if (result == true) {
-                      return res
-                        .status(409)
-                        .send({ message: "Please use a diffirent password" });
-                    } else {
-                      bcrypt.hash(req.body.Password, 10).then((hash) => {
-                        user
-                          .updateOne(
-                            { Email: decoded.Email },
-                            { Password: hash },
-                            function (err, resultUp) {
-                              if (err) {
-                                return res
-                                  .status(500)
-                                  .send({ ErrorOccured: error });
-                              }
-                              if (resultUp) {
-                                return res
-                                  .status(200)
-                                  .send({ message: "Email Verified" });
-                              }
-                            }
-                          )
-                          .catch((error) => {
-                            return res
-                              .status(500)
-                              .send({ ErrorOccured: error });
-                          });
-                      });
-                    }
-                  });
+          .then((result) => {
+            console.log(result);
+            if (result.length < 1) {
+              console.log(":errin us data n o record");
+              return res.status(404).send({ message: "No  Data Found" });
+            } else {
+              if (result[0].IsDeleted == true) {
+                return res.status(406).send({ message: "Deleted" });
               }
-            })
-            .catch((error) => {
-              return res.status(500).send({ ErrorOccured: error });
-            });
-        }
-      );
+
+              if (result[0].IsActive == true) {
+                return res.status(406).send({ message: "Disable" });
+              }
+
+              console.log(result);
+              bcrypt
+                .compare(req.body.Password, result[0].Password)
+                .then((result) => {
+                  if (result == true) {
+                    return res
+                      .status(409)
+                      .send({ message: "Please use a diffirent password" });
+                  } else {
+                    bcrypt.hash(req.body.Password, 10).then((hash) => {
+                      user
+                        .updateOne(
+                          { Email: decoded.Email },
+                          { Password: hash },
+                          function (err, resultUp) {
+                            if (err) {
+                              return res
+                                .status(500)
+                                .send({ ErrorOccured: error });
+                            }
+                            if (resultUp) {
+                              return res
+                                .status(200)
+                                .send({ message: "Email Verified" });
+                            }
+                          }
+                        )
+                        .catch((error) => {
+                          return res.status(500).send({ ErrorOccured: error });
+                        });
+                    });
+                  }
+                });
+            }
+          })
+          .catch((error) => {
+            return res.status(500).send({ ErrorOccured: error });
+          });
+      });
     }
   });
 };
@@ -442,8 +435,6 @@ exports.CheckUser = (req, res) => {
 };
 
 exports.ChangePasswordPhone = (req, res) => {
-  
-
   sendOtp.verify(req.body.phone, req.body.otp, function (error, data) {
     if (error) {
       return res.status(500).send({
