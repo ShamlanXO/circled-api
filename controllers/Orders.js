@@ -147,6 +147,7 @@ exports.GetClients = (req, res) => {
         _id: "$_id",
         userId: "$clientData._id",
         name: "$clientData.name",
+        figgsId: "$clientData.figgsId",
         program: "$program.Program.Title",
         isActive: "$program.isActive",
         profilePic: "$clientData.profilePic",
