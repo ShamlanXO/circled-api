@@ -374,7 +374,7 @@ exports.CreateProgram = async (req, res) => {
                     : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
                   profileImg: req.userData.profilePic
                     ? req.userData.profilePic
-                    : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
+                    : "https://ik.imagekit.io/figgs/email/Male_soSSHMqHN.png?ik-sdk-version=javascript-1.4.3&updatedAt=1667477819527",
                   Title: req.body.Title,
                   GreetingMessage: req.body.GreetingMessage
                     ? req.body.GreetingMessage
