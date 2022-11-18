@@ -2,7 +2,8 @@ const Order = require("../models/Orders");
 const aqp = require("api-query-params");
 const BodyImageModel = require("../models/BodyImages");
 var ObjectID = require("mongodb").ObjectID;
-
+const diff = require("diff-arrays-of-objects");
+const { detailedDiff } = require("deep-object-diff");
 exports.SearchOrder = (req, res) => {
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
@@ -319,8 +320,8 @@ exports.CheckExist = (req, res) => {
 //     });
 // };
 
-exports.UpdateOrder = (req, res) => {
-  console.log(req.body);
+exports.UpdateOrder = async (req, res) => {
+  let orderData = await Order.findById(req.body._id).lean();
 
   Order.updateOne(
     { _id: req.body._id, "Program.createdBy": req.userData._id },
@@ -332,7 +333,28 @@ exports.UpdateOrder = (req, res) => {
         return res.status(500).send({ ErrorOccured: error });
       }
       if (response) {
-        console.log(response);
+        console.log(
+          JSON.parse(JSON.stringify(orderData.Program)),
+          req.body.Program
+        );
+        if (req.body?.Program) {
+          console.log(
+            detailedDiff(
+              JSON.parse(JSON.stringify(orderData.Program)),
+              req.body.Program
+            )
+          );
+        } else {
+          let todoDiff = diff(
+            orderData?.todo?.map((i) => ({ ...i, _id: String(i._id) })) || [],
+            req.body.todo.map((i) => {
+              delete i.edit;
+              return i;
+            }) || [],
+            "_id"
+          );
+        }
+
         return res.status(200).send({ message: "Order Details Updated" });
       }
     }
