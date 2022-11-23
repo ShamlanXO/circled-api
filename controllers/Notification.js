@@ -2,32 +2,30 @@ const Notification = require("../models/Notifications");
 const aqp = require("api-query-params");
 
 exports.FetchNotification = (req, res) => {
-
-  
-  
   const { filter, skip, limit, sort, projection } = aqp(req.query);
-  console.log(req.userData)
-  Notification.find({$or:[
-{
-  To:req.userData.email
-},
 
-{
-  To:req.userData.figgsId
-},
+  Notification.find({
+    $or: [
+      {
+        To: req.userData.email,
+      },
 
-{
-  UserId:req.userData._id
-}
+      {
+        To: req.userData.figgsId,
+      },
 
-
-  ],...filter})
+      {
+        UserId: req.userData._id,
+      },
+    ],
+    ...filter,
+  })
     .skip(skip)
     .limit(limit)
-    .sort({createdAt:-1})
-   .populate("Sender","name _id profilePic")
-   .populate("SentProgramId","Title Program.BannerImage Program.Price")
-    .then(result => {
+    .sort({ createdAt: -1 })
+    .populate("Sender", "name _id profilePic")
+    .populate("SentProgramId", "Title Program.BannerImage Program.Price")
+    .then((result) => {
       if (result.length < 1) {
         return res.status(404).send({ message: "No Notifications Found" });
       } else {
@@ -36,78 +34,142 @@ exports.FetchNotification = (req, res) => {
           .send({ message: "Notifications", ServerResponse: result });
       }
     })
-    .catch(error => {
+    .catch((error) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
 
+exports.GetUnreadCount = (req, res) => {
+  Notification.find({
+    $or: [
+      {
+        To: req.userData.email,
+      },
 
-exports.GetUnreadCount=(req,res) =>{
+      {
+        To: req.userData.figgsId,
+      },
 
-   
-
-  Notification.find({$or:[
-{
-  To:req.userData.email
-},
-
-{
-  To:req.userData.figgsId
-},
-
-{
-  UserId:req.userData._id
-}
-
-
-  ],IsRead:false}).count().then(data => {
-res.status(200).send({count:data})
+      {
+        UserId: req.userData._id,
+      },
+    ],
+    IsRead: false,
   })
-  .catch(err =>{
-    res.status(500).send()
-  }
-    
-    
-    )
-
-
-}
-
-
+    .count()
+    .then((data) => {
+      res.status(200).send({ count: data });
+    })
+    .catch((err) => {
+      res.status(500).send();
+    });
+};
 
 exports.CreateNotification = (req, res) => {
   const notification = new Notification(req.body);
   notification
     .save()
-    .then(result => {
+    .then((result) => {
       return res
         .status(201)
         .send({ message: "Notification Created", Id: result._id });
     })
-    .catch(error => {
+    .catch((error) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
 
 exports.UpdateNotification = (req, res) => {
-console.log("new update notification")
+  console.log("new update notification");
 
   Notification.update({ _id: req.params.Id }, req.body)
-    .then(result => {
-   
+    .then((result) => {
       return res.status(200).send({ message: "Notification Updated" });
     })
-    .catch(error => {
+    .catch((error) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
 
 exports.DeleteNotification = (req, res) => {
   Notification.deleteOne({ _id: req.params.Id })
-    .then(result => {
+    .then((result) => {
       return res.status(200).send({ message: "Notification Deleted" });
     })
-    .catch(error => {
+    .catch((error) => {
       return res.status(500).send({ ErrorOccured: error });
     });
+};
+
+exports.CreateGeneralNotification = (to, from, type, message, data) => {
+  // const type = ["update-todo", "update-program", "edited-diet"];
+  console.log(type, data);
+  switch (type) {
+    case "update-program":
+      new Notification({
+        To: to,
+        Sender: from._id,
+        UserId: to,
+        Type: type,
+        //Link: link,
+        Description: `${from.name} updated your workout program ${data.planName}`,
+        Title: "Updated Program",
+        orderId: data.orderId,
+      }).save();
+      break;
+    case "edited-diet":
+      console.log("edited diet create");
+      new Notification({
+        To: to,
+        Sender: from._id,
+        UserId: to,
+        Type: type,
+        //Link: link,
+        Description: `${from.name} edited your diet plan of workout program ${data.planName}`,
+        Title: "Edited Diet Plan",
+        orderId: data.orderId,
+      }).save();
+      break;
+    case "update-todo":
+      data.removed.map((item) => {
+        new Notification({
+          To: to,
+          Sender: from._id,
+          UserId: to,
+          Type: type,
+          //Link: link,
+          Description: `${from.name} removed ${item.value} from your todo list`,
+          Title: "Removed a todo task",
+          orderId: data.orderId,
+        }).save();
+      });
+      data.updated.map((item) => {
+        new Notification({
+          To: to,
+          Sender: from._id,
+          UserId: to,
+          Type: type,
+          //Link: link,
+          Description: `${from.name} updated ${item.value} in your todo list`,
+          Title: "Updated a todo task",
+          orderId: data.orderId,
+        }).save();
+      });
+      data.added.map((item) => {
+        new Notification({
+          To: to,
+          Sender: from._id,
+          UserId: to,
+          Type: type,
+          //Link: link,
+          Description: `${from.name} added ${item.value} in your todo list`,
+          Title: "Added a todo task",
+          orderId: data.orderId,
+        }).save();
+      });
+      break;
+
+    default:
+      break;
+  }
 };

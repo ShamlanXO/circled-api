@@ -4,6 +4,7 @@ const BodyImageModel = require("../models/BodyImages");
 var ObjectID = require("mongodb").ObjectID;
 const diff = require("diff-arrays-of-objects");
 const { detailedDiff } = require("deep-object-diff");
+const { CreateGeneralNotification } = require("./Notification");
 exports.SearchOrder = (req, res) => {
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
@@ -333,17 +334,45 @@ exports.UpdateOrder = async (req, res) => {
         return res.status(500).send({ ErrorOccured: error });
       }
       if (response) {
-        console.log(
-          JSON.parse(JSON.stringify(orderData.Program)),
-          req.body.Program
-        );
         if (req.body?.Program) {
-          console.log(
-            detailedDiff(
-              JSON.parse(JSON.stringify(orderData.Program)),
-              req.body.Program
-            )
+          let prdiff = detailedDiff(
+            JSON.parse(JSON.stringify(orderData.Program)),
+            req.body.Program
           );
+          if (
+            prdiff.updated?.DietPlan?.Description ||
+            prdiff.added?.DietPlan?.Description
+          ) {
+            CreateGeneralNotification(
+              orderData.UserId,
+              req.userData,
+              "edited-diet",
+              ``,
+              {
+                ...prdiff,
+                OrderId: req.body._id,
+                planName: orderData.Program.Title,
+              }
+            );
+          }
+
+          if (
+            prdiff.updated?.ExercisePlan ||
+            prdiff.added?.ExercisePlan ||
+            prdiff.deleted?.ExercisePlan
+          ) {
+            CreateGeneralNotification(
+              orderData.UserId,
+              req.userData,
+              "update-program",
+              ``,
+              {
+                ...prdiff,
+                OrderId: req.body._id,
+                planName: orderData.Program.Title,
+              }
+            );
+          }
         } else {
           let todoDiff = diff(
             orderData?.todo?.map((i) => ({ ...i, _id: String(i._id) })) || [],
@@ -352,6 +381,13 @@ exports.UpdateOrder = async (req, res) => {
               return i;
             }) || [],
             "_id"
+          );
+          CreateGeneralNotification(
+            orderData.UserId,
+            req.userData,
+            "update-todo",
+            ``,
+            { ...todoDiff, OrderId: req.body._id }
           );
         }
 
