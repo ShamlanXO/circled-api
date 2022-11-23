@@ -322,7 +322,7 @@ exports.CheckExist = (req, res) => {
 // };
 
 exports.UpdateOrder = async (req, res) => {
-  let orderData = await Order.findById(req.body._id).lean();
+  let orderData = await Order.findById(req.body._id).populate("UserId").lean();
 
   Order.updateOne(
     { _id: req.body._id, "Program.createdBy": req.userData._id },
@@ -344,7 +344,7 @@ exports.UpdateOrder = async (req, res) => {
             prdiff.added?.DietPlan?.Description
           ) {
             CreateGeneralNotification(
-              orderData.UserId,
+              orderData.UserId._id,
               req.userData,
               "edited-diet",
               ``,
@@ -352,6 +352,8 @@ exports.UpdateOrder = async (req, res) => {
                 ...prdiff,
                 OrderId: req.body._id,
                 planName: orderData.Program.Title,
+                email: orderData.UserId.email,
+                socket: req.app.get("socketService"),
               }
             );
           }
@@ -362,7 +364,7 @@ exports.UpdateOrder = async (req, res) => {
             prdiff.deleted?.ExercisePlan
           ) {
             CreateGeneralNotification(
-              orderData.UserId,
+              orderData.UserId._id,
               req.userData,
               "update-program",
               ``,
@@ -370,6 +372,8 @@ exports.UpdateOrder = async (req, res) => {
                 ...prdiff,
                 OrderId: req.body._id,
                 planName: orderData.Program.Title,
+                email: orderData.UserId.email,
+                socket: req.app.get("socketService"),
               }
             );
           }
@@ -383,11 +387,16 @@ exports.UpdateOrder = async (req, res) => {
             "_id"
           );
           CreateGeneralNotification(
-            orderData.UserId,
+            orderData.UserId._id,
             req.userData,
             "update-todo",
             ``,
-            { ...todoDiff, OrderId: req.body._id }
+            {
+              ...todoDiff,
+              OrderId: req.body._id,
+              email: orderData.UserId.email,
+              socket: req.app.get("socketService"),
+            }
           );
         }
 

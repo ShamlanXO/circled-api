@@ -310,6 +310,34 @@ exports.ChangePasswordMail = (req, res) => {
     });
 };
 
+exports.sendNotificationMail = (data) => {
+  readHTMLFile(appRoot + "/templates/notification.html", function (err, html) {
+    if (err) {
+      return res.status(500).send({ ErrorOccured: err });
+    } else {
+      var template = handlebars.compile(html);
+      var replacements = {
+        message: data.message,
+        email: data.email.toLowerCase(),
+      };
+      var htmlToSend = template(replacements);
+
+      smtpTransport
+        .sendMail({
+          from: `noreply@figgs.co`,
+          to: data.email.toLowerCase(),
+          subject: "Notification",
+          html: htmlToSend,
+        })
+        .then((result) => {
+          return;
+          // return res.status(200).send({ message: "mail sent", ServerResponse: result });
+        })
+        .catch((err) => console.log(err));
+    }
+  });
+};
+
 exports.ChangePasswordMail2 = (req, res) => {
   User.findOne({ email: req.body.email.toLowerCase() })
     .then((userData) => {
