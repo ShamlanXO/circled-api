@@ -9,6 +9,7 @@ const SentProgramRoutes = require("./SentProgram");
 const ChatRoutes = require("./Chat");
 const paymentRoutes = require("./Payments");
 const bodyImagesRoutes = require("./BodyImages");
+const recentRoutes = require("./recents");
 module.exports = function (app) {
   app.use("/api/user", userRoutes);
   app.use("/api/otp", otpRoutes);
@@ -21,4 +22,5 @@ module.exports = function (app) {
   app.use("/api/order", orderRoutes);
   app.use("/api/chat", ChatRoutes);
   app.use("/api/notification", NotificationRoutes);
+  app.use("/api/recent", recentRoutes);
 };

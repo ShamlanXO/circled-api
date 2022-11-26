@@ -9,6 +9,7 @@ var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 const Chat = require("../models/Chat");
 const axios = require("axios");
+const { addTorecent } = require("./RecentController");
 exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   Program.find({
@@ -313,7 +314,6 @@ exports.CreateProgram = async (req, res) => {
           },
           { _id: 1, email: 1 }
         ).then((userData) => {
-          console.log(userData);
           let dataChat = [];
           if (userData.length > 0)
             userData.map((item) => {
@@ -323,7 +323,16 @@ exports.CreateProgram = async (req, res) => {
                   SenderId: req.userData._id,
                   SentProgramId: sentProgram[0]._id,
                 });
-                if (item.email)
+                if (item.email) {
+                  addTorecent("sendProgram", {
+                    programId: program[0]._id,
+                    userId: req.userData._id,
+                    email: item.email,
+                    clientId: item._id,
+                  });
+                  req.body.SendTo = req.body.SendTo.filter(
+                    (i) => i !== item.email
+                  );
                   sendPromoMain({
                     email: item.email,
                     name: req.userData.name,
@@ -348,12 +357,12 @@ exports.CreateProgram = async (req, res) => {
                       "/" +
                       item.email,
                   });
+                }
 
                 req.app.get("socketService").sendTo(item._id, item._id, {
                   type: "new-notification",
                   data: { name: req.userData.name, type: "sent-program" },
                 });
-                console.log(userData);
               }
             });
           else {
@@ -390,6 +399,11 @@ exports.CreateProgram = async (req, res) => {
                     item +
                     "/" +
                     token,
+                });
+                addTorecent("sendProgram", {
+                  programId: program[0]._id,
+                  userId: req.userData._id,
+                  email: item,
                 });
               }
             });
@@ -572,7 +586,14 @@ exports.SendProgram = async (req, res) => {
         let dataChat = [];
         if (userData.length > 0)
           userData.map((item) => {
-            if (item.email)
+            if (item.email) {
+              addTorecent("sendProgram", {
+                programId: program._id,
+                userId: req.userData._id,
+                email: item.email,
+                clientId: item._id,
+              });
+              req.body.SendTo = req.body.SendTo.filter((i) => i !== item.email);
               sendPromoMain({
                 email: item.email,
                 name: req.userData.name,
@@ -597,6 +618,7 @@ exports.SendProgram = async (req, res) => {
                   "/" +
                   item.email,
               });
+            }
 
             if (item._id !== req.userData._id) {
               dataChat.push({
@@ -634,7 +656,11 @@ exports.SendProgram = async (req, res) => {
           });
         else {
           req.body.SendTo.map(async (item) => {
-            console.log(item);
+            addTorecent("sendProgram", {
+              programId: program._id,
+              userId: req.userData._id,
+              email: item,
+            });
             if (item.includes("@")) {
               let token = await jwt.sign(
                 { uuid: item.toLowerCase(), type: "email" },
