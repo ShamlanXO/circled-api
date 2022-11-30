@@ -52,6 +52,7 @@ exports.ProgramsAll = (req, res) => {
 exports.ProgramsInstructor = (req, res) => {
   console.log("fetching all instructors program");
   console.log(req.userData._id);
+
   Program.aggregate([
     {
       $match: { createdBy: ObjectID(req.userData._id) },
@@ -110,6 +111,7 @@ exports.ProgramsInstructor = (req, res) => {
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
         payment: 1,
+        IsArchived: 1,
         Price: 1,
         IsDeleted: 1,
         BannerImage: 1,
@@ -746,6 +748,19 @@ exports.DeleteProgram = (req, res) => {
   Program.updateOne({ _id: req.params.id }, { IsDeleted: true })
     .then((result) => {
       return res.status(200).send({ message: "Program  Deleted" });
+    })
+    .catch((error) => {
+      return res.status(500).send({ ErrorOccured: error });
+    });
+};
+
+exports.ArchiveProgram = (req, res) => {
+  Program.updateOne(
+    { _id: req.params.id },
+    { IsArchived: true, IsPublished: false }
+  )
+    .then((result) => {
+      return res.status(200).send({ message: "Program  Archived" });
     })
     .catch((error) => {
       return res.status(500).send({ ErrorOccured: error });

@@ -6,7 +6,7 @@ const DietPlanSchema = new mongoose.Schema({
 });
 
 const ExerciseSchema = new mongoose.Schema({
-  media: [{type:String}],
+  media: [{ type: String }],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },
@@ -14,7 +14,7 @@ const ExerciseSchema = new mongoose.Schema({
   rest: { type: Number, default: null },
   banner: { type: String, default: null },
 
-  triggerMuscle:[{type:String}]
+  triggerMuscle: [{ type: String }],
 });
 
 const ExercisePlanSchema = new mongoose.Schema({
@@ -25,16 +25,12 @@ const ExercisePlanSchema = new mongoose.Schema({
   Note: { type: String, default: null },
 });
 
-const  Day=new mongoose.Schema(
-  {
-    days:[ExercisePlanSchema]
-  }
-)
-const Week=new mongoose.Schema(
-  {
-    weeks:[Day]
-  }
-)
+const Day = new mongoose.Schema({
+  days: [ExercisePlanSchema],
+});
+const Week = new mongoose.Schema({
+  weeks: [Day],
+});
 const ProgramSchema = new mongoose.Schema(
   {
     CreatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
@@ -49,9 +45,10 @@ const ProgramSchema = new mongoose.Schema(
     Price: { type: Number, default: 0 },
     Discount: { type: Number },
     Type: { type: String },
-    Duration: {type: Number},
+    Duration: { type: Number },
     IsDraft: { type: Boolean, default: false },
     IsDeleted: { type: Boolean, default: false },
+    IsArchived: { type: Boolean, default: false },
     DietPlan: DietPlanSchema,
     ExercisePlan: Week,
     BannerImage: { type: String, default: null },
@@ -60,7 +57,7 @@ const ProgramSchema = new mongoose.Schema(
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     PlanId: { type: String, default: null },
     ProductId: { type: String, default: null },
-    Notes:{type:String,default:null},
+    Notes: { type: String, default: null },
   },
   { timestamps: true }
 );
