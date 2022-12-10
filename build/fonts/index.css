@@ -13,6 +13,6 @@
 @font-face {
   font-family: 'SF';
   font-weight: 700;
-  font-style: normal;
-  src: local('CircularStd'), url('SF-Pro-Rounded-Bold.otf') format('opentype');
+  font-style: "bold";
+  src: local('CircularStd'), url('SF-Pro-Rounded-Semibold.otf') format('opentype');
 }
