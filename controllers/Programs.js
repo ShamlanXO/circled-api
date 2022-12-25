@@ -367,49 +367,50 @@ exports.CreateProgram = async (req, res) => {
                 });
               }
             });
-          else {
-            req.body.SendTo.map(async (item) => {
-              if (item.includes("@")) {
-                let token = await jwt.sign(
-                  { uuid: item.toLowerCase(), type: "email" },
-                  "s3cr3t",
-                  { expiresIn: "1d" }
-                );
 
-                sendPromoMain({
-                  email: item,
-                  name: req.userData.name,
-                  description: req.body.Description,
-                  BannerImage: req.body.BannerImage
-                    ? req.body.BannerImage
-                    : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-                  profileImg: req.userData.profilePic
-                    ? req.userData.profilePic
-                    : "https://ik.imagekit.io/figgs/email/Male_soSSHMqHN.png?ik-sdk-version=javascript-1.4.3&updatedAt=1667477819527",
-                  Title: req.body.Title,
-                  GreetingMessage: req.body.GreetingMessage
-                    ? req.body.GreetingMessage
-                    : "No message from instructor",
-                  Price: req.body.Price ? req.body.Price : "N/A",
-                  PaymentType: req.body.PaymentType
-                    ? req.body.PaymentType
-                    : "N/A",
-                  Link:
-                    "https://figgs.co/public/payment/" +
-                    sentProgram[0]._id +
-                    "/" +
-                    item +
-                    "/" +
-                    token,
-                });
-                addTorecent("sendProgram", {
-                  programId: program[0]._id,
-                  userId: req.userData._id,
-                  email: item,
-                });
-              }
-            });
-          }
+          req.body.SendTo.filter(
+            (eitem) => userData.find((ud) => ud.email === eitem) == null
+          ).map(async (item) => {
+            if (item.includes("@")) {
+              let token = await jwt.sign(
+                { uuid: item.toLowerCase(), type: "email" },
+                "s3cr3t",
+                { expiresIn: "1d" }
+              );
+
+              sendPromoMain({
+                email: item,
+                name: req.userData.name,
+                description: req.body.Description,
+                BannerImage: req.body.BannerImage
+                  ? req.body.BannerImage
+                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
+                profileImg: req.userData.profilePic
+                  ? req.userData.profilePic
+                  : "https://ik.imagekit.io/figgs/email/Male_soSSHMqHN.png?ik-sdk-version=javascript-1.4.3&updatedAt=1667477819527",
+                Title: req.body.Title,
+                GreetingMessage: req.body.GreetingMessage
+                  ? req.body.GreetingMessage
+                  : "No message from instructor",
+                Price: req.body.Price ? req.body.Price : "N/A",
+                PaymentType: req.body.PaymentType
+                  ? req.body.PaymentType
+                  : "N/A",
+                Link:
+                  "https://figgs.co/public/payment/" +
+                  sentProgram[0]._id +
+                  "/" +
+                  item +
+                  "/" +
+                  token,
+              });
+              addTorecent("sendProgram", {
+                programId: program[0]._id,
+                userId: req.userData._id,
+                email: item,
+              });
+            }
+          });
 
           Chat.create(dataChat);
         });
@@ -584,7 +585,6 @@ exports.SendProgram = async (req, res) => {
         },
         { _id: 1, email: 1 }
       ).then((userData) => {
-        console.log(userData);
         let dataChat = [];
         if (userData.length > 0)
           userData.map((item) => {
@@ -656,49 +656,48 @@ exports.SendProgram = async (req, res) => {
               });
             }
           });
-        else {
-          req.body.SendTo.map(async (item) => {
-            addTorecent("sendProgram", {
-              programId: program._id,
-              userId: req.userData._id,
-              email: item,
-            });
-            if (item.includes("@")) {
-              let token = await jwt.sign(
-                { uuid: item.toLowerCase(), type: "email" },
-                "s3cr3t",
-                { expiresIn: "1d" }
-              );
 
-              sendPromoMain({
-                email: item,
-                name: req.userData.name,
-                description: req.body.Description,
-                BannerImage: req.body.BannerImage
-                  ? req.body.BannerImage
-                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-                profileImg: req.userData.profilePic
-                  ? req.userData.profilePic
-                  : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
-                Title: req.body.Title,
-                GreetingMessage: req.body.GreetingMessage
-                  ? req.body.GreetingMessage
-                  : "No message from instructor",
-                Price: req.body.Price ? req.body.Price : "N/A",
-                PaymentType: req.body.PaymentType
-                  ? req.body.PaymentType
-                  : "N/A",
-                Link:
-                  "https://figgs-v2.herokuapp.com/program/instructorSend/" +
-                  sentProgram[0]._id +
-                  "/" +
-                  item +
-                  "/" +
-                  token,
-              });
-            }
+        req.body.SendTo.filter(
+          (eitem) => userData.find((ud) => ud.email === eitem) == null
+        ).map(async (item) => {
+          addTorecent("sendProgram", {
+            programId: program._id,
+            userId: req.userData._id,
+            email: item,
           });
-        }
+          if (item.includes("@")) {
+            let token = await jwt.sign(
+              { uuid: item.toLowerCase(), type: "email" },
+              "s3cr3t",
+              { expiresIn: "1d" }
+            );
+
+            sendPromoMain({
+              email: item,
+              name: req.userData.name,
+              description: req.body.Description,
+              BannerImage: req.body.BannerImage
+                ? req.body.BannerImage
+                : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
+              profileImg: req.userData.profilePic
+                ? req.userData.profilePic
+                : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
+              Title: req.body.Title,
+              GreetingMessage: req.body.GreetingMessage
+                ? req.body.GreetingMessage
+                : "No message from instructor",
+              Price: req.body.Price ? req.body.Price : "N/A",
+              PaymentType: req.body.PaymentType ? req.body.PaymentType : "N/A",
+              Link:
+                "https://figgs-v2.herokuapp.com/program/instructorSend/" +
+                sentProgram[0]._id +
+                "/" +
+                item +
+                "/" +
+                token,
+            });
+          }
+        });
       });
 
       return res.status(201).send();
