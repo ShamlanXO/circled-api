@@ -765,3 +765,13 @@ exports.ArchiveProgram = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+exports.UnArchiveProgram = (req, res) => {
+  Program.updateOne({ _id: req.params.id }, { IsArchived: false })
+    .then((result) => {
+      return res.status(200).send({ message: "Program  UnArchived" });
+    })
+    .catch((error) => {
+      return res.status(500).send({ ErrorOccured: error });
+    });
+};

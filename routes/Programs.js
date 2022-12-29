@@ -11,4 +11,5 @@ router.route("/update").patch(checkAuth, ProgramRoute.UpdateProgram);
 router.route("/send").post(checkAuth, ProgramRoute.SendProgram);
 router.route("/delete/:id").delete(checkAuth, ProgramRoute.DeleteProgram);
 router.route("/archive/:id").patch(checkAuth, ProgramRoute.ArchiveProgram);
+router.route("/unarchive/:id").patch(checkAuth, ProgramRoute.UnArchiveProgram);
 module.exports = router;
