@@ -21,7 +21,7 @@ var ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
 const compression = require("compression");
 const path = require("path");
-const SocketService = require("./components/socket");
+//const SocketService = require("./components/socket");
 const server = require("http").Server(app);
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -31,11 +31,11 @@ const server = require("http").Server(app);
 
 // //  apply to all requests
 // app.use(limiter);
-global.appRoot = path.resolve(process.cwd());
+global.appRoot = path.resolve(__dirname);
 require("dotenv").config();
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
-app.set("socketService", new SocketService(server));
+//app.set("socketService", new SocketService(server));
 app.use(helmet());
 
 //Security headers in every response to tackle cors errors
@@ -119,7 +119,7 @@ mongoose.connect(
 
 app.get("/", function (req, res) {
   console.log("runnning");
-  const filePath = path.join(process.cwd(), "build", "index.html");
+  const filePath = path.resolve(__dirname, "build", "index.html");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       return console.log(err);
@@ -138,7 +138,7 @@ app.get("/", function (req, res) {
 app.get("/public/sharedProgram/:id", function (req, res) {
   Program.findById(req.params.id).then((program) => {
     if (program) {
-      const filePath = path.join(process.cwd(), "build", "index.html");
+      const filePath = path.resolve(__dirname, "build", "index.html");
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
           return console.log(err);
@@ -169,7 +169,7 @@ app.get("/public/sharedProgram/:id", function (req, res) {
 
 app.use(express.static(path.join(__dirname, "build")));
 app.get("*", (req, res) =>
-  res.sendFile(path.join(process.cwd(), "build/index.html"))
+  res.sendFile(path.join(__dirname, "build/index.html"))
 );
 
 //Middlewares for error handling and presentation.
