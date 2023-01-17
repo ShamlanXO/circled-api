@@ -21,7 +21,7 @@ var ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
 const compression = require("compression");
 const path = require("path");
-//const SocketService = require("./components/socket");
+const SocketService = require("./components/socket");
 const server = require("http").Server(app);
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -35,7 +35,7 @@ global.appRoot = path.resolve(__dirname);
 require("dotenv").config();
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
-//app.set("socketService", new SocketService(server));
+app.set("socketService", new SocketService(server));
 app.use(helmet());
 
 //Security headers in every response to tackle cors errors
