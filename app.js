@@ -15,7 +15,7 @@ const Orders = require("./models/Orders");
 const axios = require("axios");
 const fs = require("fs");
 const Program = require("./models/Programs");
-
+var wwwhisper = require("connect-wwwhisper");
 var ObjectID = require("mongodb").ObjectID;
 
 const cors = require("cors");
@@ -44,6 +44,8 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 app.use(morgan("dev"));
+app.use(wwwhisper());
+
 // app
 // app.get("/", (req, res) => {
 //   res.redirect("/api/welcome");
