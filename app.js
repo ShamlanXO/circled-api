@@ -15,7 +15,7 @@ const Orders = require("./models/Orders");
 const axios = require("axios");
 const fs = require("fs");
 const Program = require("./models/Programs");
-var wwwhisper = require("connect-wwwhisper");
+
 var ObjectID = require("mongodb").ObjectID;
 
 const cors = require("cors");
@@ -34,7 +34,7 @@ const server = require("http").Server(app);
 global.appRoot = path.resolve(__dirname);
 
 require("dotenv").config();
-app.use(wwwhisper());
+
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
 app.set("socketService", new SocketService(server));
