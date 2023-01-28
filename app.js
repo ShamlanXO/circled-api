@@ -32,7 +32,9 @@ const server = require("http").Server(app);
 // //  apply to all requests
 // app.use(limiter);
 global.appRoot = path.resolve(__dirname);
+
 require("dotenv").config();
+app.use(wwwhisper());
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
 app.set("socketService", new SocketService(server));
@@ -44,7 +46,6 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 app.use(morgan("dev"));
-app.use(wwwhisper());
 
 // app
 // app.get("/", (req, res) => {
