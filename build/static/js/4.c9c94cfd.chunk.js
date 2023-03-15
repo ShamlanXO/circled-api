@@ -1,0 +1,2 @@
+(this["webpackJsonp@minimal/minimal-kit-react"]=this["webpackJsonp@minimal/minimal-kit-react"]||[]).push([[4],{1465:function(i,a,t){"use strict";t.r(a);var m=t(1596);a.default=m.a}}]);
+//# sourceMappingURL=4.c9c94cfd.chunk.js.map
