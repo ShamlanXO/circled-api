@@ -40,7 +40,9 @@ exports.sendPromoMain = (data) => {
         sender: data.name,
         banner: data.BannerImage,
         title: data.Title,
-        message: data.GreetingMessage,
+        message:
+          data.GreetingMessage ||
+          "I have sent you this program based on the plan we discussed.",
         price: data.Price,
         description: data.description,
         type: data.PaymentType,
