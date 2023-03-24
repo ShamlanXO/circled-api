@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 const Chat = require("../models/Chat");
+const { startOfMonth, endOfMonth } = require("date-fns");
 const axios = require("axios");
 const { addTorecent } = require("./RecentController");
 exports.ProgramsAll = (req, res) => {
@@ -68,7 +69,9 @@ exports.ProgramsInstructor = (req, res) => {
         pipeline: [
           {
             $match: {
-              $expr: { $and: [{ $eq: ["$Program._id", "$$program"] }] },
+              $expr: {
+                $and: [{ $eq: ["$Program._id", "$$program"] }],
+              },
             },
           },
           {
@@ -85,11 +88,21 @@ exports.ProgramsInstructor = (req, res) => {
     {
       $lookup: {
         from: "payments",
-        let: { program: "$_id" },
+        let: {
+          program: "$_id",
+          endDate: endOfMonth(new Date()),
+          startDate: startOfMonth(new Date()),
+        },
         pipeline: [
           {
             $match: {
-              $expr: { $and: [{ $eq: ["$ProgramId", "$$program"] }] },
+              $expr: {
+                $and: [
+                  { $eq: ["$ProgramId", "$$program"] },
+                  { $lte: ["$createdAt", "$$endDate"] },
+                  { $gte: ["$createdAt", "$$startDate"] },
+                ],
+              },
             },
           },
           {
@@ -348,7 +361,7 @@ exports.CreateProgram = async (req, res) => {
                     description: req.body.Description,
                     GreetingMessage: req.body.GreetingMessage
                       ? req.body.GreetingMessage
-                      : "No message from instructor",
+                      : "No message from the trainer",
                     Price: req.body.Price ? req.body.Price : "N/A",
                     PaymentType: req.body.PaymentType
                       ? req.body.PaymentType
@@ -391,7 +404,7 @@ exports.CreateProgram = async (req, res) => {
                 Title: req.body.Title,
                 GreetingMessage: req.body.GreetingMessage
                   ? req.body.GreetingMessage
-                  : "No message from instructor",
+                  : "No message from the trainer",
                 Price: req.body.Price ? req.body.Price : "N/A",
                 PaymentType: req.body.PaymentType
                   ? req.body.PaymentType
@@ -609,7 +622,7 @@ exports.SendProgram = async (req, res) => {
                 Title: req.body.Title,
                 GreetingMessage: req.body.GreetingMessage
                   ? req.body.GreetingMessage
-                  : "No message from instructor",
+                  : "No message from the trainer",
                 Price: req.body.Price ? req.body.Price : "N/A",
                 PaymentType: req.body.PaymentType
                   ? req.body.PaymentType
@@ -685,7 +698,7 @@ exports.SendProgram = async (req, res) => {
               Title: req.body.Title,
               GreetingMessage: req.body.GreetingMessage
                 ? req.body.GreetingMessage
-                : "No message from instructor",
+                : "No message from the trainer",
               Price: req.body.Price ? req.body.Price : "N/A",
               PaymentType: req.body.PaymentType ? req.body.PaymentType : "N/A",
               Link:

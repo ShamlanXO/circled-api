@@ -78,7 +78,7 @@ exports.SearchUser = (req, res) => {
 
 exports.CreateUser = async (req, res) => {
   let userData = await user.findOne({}).sort({ createdAt: -1 });
-  let figgsId = userData?.figgsId || 1000;
+  let figgsId = Number(userData?.figgsId || 1000);
   if (req.body.authType == "gmail") {
     let userData = await user.findOne({ email: req.body.email });
     if (userData) {
