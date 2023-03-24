@@ -161,10 +161,7 @@ exports.CreateUser = async (req, res) => {
 exports.UserLogin = (req, res) => {
   user
     .find({
-      $or: [
-        { email: req.body.email.toLowerCase() },
-        { phone: req.body.phone.toLowerCase() },
-      ],
+      $or: [{ email: req.body.email.toLowerCase() }],
     })
     .then((result) => {
       if (result.length < 1) {
