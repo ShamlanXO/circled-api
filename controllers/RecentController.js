@@ -24,6 +24,7 @@ exports.getRecents = (req, res) => {
     programId: req.params.id,
   })
     .populate("clientId", "name profilePic")
+    .orderBy({ createdAt: -1 })
     .then((result) => {
       console.log(result);
       if (result.length < 1) {
