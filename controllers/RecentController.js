@@ -23,8 +23,11 @@ exports.getRecents = (req, res) => {
   Recent.find({
     programId: req.params.id,
   })
+    .sort({
+      createdAt: -1,
+    })
     .populate("clientId", "name profilePic")
-    .orderBy({ createdAt: -1 })
+
     .then((result) => {
       console.log(result);
       if (result.length < 1) {
