@@ -10,6 +10,7 @@ const ChatRoutes = require("./Chat");
 const paymentRoutes = require("./Payments");
 const bodyImagesRoutes = require("./BodyImages");
 const recentRoutes = require("./recents");
+const progressLogRoutes = require("./ProgressLogs");
 module.exports = function (app) {
   app.use("/api/user", userRoutes);
   app.use("/api/otp", otpRoutes);
@@ -23,4 +24,5 @@ module.exports = function (app) {
   app.use("/api/chat", ChatRoutes);
   app.use("/api/notification", NotificationRoutes);
   app.use("/api/recent", recentRoutes);
+  app.use("/api/progresslog", progressLogRoutes);
 };

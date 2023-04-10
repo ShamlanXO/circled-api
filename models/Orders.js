@@ -13,6 +13,14 @@ const ExerciseSchema = new mongoose.Schema({
   note: { type: String, default: null },
   rest: { type: Number, default: null },
   banner: { type: String, default: null },
+  latestLog: {
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    message: { type: String, default: null },
+    createdAt: { type: Date, default: null },
+    name: { type: String, default: null },
+    profilePic: { type: String, default: null },
+    type: { type: String, default: null },
+  },
   triggerMuscle: [{ type: String }],
   isAttempted: { type: Boolean, default: false },
 });
