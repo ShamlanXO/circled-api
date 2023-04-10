@@ -134,7 +134,7 @@ exports.getLogHistory = (req, res) => {
 
     .then((result) => {
       if (result.length == 0) {
-        return res.status(404).send({ message: "Unauthorized" });
+        return res.status(404).send({ message: "no records found" });
       } else {
         return res.status(200).send(result);
       }
