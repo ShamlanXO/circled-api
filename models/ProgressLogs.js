@@ -13,6 +13,7 @@ const LogSchema = new mongoose.Schema(
     type: { type: String, default: null },
     id: { type: mongoose.Schema.Types.ObjectId },
     title: { type: String, default: null },
+    dayTitle: { type: String, default: null },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   },
   { timestamps: true }

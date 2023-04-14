@@ -13,7 +13,6 @@ exports.CreateLog = (req, res) => {
     if (orderResult.length == 0) {
       return res.status(401).send({ message: "Unauthorized" });
     } else {
-      console.log(req.userData, req.userData.type);
       orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
         req.body.day
       ].Exercise[req.body.exercise].latestLog = {
@@ -36,6 +35,11 @@ exports.CreateLog = (req, res) => {
           orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
             req.body.day
           ].Exercise[req.body.exercise].title,
+        dayTitle:
+          orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
+            req.body.day
+          ].Title,
+
         instructorId: orderResult[0].Program.createdBy,
         id: orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
           req.body.day
