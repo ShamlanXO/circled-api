@@ -367,7 +367,7 @@ exports.CreateProgram = async (req, res) => {
                       ? req.body.PaymentType
                       : "N/A",
                     Link:
-                      "https://figgs-v2.herokuapp.com/program/instructorSend/" +
+                      "https://circled.fit/program/instructorSend/" +
                       sentProgram[0]._id +
                       "/" +
                       item.email,
@@ -628,7 +628,7 @@ exports.SendProgram = async (req, res) => {
                   ? req.body.PaymentType
                   : "N/A",
                 Link:
-                  "https://figgs-v2.herokuapp.com/program/instructorSend/" +
+                  "https://circled.fit/program/instructorSend/" +
                   sentProgram[0]._id +
                   "/" +
                   item.email,
@@ -702,7 +702,7 @@ exports.SendProgram = async (req, res) => {
               Price: req.body.Price ? req.body.Price : "N/A",
               PaymentType: req.body.PaymentType ? req.body.PaymentType : "N/A",
               Link:
-                "https://figgs-v2.herokuapp.com/program/instructorSend/" +
+                "https://circled.fit/program/instructorSend/" +
                 sentProgram[0]._id +
                 "/" +
                 item +
@@ -741,7 +741,8 @@ exports.UpdateProgram = (req, res) => {
     { ...req.body }
   )
     .then((result) => {
-      if (req.body.SendTo) this.SendProgram(req, res);
+      if (req.body.SendTo && req.body.SendTo?.length)
+        this.SendProgram(req, res);
       else return res.status(200).send({ message: "Program Updated" });
     })
     .catch((error) => {
