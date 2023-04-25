@@ -55,9 +55,9 @@ exports.sendPromoMain = (data) => {
         .then((result) => {
           smtpTransport
             .sendMail({
-              from: `noreply@circled.fit`,
+              from: `Circled.fit <noreply@circled.fit>`,
               to: data.email.toLowerCase(),
-              subject: `${data.name} sent you a fitness program`,
+              subject: `${data.name}`,
               html: htmlToSend,
             })
             .then((result) => {

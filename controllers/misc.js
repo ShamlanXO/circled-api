@@ -182,7 +182,7 @@ exports.downloadFile = (req, res) => {
 exports.SendMail = (req, res) => {
   smtpTransport
     .sendMail({
-      from: "noreply@circled.fit",
+      from: "Circled.fit <noreply@circled.fit>",
       to: req.body.Email.toLowerCase(),
       subject: req.body.Subject,
       html: req.body.MailBody,
@@ -226,7 +226,7 @@ exports.SendVerifyMail = (req, res) => {
                     .then((result) => {
                       smtpTransport
                         .sendMail({
-                          from: `noreply@circled.fit`,
+                          from: `Circled.fit <noreply@circled.fit>`,
                           to: req.body.email.toLowerCase(),
                           subject: "Email verification",
                           html: htmlToSend,
@@ -284,7 +284,7 @@ exports.ChangePasswordMail = (req, res) => {
 
                   smtpTransport
                     .sendMail({
-                      from: `noreply@circled.fit`,
+                      from: `Circled.fit <noreply@circled.fit>`,
                       to: req.body.email.toLowerCase(),
                       subject: "Email verification",
                       html: htmlToSend,
@@ -324,7 +324,7 @@ exports.sendNotificationMail = (data) => {
 
       smtpTransport
         .sendMail({
-          from: `noreply@circled.fit`,
+          from: `Circled.fit <noreply@circled.fit>`,
           to: data.email.toLowerCase(),
           subject: "Notification",
           html: htmlToSend,
@@ -363,7 +363,7 @@ exports.ChangePasswordMail2 = (req, res) => {
 
                   smtpTransport
                     .sendMail({
-                      from: `noreply@circled.fit`,
+                      from: `Circled.fit <noreply@circled.fit>`,
                       to: req.body.email.toLowerCase(),
                       subject: "Email verification",
                       html: htmlToSend,
