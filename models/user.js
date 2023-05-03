@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema(
     },
     bodyImages: [{ type: String }],
     links: [{ type: String }],
+    lastActive: { type: Date },
   },
   { timestamps: true }
 );

@@ -1,5 +1,5 @@
 const socketIo = require("socket.io");
-
+const User=require("../models/user")
 class SocketService {
   constructor(server) {
     this.io = socketIo(server);
@@ -21,9 +21,14 @@ class SocketService {
     };
 
     this.io.on("connection", (socket) => {
+      console.log(socket.handshake.query);
 
       this.io.emit(socket.id+"", {type:"status",isConnected:true})
 
+      if(socket.id)
+      User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
+        console.log(data)
+      })
       
 
 
@@ -33,7 +38,11 @@ class SocketService {
 
 
       socket.on("disconnect",(data) => {
-
+        console.log(socket.handshake.query);
+        if(socket.id)
+        User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
+          console.log(data)
+        })
         if (this.io.sockets.sockets[socket.id]&&this.io.sockets.sockets[socket.id].connected) {
            
           this.io.emit(socket.id, {type:"status",isConnected:true})
@@ -49,9 +58,11 @@ class SocketService {
 
      
       socket.on("getStatus",(data,callback) => {
+
+        
       
           if (this.io.sockets.sockets[data]&&this.io.sockets.sockets[data].connected) {
-           
+            console.log("connected",socket.id)
 callback({type:"status",isConnected:true})
           }
           else{
