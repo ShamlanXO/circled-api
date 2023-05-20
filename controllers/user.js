@@ -321,6 +321,46 @@ exports.CheckUserExistence = (req, res) => {
     });
 };
 
+exports.ResetPassword=async(req,res)=>{
+
+  const currentPassword=await bcrypt.hash(req.body.currentPassword,10)
+  const newPassword=await bcrypt.hash(req.body.Password,10)
+
+
+      user.findOne(
+        { _id: req.userData._id },
+       
+        
+      ).then(async (result)=>{
+        
+        let compare=await bcrypt.compareSync(
+          req.body.currentPassword
+          ,
+          result.password)
+
+          console.log(compare,result.password,currentPassword)
+          if(!compare){
+            return res.status(409).send();
+          }
+
+          result.password = newPassword;
+          result.save();
+          
+           
+              return res.status(200).send({ message: result });
+         
+          
+        
+      })
+   
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({ ErrorOccured: error });
+    });
+
+
+}
+
 exports.ChangePassword = (req, res) => {
   const decoded = jwt.verify(req.body.token, "s3cr3t");
 
@@ -347,6 +387,8 @@ exports.ChangePassword = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+
 
 exports.ChangePasswordEmail = (req, res) => {
   console.log(req.body.Email);

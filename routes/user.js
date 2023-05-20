@@ -10,6 +10,7 @@ router.route("/login").post(UserController.UserLogin);
 router.route("/update/").patch(checkAuth, UserController.UserUpdate);
 router.route("/updateAuth/").patch(UserController.UserUpdateAuth);
 router.route("/check").get(UserController.CheckUserExistence);
+router.route("/reset-password").post(checkAuth,UserController.ResetPassword);
 router.route("/change-password/").patch(UserController.ChangePassword);
 router.route("/change-password-mail").post(UserController.ChangePasswordEmail);
 router.route("/delete/:UserId").delete(checkAuth, UserController.DeleteUser);
