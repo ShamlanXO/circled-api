@@ -507,3 +507,31 @@ exports.deleteVideo = async (req, res) => {
   //   res.status(err.response.status).send({err:err})
   // })
 };
+
+
+exports.AddFeedback=async(req,res)=>{
+
+  smtpTransport
+  .sendMail({
+    from: `Feedback circled <feedback@circled.fit>`,
+    to: ["amanjain.3331@gmail.com","shamlan555@gmail.com"],
+    subject: req.body.type,
+    attachments:[{
+      href:req.body.attachment
+    }],
+    html: `<h3>${req.body.title}</h3>
+            <p>${req.body.description}</p><br/>
+            <small>${req.body.email}</small>
+    `,
+  })
+  .then((result) => {
+    return res
+      .status(200)
+      .send({ message: "mail sent", ServerResponse: result });
+  })
+  .catch((err) =>{
+    return res
+    .status(500)
+  });
+
+}
