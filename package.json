@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "api-query-params": "^4.14.0",
-    "aws-sdk": "^2.773.0",
+    "aws-sdk": "^2.1384.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bulma": "^0.8.2",
@@ -31,6 +31,7 @@
     "mongoose-float": "^1.0.4",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
+    "node-cron": "^3.0.2",
     "node-env-run": "^3.0.2",
     "nodemailer": "^6.4.2",
     "nodemon": "^2.0.1",

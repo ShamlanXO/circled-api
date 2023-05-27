@@ -10,12 +10,14 @@ const config = require("./config/config");
 const helmet = require("helmet");
 const Routes = require("./routes/index");
 const Orders = require("./models/Orders");
+
+const MediaFiles=require("./models/MediaUploads")
 //const swaggerDocument = require("./documentation/swagger.json");
 //redist
 const axios = require("axios");
 const fs = require("fs");
 const Program = require("./models/Programs");
-
+var cron = require('node-cron');
 var ObjectID = require("mongodb").ObjectID;
 
 const cors = require("cors");
@@ -120,6 +122,8 @@ mongoose.connect(
 
 // });
 
+
+
 app.get("/", function (req, res) {
   console.log("runnning");
   const filePath = path.resolve(__dirname, "build", "index.html");
@@ -187,6 +191,38 @@ app.use((error, req, res, next) => {
   res.json({
     message: error.message,
   });
+});
+
+cron.schedule('50 * * * *', async() => {
+ console.log("running cron")
+  let mediaItems=await MediaFiles.find().sort({updatedAt:-1}).limit(20)
+
+  for(const i=0 ;i<mediaItems.length; i++){
+    item=mediaItems[i]
+    console.log(item.key)
+    let regex = new RegExp(item.key)
+    let checkPrograms=await Program.findOne({
+      "ExercisePlan.weeks.days.Exercise.media":{ $regex: regex },
+      "IsDeleted":false
+    })
+
+    let checkOrders=await Orders.findOne({
+      "Program.ExercisePlan.weeks.days.Exercise.media":{ $regex: regex }
+    })
+
+    if(checkPrograms!==null||checkOrders!==null){
+      item.markedForDeletion=false
+      item.updatedAt=new Date()
+      item.save()
+    }
+    else{
+      item.markedForDeletion=true
+      item.updatedAt=new Date()
+      item.save()
+    }
+  }
+
+
 });
 
 module.exports = app;

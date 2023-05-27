@@ -36,9 +36,9 @@ var readHTMLFile = function (path, callback) {
 //configuring the AWS environment
 AWS.config.setPromisesDependency();
 AWS.config.update({
-  accessKeyId: "AKIA2BGJZD4HW72DSX3V",
-  secretAccessKey: "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",
-  region: "us-east-2",
+  accessKeyId: "AKIAQOB4DHYAMZONMOVH",
+  secretAccessKey: "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",
+  region: "us-east-1",
 });
 
 var s3 = new AWS.S3();
@@ -61,18 +61,18 @@ exports.Promotional = (req, res) => {
 
 exports.getSignatureUrl = (req, res) => {
   const S3 = new AWS.S3({
-    endpoint: "s3-us-east-2.amazonaws.com", // Put you region
-    accessKeyId: "AKIA2BGJZD4HZM3RPVPI",
-    secretAccessKey: "VAWRWz0xNNp/nMhcnqrDQtApyS7Cq6hoXfRX2Y1U",
-    region: "us-east-2",
-    Bucket: "figgs", // Put your bucket name
+    endpoint: "s3.us-east-1.amazonaws.com", // Put you region
+    accessKeyId: "AKIAQOB4DHYAMZONMOVH",
+    secretAccessKey: "B1O6ptlLbj17lCWZvsvio49W6Fhj+OkGX5hy3NkV",
+    region: "us-east-1",
+    Bucket: "circled-videos", // Put your bucket name
     signatureVersion: "v4",
     // Put you region
   });
   var params = {
     ACL: "public-read",
-    Bucket: "figgs",
-    Key: `${Date.now()}${"-"}figgsVideo-${req.body.name}`,
+    Bucket: "circled-videos", // Put your bucket name
+    Key: `videos/${req.userData._id}/${Date.now()}${"-"}-${req.body.name}`,
     Expires: 24 * 3600,
     ContentType: req.body.type,
   };
