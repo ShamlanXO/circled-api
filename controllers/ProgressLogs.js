@@ -13,16 +13,7 @@ exports.CreateLog = (req, res) => {
     if (orderResult.length == 0) {
       return res.status(401).send({ message: "Unauthorized" });
     } else {
-      orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
-        req.body.day
-      ].Exercise[req.body.exercise].latestLog = {
-        createdBy: req.userData._id,
-        message: req.body.message,
-        createdAt: new Date(),
-        name: req.userData.name,
-        profilePic: req.userData.profilePic,
-        type: req.userData.type,
-      };
+     
       const log = new Log({
         ...req.body,
         clientId: orderResult[0].UserId,
@@ -48,11 +39,23 @@ exports.CreateLog = (req, res) => {
       log
         .save()
         .then((result) => {
+          orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
+            req.body.day
+          ].Exercise[req.body.exercise].latestLog = {
+            _id:result._id,
+            createdBy: req.userData._id,
+            message: req.body.message,
+            createdAt: new Date(),
+            name: req.userData.name,
+            profilePic: req.userData.profilePic,
+            type: req.userData.type,
+          };
           orderResult[0].save();
           return res.status(201).send({
             message: "Log Created",
             ServerResponse: result,
             latestLog: {
+              _id:result._id,
               createdBy: req.userData._id,
               message: req.body.message,
               createdAt: new Date(),
@@ -149,3 +152,36 @@ exports.getLogHistory = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+exports.deleteLog =(req, res) => {
+  Log.findOneAndDelete({_id:req.params.id}).then(async(item)=>{
+    if(!item)
+    {
+      res.status(500).send({ message:"Error"})
+    }
+ let OrderItem=await Order.findOne({
+      _id: ObjectID(item.orderId),
+      $or: [
+        { UserId: req.userData._id },
+        { "Program.createdBy": req.userData._id },
+      ],
+    })
+
+
+if(OrderItem&& String(OrderItem.Program.ExercisePlan.weeks[item.week].days[
+  item.day
+  ].Exercise[item.exercise]?.latestLog?._id)==String(req.params.id))
+    {
+      OrderItem.Program.ExercisePlan.weeks[item.week].days[item.day].Exercise[item.exercise].latestLog={}
+console.log("should delete item")
+       await  OrderItem.save()
+    
+}
+
+
+res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item})
+  }).catch((err)=>{
+    console.log(err)
+    res.status(500).send({ message:"Error"})
+  })
+}

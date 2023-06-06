@@ -519,7 +519,8 @@ exports.AddFeedback=async(req,res)=>{
     attachments:[{
       href:req.body.attachment
     }],
-    html: `<h3>${req.body.title}</h3>
+    html: `<h3>${req.body.title}</h3><br/>
+            ${req.body.satisfaction?`<h2>${req.body.satisfaction}</h2>`:""}
             <p>${req.body.description}</p><br/>
             <small>${req.body.email}</small>
     `,

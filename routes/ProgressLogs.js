@@ -8,4 +8,5 @@ router
   .route("/perticular/:id/:week/:day/:exercise")
   .get(checkAuth, LogController.getPerticularLog);
 router.route("/all/:id").get(checkAuth, LogController.getLogHistory);
+router.route("/:id").delete(checkAuth, LogController.deleteLog)
 module.exports = router;

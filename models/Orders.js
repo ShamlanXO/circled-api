@@ -14,6 +14,7 @@ const ExerciseSchema = new mongoose.Schema({
   rest: { type: Number, default: null },
   banner: { type: String, default: null },
   latestLog: {
+    _id: { type:mongoose.Schema.Types.ObjectId},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     message: { type: String, default: null },
     createdAt: { type: Date, default: null },

@@ -193,13 +193,14 @@ app.use((error, req, res, next) => {
   });
 });
 
-cron.schedule('50 * * * *', async() => {
+cron.schedule('50 * * * * *', async() => {
  console.log("running cron")
-  let mediaItems=await MediaFiles.find().sort({updatedAt:-1}).limit(20)
+  let mediaItems=await MediaFiles.find().sort({updatedAt:1}).limit(20)
 
-  for(const i=0 ;i<mediaItems.length; i++){
+  for(let i=0 ;i<mediaItems.length; i++){
+
     item=mediaItems[i]
-    console.log(item.key)
+    console.log(item.key ,i)
     let regex = new RegExp(item.key)
     let checkPrograms=await Program.findOne({
       "ExercisePlan.weeks.days.Exercise.media":{ $regex: regex },
