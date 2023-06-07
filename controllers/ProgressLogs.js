@@ -159,24 +159,9 @@ exports.deleteLog =(req, res) => {
     {
       res.status(500).send({ message:"Error"})
     }
- let OrderItem=await Order.findOne({
-      _id: ObjectID(item.orderId),
-      $or: [
-        { UserId: req.userData._id },
-        { "Program.createdBy": req.userData._id },
-      ],
-    })
 
 
-if(OrderItem&& String(OrderItem.Program.ExercisePlan.weeks[item.week].days[
-  item.day
-  ].Exercise[item.exercise]?.latestLog?._id)==String(req.params.id))
-    {
-      OrderItem.Program.ExercisePlan.weeks[item.week].days[item.day].Exercise[item.exercise].latestLog={}
-console.log("should delete item")
-       await  OrderItem.save()
-    
-}
+
 
 
 res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item})

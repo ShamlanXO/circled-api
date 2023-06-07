@@ -146,7 +146,7 @@ exports.GetClients = (req, res) => {
     },
     {
       $project: {
-        _id: "$_id",
+        _id: "$program._id",
         userId: "$clientData._id",
         name: "$clientData.name",
         figgsId: "$clientData.figgsId",
@@ -154,7 +154,7 @@ exports.GetClients = (req, res) => {
         isActive: "$program.isActive",
         profilePic: "$clientData.profilePic",
       },
-    },
+    }
   ])
 
     // Order.find(
@@ -211,14 +211,15 @@ exports.GetClientsSpecificProgram = (req, res) => {
 };
 
 exports.GetSpecificClients = async (req, res) => {
-  const Biresult = await BodyImageModel.find({ createdBy: req.params.Id });
+ 
   Order.findOne({
     $or: [{ _id: req.params.Id }, { UserId: req.params.Id }],
-    isActive: true,
+ 
     "Program.createdBy": req.userData._id,
   })
     .populate("UserId", "-password")
-    .then((result) => {
+    .then(async(result) => {
+      const Biresult = await BodyImageModel.find({ createdBy: result.UserId._id });
       if (!result) {
         return res.status(404).send({
           message: "No order Found",
