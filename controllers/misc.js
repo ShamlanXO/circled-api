@@ -536,3 +536,32 @@ exports.AddFeedback=async(req,res)=>{
   });
 
 }
+
+
+exports.reportBug=async(req,res)=>{
+
+  smtpTransport
+  .sendMail({
+    from: `Feedback circled <bugreport@circled.fit>`,
+    to: ["amanjain.3331@gmail.com","shamlan555@gmail.com"],
+    subject: "Bug Report",
+    attachments:[{
+      href:req.body.attachment
+    }],
+    html: `<h3>${req.body.title}</h3><br/>
+            ${req.body.deviceType?`<h2>${req.body.deviceType}</h2>`:""}
+            <p>${req.body.description}</p><br/>
+            <small>${req.body.email}</small>
+    `,
+  })
+  .then((result) => {
+    return res
+      .status(200)
+      .send({ message: "mail sent", ServerResponse: result });
+  })
+  .catch((err) =>{
+    return res
+    .status(500)
+  });
+
+}

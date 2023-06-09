@@ -32,6 +32,7 @@ router.route("/change-password-mail").post(checkAuth,miscController.ChangePasswo
 router.route("/change-password-mail2").post(miscController.ChangePasswordMail2);
 router.route("/promo").get(miscController.Promotional)
 router.route("/addfeedback").post(miscController.AddFeedback);
+router.route("/reportBug").post(miscController.reportBug);
 router.route("/webhook").get(miscController.GetWebhook);
 router.route("/webhook").post(miscController.GetWebhook);
 module.exports = router;

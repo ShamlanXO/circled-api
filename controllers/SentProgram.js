@@ -12,12 +12,7 @@ const mongoose = require("mongoose");
 
 exports.GetProgram = (req, res) => {
 
-SentProgram.find({_id:req.params.id,$or:[
-
-{SendTo:req.userData.figgsId},
-{SendTo:req.userData.email}
-
-  ]}).populate("Program.createdBy").then((result) => {
+SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.createdBy").then((result) => {
       if (result.length < 1) {
         return res.status(404).send([]);
       } else {

@@ -4,7 +4,7 @@ const router = express.Router();
 const checkAuth = require("../middleware/CheckAuth");
 
 
-router.route("/get/:id").get(checkAuth, SentProgramController.GetProgram);
+router.route("/get/:id").get(SentProgramController.GetProgram);
 router.route("/addProgram/:id").post(checkAuth, SentProgramController.AddProgram)
 router.route("/sharedProgramId/:id").post(checkAuth, SentProgramController.SharedProgramId)
 
