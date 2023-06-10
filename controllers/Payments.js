@@ -331,7 +331,7 @@ exports.AddFreeOrder = (req, res) => {
             }
             else{
               console.log("not found")
-              return res.status(500).send({ ErrorOccured: error });
+              return res.status(500).send({ ErrorOccured: "" });
             }
           
           })
