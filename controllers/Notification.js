@@ -231,7 +231,7 @@ exports.CreateGeneralNotification = (to, from, type, message, data) => {
           Type: type,
           //Link: link,
           Description: `${from.name} added (${item.value}) in your todo list`,
-          Title: "Added a todo task",
+          Title: "You have a task",
           orderId: data.orderId,
         }).save();
         sendNotificationMail({
@@ -247,7 +247,7 @@ exports.CreateGeneralNotification = (to, from, type, message, data) => {
             Type: type,
             //Link: link,
             Description: `${from.name} added (${item.value}) in your todo list`,
-            Title: "Added a todo task",
+            Title: "You have a task",
             orderId: data.orderId,
           },
         });
