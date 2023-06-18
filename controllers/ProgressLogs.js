@@ -1,5 +1,6 @@
 const Order = require("../models/Orders");
 const Log = require("../models/ProgressLogs");
+const Notification = require("../models/Notifications");
 var ObjectID = require("mongodb").ObjectID;
 
 exports.CreateLog = (req, res) => {
@@ -38,7 +39,27 @@ exports.CreateLog = (req, res) => {
       });
       log
         .save()
-        .then((result) => {
+        .then(async(result) => {
+
+
+
+      await Notification.create(
+        [
+          {
+            To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+            Type: "log-notification",
+            Sender: req.userData._id,
+            OrderId:req.body.orderId,
+            Title:req.userData.name + " sent you a message",
+            UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+            Description:req.body.message,
+          },
+        ]
+      );
+      req.app.get("socketService").sendTo(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId, {
+        type: "log-notification",
+        data: { name: req.userData.name, type: "log-notification" },
+      });
           orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
             req.body.day
           ].Exercise[req.body.exercise].latestLog = {
@@ -69,6 +90,11 @@ exports.CreateLog = (req, res) => {
           console.log(error);
           return res.status(500).send({ ErrorOccured: error });
         });
+
+
+
+
+
     }
   });
 };
@@ -119,6 +145,7 @@ exports.getLogHistory = (req, res) => {
           $push: {
             _id: "$_id",
             message: "$message",
+            IsRead:"$IsRead",
             createdAt: "$createdAt",
             createdBy: "$createdBy",
             type: "$type",
@@ -168,5 +195,27 @@ res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item
   }).catch((err)=>{
     console.log(err)
     res.status(500).send({ message:"Error"})
+  })
+}
+
+exports.markAsRead=(req, res) => {
+  Log.updateOne({_id:req.body._id,createdBy:req.userData._id},{IsRead:true}).then(async(item)=>{
+    res.status(200).send()
+  }).catch(err=>{
+    res.status(500).send()
+  })
+}
+
+exports.getUnreadCount=(req,res) => {
+  
+  Log.find({
+    orderId: req.params.id,
+    IsRead:false,
+    createdBy:{$ne:req.userData._id}
+  }).count().then(count => {
+    res.status(200).send({count});
+  }).catch(err=>{
+    console.error(err)
+    res.status(500).send(err)
   })
 }
