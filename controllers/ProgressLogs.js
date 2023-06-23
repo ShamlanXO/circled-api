@@ -199,7 +199,7 @@ res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item
 }
 
 exports.markAsRead=(req, res) => {
-  Log.updateOne({_id:req.body._id,createdBy:req.userData._id},{IsRead:true}).then(async(item)=>{
+  Log.updateOne({_id:req.body._id},{IsRead:true}).then(async(item)=>{
     res.status(200).send()
   }).catch(err=>{
     res.status(500).send()
