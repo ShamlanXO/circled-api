@@ -50,7 +50,7 @@ exports.CreateLog = (req, res) => {
             Type: "log-notification",
             Sender: req.userData._id,
             OrderId:req.body.orderId,
-            Title:req.userData.name + " sent you a message",
+            Title:req.userData.name + " commented on exercise",
             UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
             Description:req.body.message,
           },
