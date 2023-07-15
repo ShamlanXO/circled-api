@@ -190,7 +190,7 @@ exports.GetClientsSpecificProgram = (req, res) => {
     },
     { UserId: 1 }
   )
-    .populate("UserId", "name profilePic _id createdAt")
+    .populate("UserId", "name profilePic figgsId _id createdAt")
     .then((result) => {
       if (result.length < 1) {
         return res.status(404).send({
@@ -246,7 +246,7 @@ exports.GetOrder = (req, res) => {
     _id: req.params.id,
     Status: "Active",
   })
-    .populate("Program.createdBy", "name profilePic _id")
+    .populate("Program.createdBy", "name profilePic figgsId _id")
     .populate("SentProgramId")
     .then((result) => {
       if (!result) {
