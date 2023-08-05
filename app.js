@@ -193,7 +193,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-cron.schedule('50 * * * * *', async() => {
+cron.schedule('* 1 * * *', async() => {
  console.log("running cron")
   let mediaItems=await MediaFiles.find().sort({updatedAt:1}).limit(20)
 

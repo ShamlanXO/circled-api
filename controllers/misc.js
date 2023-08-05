@@ -69,16 +69,27 @@ exports.getSignatureUrl = (req, res) => {
     signatureVersion: "v4",
     // Put you region
   });
+  let key=`videos/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
   var params = {
     ACL: "public-read",
     Bucket: "circled-videos", // Put your bucket name
-    Key: `videos/${req.userData._id}/${Date.now()}${"-"}-${req.body.name}`,
+    Key: key,
     Expires: 24 * 3600,
     ContentType: req.body.type,
   };
   var signedUrlPut = S3.getSignedUrl("putObject", params);
-
+ new Media({
+  key: key, 
+  title:req.body?.title,
+  createdAt:new Date(),
+  updatedAt:new Date(),
+  UserId:req.userData._id
+ }).save().then(result => {
   res.send(signedUrlPut);
+ }).catch(err => {
+  res.status(500).send(err)
+ })
+
 };
 
 exports.generateToken = (req, res) => {
