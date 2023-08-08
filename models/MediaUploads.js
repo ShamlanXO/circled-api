@@ -9,6 +9,7 @@ const mediaSchema = new mongoose.Schema({
   standalone:{type:Boolean},
   createdAt:{type:Date},
   updatedAt:{type:Date},
+  savedToLibrary:{type:Boolean,default:false},
   triggerMuscle: [{ type: String }],
   title:{type:String,default:"unamed"},
   UploadedSuccess:{type:Boolean,default:false},

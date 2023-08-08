@@ -55,7 +55,7 @@ exports.FetchVideoLibrary = (req, res) => {
 };
 
 exports.getAllVideos=(req,res)=>{
-  Library.find({UserId:req.userData._id,UploadedSuccess:true}).sort({createdAt:-1}).then(result=>{
+  Library.find({UserId:req.userData._id,UploadedSuccess:true, savedToLibrary:true}).sort({createdAt:-1}).then(result=>{
     res.status(200).send(result)
   }).catch(err=>{
     res.status(500).send(err)
@@ -72,10 +72,19 @@ exports.updateVideo=(req,res)=>{
   })
 }
 
+exports.saveVideoToLibrary=(req,res)=>{  
+  Library.findOneAndUpdate({key:req.body.key},{savedToLibrary:true}).then(result=>{
+    res.status(200).send(result)
+  }).catch(err=>{
+    res.status(500).send(err)
+  })
+}
+
 exports.addVideo=(req,res)=>{
   delete req.body.UserId
  Library.findOneAndUpdate({
     UserId:req.userData._id,
+    
     key:req.body.key
   },{
     ...req.body
@@ -129,7 +138,7 @@ exports.updateWorkout=(req,res)=>{
 
 
 exports.deleteWorkout=(req,res)=>{
-  WorkoutLibrary.deleteOne({_id:req.body._id,CreatedBy:req.userData._id}).then(result=>{
+  WorkoutLibrary.deleteOne({_id:req.params.id,CreatedBy:req.userData._id}).then(result=>{
     res.status(200).send(result)
       }).catch(err=>{
         res.status(500).send(err)
