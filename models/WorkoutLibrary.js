@@ -13,6 +13,7 @@ const ExerciseSchema = new mongoose.Schema({
 
 const ExercisePlanSchema = new mongoose.Schema({
   Title: { type: String, default: null },
+  Program:{ type:String, default: null  },
   Exercise: [ExerciseSchema],
   Cover: { type: String, default: null },
   Note: { type: String, default: null },

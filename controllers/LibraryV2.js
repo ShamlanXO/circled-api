@@ -111,6 +111,17 @@ res.status(200).send(result)
   })
 }
 
+exports.getWorkout=(req, res) => {
+ 
+  WorkoutLibrary.findOne({_id:req.params.id}).then(result=>{
+    console.log(result)
+   res.status(200).send(result)
+  }).catch(err=>{
+    console.log(err)
+    res.status(500).send(err)
+  })
+}
+
 exports.addWorkout=(req,res)=>{
  WorkoutLibrary.findOneAndUpdate(
   {_id:req.body._id},
