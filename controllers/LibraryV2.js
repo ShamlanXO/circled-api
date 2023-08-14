@@ -113,7 +113,7 @@ res.status(200).send(result)
 
 exports.getWorkout=(req, res) => {
  
-  WorkoutLibrary.findOne({_id:req.params.id}).then(result=>{
+  WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic").then(result=>{
     console.log(result)
    res.status(200).send(result)
   }).catch(err=>{
