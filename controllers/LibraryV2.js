@@ -114,8 +114,10 @@ res.status(200).send(result)
 exports.getWorkout=(req, res) => {
  
   WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic").then(result=>{
-    console.log(result)
+   if(result)
    res.status(200).send(result)
+  else
+  res.status(404).send("no record found")
   }).catch(err=>{
     console.log(err)
     res.status(500).send(err)

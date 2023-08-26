@@ -83,7 +83,8 @@ exports.getSignatureUrl = (req, res) => {
   title:req.body?.title,
   createdAt:new Date(),
   updatedAt:new Date(),
-  UserId:req.userData._id
+  UserId:req.userData._id,
+  savedToLibrary:req.body?.savedToLibrary||false,
  }).save().then(result => {
   res.send(signedUrlPut);
  }).catch(err => {
