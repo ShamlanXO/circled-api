@@ -1,31 +1,37 @@
 const jwt = require("jsonwebtoken");
 const user = require("../models/user");
-module.exports = (req, res, next) => {
+const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
+module.exports =async (req, res, next) => {
   try {
     const token = req.headers.authorization;
     const decoded = jwt.verify(token, "s3cr3t");
     req.userData = decoded;
     user
-      .find({ _id: decoded._id })
-      .then((result) => {
-        if (result.length < 1 || result[0].IsActive == false) {
+      .findOne({ _id: decoded._id })
+      .then(async(result) => {
+        if (!result || result.IsActive == false) {
           throw "invalid";
         } else {
+           
+         
+         
           req.userData = {
-            _id: result[0]._id,
-            email: result[0].email,
-            figgsId: result[0].figgsId,
-            name: result[0].name,
-            profilePic: result[0].profilePic,
-            type: result[0].type,
-            IsActive: result[0].IsActive,
-            createdAt: result[0].createdAt,
-            updatedAt: result[0].updatedAt,
+            _id: result._id,
+            email: result.email,
+            figgsId: result.figgsId,
+            name: result.name,
+            profilePic: result.profilePic,
+            type: result.type,
+            stripeUserId:result.stripeUserId,
+            IsActive: result.IsActive,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
           };
           return next();
         }
       })
       .catch((err) => {
+        console.log(err)
         return res.status(401).json({
           message: "Invalid or expired token",
         });

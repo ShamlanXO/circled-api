@@ -15,4 +15,8 @@ router.route("/unsubscribe").post(checkAuth,PaymentController.Unsubscribe)
 // router.route("/paymentFailedSubscription").get(PaymentController.paymentFailedSubscription);
 // router.route("/CapturePayment").get(PaymentController.capturePayment);
 
+router.route("/stripe-customer").get(checkAuth,PaymentController.getStripeCustomer)
+router.route("/add-payment-method").post(checkAuth,PaymentController.addPaymentMethod)
+router.route("/set-default-payment-method").post(checkAuth,PaymentController.setdefaultPaymentMethos)
+router.route("/remove-payment-method").post(checkAuth,PaymentController.removePaymentMethod)
 module.exports = router;

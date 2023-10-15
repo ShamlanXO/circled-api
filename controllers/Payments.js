@@ -5,6 +5,7 @@ const Order = require("../models/Orders");
 const SendProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 const mongoose = require("mongoose");
+const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
 exports.createSubscription = (req, res) => {
   Order.findOne({
     SentProgramId: req.body.id,
@@ -392,4 +393,75 @@ Payment.updateOne({ SubscriptionId: req.body.id},{Status:"Unsubscribed"}).then(r
   }).catch((err)=>{
     res.status(500).send()
   })
+}
+
+
+exports.getStripeCustomer=async(req, res) => {
+  try {
+    // Fetch customer data from Stripe (you'll need to store and retrieve the customer ID)
+    const customer = await stripe.customers.retrieve(req.userData.stripeUserId);
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: req.userData.stripeUserId,
+      type: 'card', // You can specify the type if needed
+    });
+    res.status(200).send({ customer,paymentMethods:paymentMethods.data });
+  } catch (error) {
+    console.error('Error fetching customer data:', error);
+    res.status(500).json({ error: 'Error fetching customer data.' });
+  }
+
+
+}
+
+exports.addPaymentMethod=async(req, res) =>{
+  try {
+    const { token } = req.body;
+    // Attach the payment method to the customer
+    await stripe.paymentMethods.attach(token, { customer: req.userData.stripeUserId });
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: req.userData.stripeUserId,
+      type: 'card', // You can specify the type if needed
+    });
+    res.status(200).send({paymentMethods:paymentMethods.data});
+  } catch (error) {
+    console.error('Error attaching payment method:', error);
+    res.status(500).json({ error: 'Error attaching payment method.' });
+  }
+}
+
+exports.setdefaultPaymentMethos=async(req, res) =>{
+  try {
+    const {  paymentMethodId } = req.body;
+
+    // Set the default payment method for the customer
+    await stripe.customers.update(req.userData.stripeUserId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    res.json({ success: true, message: 'Default payment method updated successfully.' });
+  } catch (error) {
+    console.error('Error marking payment method as default:', error);
+    res.status(500).json({ success: false, error: 'Error marking payment method as default.' });
+  }
+}
+
+exports.removePaymentMethod=async(req, res) =>{
+  try {
+    const {  token } = req.body;
+
+    // Detach the payment method from the customer
+    await stripe.paymentMethods.detach(token);
+
+    // Fetch and return the updated customer's payment methods
+    const paymentMethods = await stripe.paymentMethods.list({
+      customer: req.userData.stripeUserId,
+      type: 'card', // You can specify the type if needed
+    });
+    res.json({ success: true, message: 'Payment method removed successfully', paymentMethods:paymentMethods.data });
+  } catch (error) {
+    console.error('Error removing payment method:', error);
+    res.status(500).json({ success: false, error: 'Error removing payment method.' });
+  }
 }

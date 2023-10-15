@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const SendOtp = require("../components/sendOtp");
 const aqp = require("api-query-params");
 const programs = require("../models/Programs");
+const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
 const sendOtp = new SendOtp(
   "295956Ayx1TlMrGo5d8c4054",
   "{{otp}} is your Secret OTP for completing the current process. Do not Share it with Anyone."
@@ -86,6 +87,24 @@ exports.CreateUser = async (req, res) => {
         expiresIn: "30d",
       });
 
+      if(!userData.stripeUserId){
+        const customer = await stripe.customers.create({
+          email: userData.email,
+          name: userData.name,
+          metadata:{
+            figgsId: userData.figgsId,
+            _id: String(userData._id),
+            createdAt:new Date(),
+ 
+          }
+        });
+        
+        result.stripeUserId=customer.id
+        result.save()
+
+      }
+     
+
       return res
         .status(201)
         .send({ userData: userData, message: "User Created", token: token });
@@ -97,7 +116,25 @@ exports.CreateUser = async (req, res) => {
       figgsId: Number(figgsId + 1),
     });
     User.save()
-      .then((result) => {
+      .then(async(result) => {
+
+        if(!result.stripeUserId){
+          const customer = await stripe.customers.create({
+            email: result.email,
+            name: result.name,
+            metadata:{
+              figgsId: result.figgsId,
+              _id: String(result._id),
+              createdAt:new Date(),
+   
+            }
+          });
+          
+          result.stripeUserId=customer.id
+          result.save()
+  
+        }
+
         const token = jwt.sign({ _id: result._id }, "s3cr3t", {
           expiresIn: "30d",
         });
@@ -137,7 +174,24 @@ exports.CreateUser = async (req, res) => {
         figgsId: Number(figgsId + 1),
       });
       User.save()
-        .then((result) => {
+        .then(async(result) => {
+
+        if(!result.stripeUserId){
+          const customer = await stripe.customers.create({
+            email: result.email,
+            name: result.name,
+            metadata:{
+              figgsId: result.figgsId,
+              _id: String(result._id),
+              createdAt:new Date(),
+   
+            }
+          });
+          
+          result.stripeUserId=customer.id
+          result.save()
+  
+        }
           const token = jwt.sign({ _id: result._id }, "s3cr3t", {
             expiresIn: "30d",
           });
@@ -163,12 +217,31 @@ exports.UserLogin = (req, res) => {
     .find({
       $or: [{ email: req.body.email.toLowerCase() }],
     })
-    .then((result) => {
+    .then(async(result) => {
       if (result.length < 1) {
         return res
           .status(404)
           .send({ message: "No User exists with this mail address" });
       } else {
+
+
+        if(!result[0].stripeUserId){
+          const customer = await stripe.customers.create({
+            email: result[0].email,
+            name: result[0].name,
+            metadata:{
+              figgsId: result[0].figgsId,
+              _id: String(result[0]._id),
+              createdAt:new Date(),
+   
+            }
+          });
+          
+          result[0].stripeUserId=customer.id
+          result[0].save()
+  
+        }
+
         if (
           result[0].authType &&
           result[0].authType.includes(req.body.authType)
@@ -219,6 +292,7 @@ exports.UserLogin = (req, res) => {
       }
     })
     .catch((error) => {
+      console.log(error);
       return res.status(500).send({ ErrorOccured: error });
     });
 };

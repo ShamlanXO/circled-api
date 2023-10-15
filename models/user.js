@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema(
     currentJob: { type: String, default: null },
     faviroteCardio: { type: String, default: null },
     activityLevel: { type: String, default: null },
+    stripeUserId: { type: String, default: null },
     healthInfo: {
       height: { type: Number, default: null },
       weight: { type: Number, default: null },
