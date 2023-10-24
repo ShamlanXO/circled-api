@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const SendOtp = require("../components/sendOtp");
 const aqp = require("api-query-params");
+const _ =require("lodash");
 const programs = require("../models/Programs");
 const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
 const sendOtp = new SendOtp(
@@ -215,7 +216,7 @@ exports.CreateUser = async (req, res) => {
 exports.UserLogin = (req, res) => {
   user
     .find({
-      $or: [{ email: req.body.email.toLowerCase() }],
+      $or: [{ email: req.body.email.toLowerCase() },{phone: req.body.phone.toLowerCase()}],
     })
     .then(async(result) => {
       if (result.length < 1) {
@@ -301,7 +302,7 @@ exports.UserUpdate = (req, res) => {
   console.log(req.userData);
   delete req.body._id;
 
-  delete req.body.email;
+ 
   delete req.body.password;
   user
     .updateOne({ _id: req.userData._id }, req.body, function (err, result) {
@@ -386,6 +387,7 @@ exports.CheckUserExistence = (req, res) => {
           message: "User Exists with this data",
           id: result[0]._id,
           email: result[0].email,
+          phone: result[0].phone,
           authType: result[0].authType,
         });
       }
@@ -535,8 +537,9 @@ exports.ChangePasswordEmail = (req, res) => {
 };
 
 exports.CheckUser = (req, res) => {
+let payload=_.pick(req.body,["email","phone"])
   user
-    .find({ email: req.params.email })
+    .find(payload)
     .then((result) => {
       if (result && result.length > 0) {
         res.status(200).send({ message: "exist" });

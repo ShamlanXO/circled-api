@@ -17,6 +17,7 @@ const sendOTPReg = new SendOtp(
 );
 const user = require("../models/user");
 const jwt = require("jsonwebtoken");
+console.log(process.env.twillio_SID, process.env.twillio_CRED)
 exports.SendOTP = (req, res) => {
   User.findOne({phone: req.query.phone}).then((userData) => {
     if(!userData){
@@ -28,9 +29,9 @@ exports.SendOTP = (req, res) => {
           if(resultUpdate.nModified>0){
 
             client.messages
-            .create({body: 'You secret verification code for fiigs is '+token, from: '+18564315487', to:"+"+req.query.phone})
+            .create({body: 'You secret verification code for circled.fit is '+token, from: `${req.params?.channel=="whatsapp"?"whatsapp:":""}+${req.params.phone}`, to:`${req.params?.channel=="whatsapp"?"whatsapp:":""}${req.params.phone}`})
             .then(message => {
-console.log(message)
+
               return res.status(200).send({
                 message: "OTP SENT",
               

@@ -17,5 +17,5 @@ router.route("/delete/:UserId").delete(checkAuth, UserController.DeleteUser);
 router
   .route("/updateSensitiveData")
   .patch(checkAuth, UserController.UserSensitiveDataUpdate);
-router.route("/exists/:email").get(UserController.CheckUser);
+router.route("/exists").post(UserController.CheckUser);
 module.exports = router;
