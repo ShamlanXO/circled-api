@@ -212,7 +212,7 @@ exports.SendMail = (req, res) => {
 exports.SendVerifyMail = (req, res) => {
   User.findOne({ email: req.body.email.toLowerCase() })
     .then((userData) => {
-      if (!userData) {
+     
         readHTMLFile(appRoot + "/templates/mail.html", function (err, html) {
           if (err) {
             return res.status(500).send({ ErrorOccured: err });
@@ -249,7 +249,7 @@ exports.SendVerifyMail = (req, res) => {
                           //return res.status(200).send({ message: "mail sent", ServerResponse: result });
                         })
                         .catch((err) => res.status(500).send());
-                      return res.status(200).send({ message: "mail sent" });
+                      return res.status(200).send({ message: "mail sent" ,type:userData?"login":"signup"});
                     })
                     .catch((err) => {
                       console.log(err);
@@ -260,9 +260,7 @@ exports.SendVerifyMail = (req, res) => {
               .catch((err) => res.status(500).send());
           }
         });
-      } else {
-        res.status(406).send({ message: "user alreaddy exists" });
-      }
+      
     })
     .catch((err) => res.status(500));
 };
@@ -404,24 +402,76 @@ exports.ChangePasswordMail2 = (req, res) => {
 };
 
 exports.VerifyMail = (req, res) => {
-  console.log(req.body);
-  Verify.findOne({ email: req.body.email.toLowerCase(), token: req.body.token })
+  type=req.body?.type||"email"
+ 
+  Verify.findOne({ [type]: req.body[type].toLowerCase(), token: req.body.token })
     .then((response) => {
       if (!response && req.body.token !== "123456")
         return res.status(404).send({ error: "no user found" });
+if(req.body.authType=="login"){
+  User
+    .find({
+   [type]: req.body[type].toLowerCase()
+    })
+    .then(async(result) => {
+      if (result.length < 1) {
+        return res
+          .status(404)
+          .send({ message: "No User exists with this mail address" });
+      } else {
 
-      jwt.sign(
-        { uuid: req.body.email.toLowerCase(), type: "email" },
-        "s3cr3t",
-        { expiresIn: "1d" },
-        function (err, token) {
-          if (err) {
-            return res.status(500).send({ ErrorOccured: err });
-          } else {
-            return res.status(200).send(token);
-          }
+
+        if(!result[0].stripeUserId){
+          const customer = await stripe.customers.create({
+            email: result[0].email,
+            name: result[0].name,
+            metadata:{
+              figgsId: result[0].figgsId,
+              _id: String(result[0]._id),
+              createdAt:new Date(),
+   
+            }
+          });
+          
+          result[0].stripeUserId=customer.id
+          result[0].save()
+  
         }
-      );
+
+        
+          const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+            expiresIn: req.body.remember ? "30d" : "7d",
+          });
+
+          return res.status(200).send({
+            message: "User Auth Successful",
+            token: token,
+            userData: result[0],
+          });
+      
+
+       
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({ ErrorOccured: error });
+    });
+}else{
+  jwt.sign(
+    { uuid: req.body[type].toLowerCase(), type: type },
+    "s3cr3t",
+    { expiresIn: "1d" },
+    function (err, token) {
+      if (err) {
+        return res.status(500).send({ ErrorOccured: err });
+      } else {
+        return res.status(200).send({token});
+      }
+    }
+  );
+}
+     
     })
     .catch((err) => {
       return res.status(500);

@@ -4,7 +4,7 @@ const verifySchema = new mongoose.Schema(
   {
     token: { type: String, },
     email: { type: String },
-    mobile:{ type: String}
+    phone:{ type: String}
   },
   { timestamps: true }
 );

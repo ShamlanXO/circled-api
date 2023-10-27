@@ -15,25 +15,26 @@ const sendOTPReg = new SendOtp(
   "295956Ayx1TlMrGo5d8c4054",
   "{{otp}} is your Secret OTP to complete the registration process. Do not Share it with Anyone."
 );
-const user = require("../models/user");
+
 const jwt = require("jsonwebtoken");
 console.log(process.env.twillio_SID, process.env.twillio_CRED)
 exports.SendOTP = (req, res) => {
   User.findOne({phone: req.query.phone}).then((userData) => {
-    if(!userData){
+   
 
 
       const token=Math.floor(100000 + Math.random() * 900000)
-        Verify.updateOne({ mobile:req.query.phone.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
+        Verify.updateOne({ phone:req.query.phone.toLowerCase()},{token:token},{upsert: true}).then(resultUpdate=>{
 
           if(resultUpdate.nModified>0){
 
             client.messages
-            .create({body: 'You secret verification code for circled.fit is '+token, from: `${req.params?.channel=="whatsapp"?"whatsapp:":""}+${req.params.phone}`, to:`${req.params?.channel=="whatsapp"?"whatsapp:":""}${req.params.phone}`})
+            .create({body: 'You secret verification code for circled.fit is '+token, from: `${req.query?.channel=="whatsapp"?"whatsapp:":""}+${process.env.twillio_PHONE}`, to:`${req.query?.channel=="whatsapp"?"whatsapp:":""}+${req.query.phone}`})
             .then(message => {
 
               return res.status(200).send({
                 message: "OTP SENT",
+                type:userData?"login":"signup"
               
               });
             }).catch((err)=>{
@@ -48,10 +49,8 @@ exports.SendOTP = (req, res) => {
 
  
 
-  }
-  else{
-    return res.status(406).send({ message:"already exist"})
-  }
+  
+  
 
 }).catch((err)=>{
   console.log(err)
@@ -140,7 +139,7 @@ console.log(message)
 
 
 exports.VerifyOTP = (req, res) => {
- console.log(req.query.phone,req.query.otp)
+
         sendOtp.verify(req.query.phone, req.query.otp, function(error, data) {
           if (error) {
             return res.status(500).send({
@@ -148,7 +147,58 @@ exports.VerifyOTP = (req, res) => {
             });
           }
           if (data.type == "success") {
-            const authToken = jwt.sign(
+
+            if(req.body.authType=="login"){
+              User
+                .find({
+              phone: req.body.phone.toLowerCase()
+                })
+                .then(async(result) => {
+                  if (result.length < 1) {
+                    return res
+                      .status(404)
+                      .send({ message: "No User exists with this mail address" });
+                  } else {
+            
+            
+                    if(!result[0].stripeUserId){
+                      const customer = await stripe.customers.create({
+                        email: result[0]?.email,
+                        name: result[0]?.name,
+                        metadata:{
+                          figgsId: result[0].figgsId,
+                          _id: String(result[0]._id),
+                          createdAt:new Date(),
+               
+                        }
+                      });
+                      
+                      result[0].stripeUserId=customer.id
+                      result[0].save()
+              
+                    }
+            
+                    
+                      const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+                        expiresIn: req.body.remember ? "30d" : "7d",
+                      });
+            
+                      return res.status(200).send({
+                        message: "User Auth Successful",
+                        token: token,
+                        userData: result[0],
+                      });
+                  
+            
+                   
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                  return res.status(500).send({ ErrorOccured: error });
+                });
+            }else
+           { const authToken = jwt.sign(
               { uuid: req.query.phone, type:"phone"},
               "s3cr3t",
               { expiresIn: "1d" }
@@ -160,6 +210,10 @@ exports.VerifyOTP = (req, res) => {
               message: "OTP Verified Successfully",
               token: authToken
             });
+
+}
+
+            
           }
 
           if (data.type == "error") {

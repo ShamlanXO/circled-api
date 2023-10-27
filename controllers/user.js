@@ -152,26 +152,23 @@ exports.CreateUser = async (req, res) => {
       });
   } else {
     const decoded = jwt.verify(req.body.token, "s3cr3t");
-    console.log(decoded);
-    bcrypt.hash(req.body.password, 10, function (err, hash) {
-      if (err) {
-        return res
-          .status(500)
-          .send({ message: "Password Hash error", Error: err });
-      }
+   
+     
 
-      let time = new Date();
-
-      delete req.body.email;
+     
+if(decoded.type!=="phone"){
+  delete req.body.email;
+}
+     
       delete req.body.phone;
       delete req.body.password;
 
-      console.log(req.body);
+     
       const User = new user({
         ...req.body,
         uuid: decoded.uuid,
         [decoded.type]: decoded.uuid.toLowerCase(),
-        password: hash,
+      
         figgsId: Number(figgsId + 1),
       });
       User.save()
@@ -209,7 +206,7 @@ exports.CreateUser = async (req, res) => {
             .status(500)
             .send({ message: "Error Creating User", ErrorOccured: error });
         });
-    });
+   
   }
 };
 
