@@ -28,9 +28,17 @@ exports.SendOTP = (req, res) => {
 
           if(resultUpdate.nModified>0){
 
-            client.messages
-            .create({body: 'You secret verification code for circled.fit is '+token, from: `${req.query?.channel=="whatsapp"?"whatsapp:":""}+${process.env.twillio_PHONE}`, to:`${req.query?.channel=="whatsapp"?"whatsapp:":""}+${req.query.phone}`})
-            .then(message => {
+            // client.messages
+            // .create({body: 'You secret verification code for circled.fit is '+token, from: `${req.query?.channel=="whatsapp"?"whatsapp:":""}+${process.env.twillio_PHONE}`, to:`${req.query?.channel=="whatsapp"?"whatsapp:":""}+${req.query.phone}`})
+            
+            
+            client.verify.v2.services('VA264c0f54bf2425caf2e7a8e49a0344b6')
+                .verifications
+                .create({
+                  
+                   to: `+${req.query.phone}`,
+                   channel: req.query?.channel=="whatsapp"?"whatsapp":"sms"
+                 }).then(message => {
 
               return res.status(200).send({
                 message: "OTP SENT",

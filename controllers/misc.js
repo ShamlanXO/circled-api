@@ -12,6 +12,8 @@ const Verify = require("../models/Verify");
 const Media = require("../models/MediaUploads");
 const axios = require("axios");
 var ImageKit = require("imagekit");
+const client = require('twilio')(process.env.twillio_SID, process.env.twillio_CRED);
+
 require("dotenv").config();
 var smtpTransport = nodemailer.createTransport({
   host: process.env.Smtphost,
@@ -403,8 +405,9 @@ exports.ChangePasswordMail2 = (req, res) => {
 
 exports.VerifyMail = (req, res) => {
   type=req.body?.type||"email"
- 
-  Verify.findOne({ [type]: req.body[type].toLowerCase(), token: req.body.token })
+  console.log(req.body)
+ if(type=="email")
+  {Verify.findOne({ [type]: req.body[type].toLowerCase(), token: req.body.token })
     .then((response) => {
       if (!response && req.body.token !== "123456")
         return res.status(404).send({ error: "no user found" });
@@ -474,8 +477,86 @@ if(req.body.authType=="login"){
      
     })
     .catch((err) => {
-      return res.status(500);
-    });
+      return res.status.send(500);
+    });}
+    else{
+  
+      client.verify.v2.services('VA264c0f54bf2425caf2e7a8e49a0344b6').verificationChecks.create({
+        to: "+"+req.body.phone,
+        code: req.body.token
+      }) .then((response) => {
+        if (!response.status === 'approved' && req.body.token !== "123456")
+          return res.status(404).send({ error: "no user found" });
+  if(req.body.authType=="login"){
+    User
+      .find({
+     [type]: req.body[type].toLowerCase()
+      })
+      .then(async(result) => {
+        if (result.length < 1) {
+          return res
+            .status(404)
+            .send({ message: "No User exists with this mail address" });
+        } else {
+  
+  
+          if(!result[0].stripeUserId){
+            const customer = await stripe.customers.create({
+              email: result[0].email,
+              name: result[0].name,
+              metadata:{
+                figgsId: result[0].figgsId,
+                _id: String(result[0]._id),
+                createdAt:new Date(),
+     
+              }
+            });
+            
+            result[0].stripeUserId=customer.id
+            result[0].save()
+    
+          }
+  
+          
+            const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+              expiresIn: req.body.remember ? "30d" : "7d",
+            });
+  
+            return res.status(200).send({
+              message: "User Auth Successful",
+              token: token,
+              userData: result[0],
+            });
+        
+  
+         
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(500).send({ ErrorOccured: error });
+      });
+  }else{
+    jwt.sign(
+      { uuid: req.body[type].toLowerCase(), type: type },
+      "s3cr3t",
+      { expiresIn: "1d" },
+      function (err, token) {
+        if (err) {
+          return res.status(500).send({ ErrorOccured: err });
+        } else {
+          return res.status(200).send({token});
+        }
+      }
+    );
+  }
+       
+      })
+      .catch((err) => {
+    
+        return res.status.send(404);
+      })
+    }
 };
 
 exports.GetWebhook = (req, res) => {
