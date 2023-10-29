@@ -175,6 +175,18 @@ app.get("/public/sharedProgram/:id", function (req, res) {
 });
 
 app.use(express.static(path.join(__dirname, "build")));
+app.get("/static/js/:fileName", (req, res) => {
+  const fileName = req.params.fileName;
+  res.sendFile(path.join(__dirname, `build/static/js/${fileName}`));
+});
+app.get("/static/css/:fileName", (req, res) => {
+  const fileName = req.params.fileName;
+  res.sendFile(path.join(__dirname, `build/static/css/${fileName}`));
+});
+app.get("/service-worker.js", (req, res) => {
+  const fileName = req.params.fileName;
+  res.sendFile(path.join(__dirname, `build/service-worker.js`));
+});
 app.get("*", (req, res) =>
   res.sendFile(path.join(__dirname, "build/index.html"))
 );

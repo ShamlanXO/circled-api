@@ -477,7 +477,7 @@ if(req.body.authType=="login"){
      
     })
     .catch((err) => {
-      return res.status.send(500);
+      return res.status(500).send();
     });}
     else{
   
@@ -554,7 +554,7 @@ if(req.body.authType=="login"){
       })
       .catch((err) => {
     
-        return res.status.send(404);
+        return res.status(404).send();
       })
     }
 };

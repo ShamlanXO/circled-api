@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, default: null },
     bio: { type: String, default: null },
     phone: { type: String, unique: true, sparse: true },
+    country: { type: String, default: null},
     DOB: { type: Date, default: null },
     isActive: { type: Boolean, default: true },
     location: { type: String },

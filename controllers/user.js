@@ -1,6 +1,7 @@
 const user = require("../models/user");
 const Verify = require("../models/Verify");
 const jwt = require("jsonwebtoken");
+const axios =require("axios")
 const bcrypt = require("bcryptjs");
 const SendOtp = require("../components/sendOtp");
 const aqp = require("api-query-params");
@@ -79,6 +80,11 @@ exports.SearchUser = (req, res) => {
 };
 
 exports.CreateUser = async (req, res) => {
+  let verifyToken=await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.tokenId}`)
+
+  if(!verifyToken?.data?.email_verified||req.body.email!==verifyToken?.data?.email){
+    return res.status(403).send()
+  }
   let userData = await user.findOne({}).sort({ createdAt: -1 });
   let figgsId = Number(userData?.figgsId || 1000);
   if (req.body.authType == "gmail") {
@@ -210,10 +216,17 @@ if(decoded.type!=="phone"){
   }
 };
 
-exports.UserLogin = (req, res) => {
-  user
-    .find({
-      $or: [{ email: req.body.email.toLowerCase() },{phone: req.body.phone.toLowerCase()}],
+exports.UserLogin = async(req, res) => {
+
+  let verifyToken=await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.tokenId}`)
+
+  if(!verifyToken?.data?.email_verified||req.body.email!==verifyToken?.data?.email){
+    return res.status(403).send()
+  }
+
+
+  user.find({
+   email: req.body.email,
     })
     .then(async(result) => {
       if (result.length < 1) {
@@ -260,33 +273,33 @@ exports.UserLogin = (req, res) => {
             message: "Diffirent mode",
           });
         }
-        bcrypt.compare(
-          req.body.password,
-          result[0].password,
-          function (err, same) {
-            if (err) {
-              return res.status(500).send({
-                message: "Error Comparing Passwords",
-                ErrorOccured: err,
-              });
-            }
-            if (same) {
-              const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
-                expiresIn: req.body.remember ? "30d" : "7d",
-              });
+        // bcrypt.compare(
+        //   req.body.password,
+        //   result[0].password,
+        //   function (err, same) {
+        //     if (err) {
+        //       return res.status(500).send({
+        //         message: "Error Comparing Passwords",
+        //         ErrorOccured: err,
+        //       });
+        //     }
+        //     if (same) {
+        //       const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+        //         expiresIn: req.body.remember ? "30d" : "7d",
+        //       });
 
-              return res.status(200).send({
-                message: "User Auth Successful",
-                token: token,
-                userData: result[0],
-              });
-            } else {
-              return res.status(409).send({
-                message: "Invalid password",
-              });
-            }
-          }
-        );
+        //       return res.status(200).send({
+        //         message: "User Auth Successful",
+        //         token: token,
+        //         userData: result[0],
+        //       });
+        //     } else {
+        //       return res.status(409).send({
+        //         message: "Invalid password",
+        //       });
+        //     }
+        //   }
+        // );
       }
     })
     .catch((error) => {
@@ -315,7 +328,12 @@ exports.UserUpdate = (req, res) => {
     });
 };
 
-exports.UserUpdateAuth = (req, res) => {
+exports.UserUpdateAuth =async (req, res) => {
+  let verifyToken=await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.tokenId}`)
+
+  if(!verifyToken?.data?.email_verified||req.body.email!==verifyToken?.data?.email){
+    return res.status(403).send()
+  }
   user
     .updateOne(
       { email: req.body.email },
