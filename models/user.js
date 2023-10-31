@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, unique: true, sparse: true },
     password: { type: String },
     name: { type: String, default: null },
+    profileName: { type: String, default:null },
     bio: { type: String, default: null },
     phone: { type: String, unique: true, sparse: true },
     country: { type: String, default: null},
