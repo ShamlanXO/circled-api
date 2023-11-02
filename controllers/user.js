@@ -80,14 +80,15 @@ exports.SearchUser = (req, res) => {
 };
 
 exports.CreateUser = async (req, res) => {
-  let verifyToken=await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.tokenId}`)
-
-  if(!verifyToken?.data?.email_verified||req.body.email!==verifyToken?.data?.email){
-    return res.status(403).send()
-  }
+ 
   let userData = await user.findOne({}).sort({ createdAt: -1 });
   let figgsId = Number(userData?.figgsId || 1000);
   if (req.body.authType == "gmail") {
+    let verifyToken=await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.tokenId}`)
+
+    if(!verifyToken?.data?.email_verified||req.body.email!==verifyToken?.data?.email){
+      return res.status(403).send()
+    }
     let userData = await user.findOne({ email: req.body.email });
     if (userData) {
       const token = jwt.sign({ _id: userData._id }, "s3cr3t", {

@@ -176,9 +176,48 @@ app.get("/public/sharedProgram/:id", function (req, res) {
 
 app.use(express.static(path.join(__dirname, "build")));
 app.get("/static/js/:fileName", (req, res) => {
-  const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `build/static/js/${fileName}`));
+  const requestedFileName = req.params.fileName;
+  const filePathWithHash = path.join(__dirname, `build/static/js/${requestedFileName}`);
+  
+  // Check if the requested file with the hash exists
+  if (fs.existsSync(filePathWithHash)) {
+    // If the hashed file exists, send it as the response
+    res.sendFile(filePathWithHash);
+  } else {
+    const numberPart = requestedFileName.match(/^(\d+|main)\./);
+  if (numberPart) {
+    const number = numberPart[1];
+
+    // Read the files in the "js" folder
+    const jsFolder = path.join(__dirname, 'build/static/js');
+    const filesInFolder = fs.readdirSync(jsFolder);
+
+    // Find a file that matches the number part
+    const matchingFile = filesInFolder.find((file) => {
+      const fileNumberPart = file.match(/^(\d+|main)\./);
+      return fileNumberPart && fileNumberPart[1] === number&& !file.endsWith(".map");
+    });
+
+    if (matchingFile) {
+      // If a matching file is found, send it as the response
+      res.sendFile(path.join(jsFolder, matchingFile));
+    } else {
+      // If no matching file is found, return a 404 Not Found response
+      res.status(404).send("File not found");
+    }
+  
+    } else {
+     
+      // If neither file exists, return a 404 Not Found response
+      res.status(404).send("File not found");
+    }
+  }
 });
+
+
+
+
+
 app.get("/static/css/:fileName", (req, res) => {
   const fileName = req.params.fileName;
   res.sendFile(path.join(__dirname, `build/static/css/${fileName}`));
