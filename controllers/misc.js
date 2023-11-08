@@ -405,7 +405,7 @@ exports.ChangePasswordMail2 = (req, res) => {
 
 exports.VerifyMail = (req, res) => {
   type=req.body?.type||"email"
-  console.log(req.body)
+
  if(type=="email")
   {Verify.findOne({ [type]: req.body[type].toLowerCase(), token: req.body.token })
     .then((response) => {
