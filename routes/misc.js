@@ -24,6 +24,7 @@ router
 router.route("/upload-string").post(miscController.uploadString);
 router.route("/download-file").get(miscController.downloadFile);
 router.route("/getSignedUrl").post(checkAuth,miscController.getSignatureUrl);
+router.route("/getMediaUploadSignedUrl").post(checkAuth,miscController.getMediaUploadSignedUrl)
 router.route("/send-mail").post(miscController.SendMail);
 router.route("/send-verify-mail").post(miscController.SendVerifyMail);
 router.route("/verify-mail").post(miscController.VerifyMail);

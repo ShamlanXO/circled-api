@@ -21,6 +21,7 @@ const ExerciseSchema = new mongoose.Schema({
     name: { type: String, default: null },
     profilePic: { type: String, default: null },
     type: { type: String, default: null },
+    media:[{ type: String}]
   },
   triggerMuscle: [{ type: String }],
   isAttempted: { type: Boolean, default: false },

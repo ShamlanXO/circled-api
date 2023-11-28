@@ -15,7 +15,7 @@ exports.CreateLog = (req, res) => {
       return res.status(401).send({ message: "Unauthorized" });
     } else {
      
-      const log = new Log({
+      const log = {
         ...req.body,
         clientId: orderResult[0].UserId,
         programId: orderResult[0].Program._id,
@@ -36,9 +36,15 @@ exports.CreateLog = (req, res) => {
         id: orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
           req.body.day
         ].Exercise[req.body.exercise]._id,
-      });
-      log
-        .save()
+      }
+
+      Log.findOneAndUpdate(
+        {_id:req.body._id},
+        log, 
+        {
+        new: true,
+        upsert: true 
+      })
         .then(async(result) => {
 
 
@@ -66,6 +72,7 @@ exports.CreateLog = (req, res) => {
             _id:result._id,
             createdBy: req.userData._id,
             message: req.body.message,
+            media: req.body.media,
             createdAt: new Date(),
             name: req.userData.name,
             profilePic: req.userData.profilePic,
@@ -80,6 +87,7 @@ exports.CreateLog = (req, res) => {
               createdBy: req.userData._id,
               message: req.body.message,
               createdAt: new Date(),
+              media: req.body.media,
               name: req.userData.name,
               profilePic: req.userData.profilePic,
               type: req.userData.type,
@@ -98,6 +106,9 @@ exports.CreateLog = (req, res) => {
     }
   });
 };
+
+
+
 
 exports.getPerticularLog = (req, res) => {
   Log.find({

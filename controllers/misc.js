@@ -95,6 +95,38 @@ exports.getSignatureUrl = (req, res) => {
 
 };
 
+
+exports.getMediaUploadSignedUrl=(req, res) => {
+  const S3 = new AWS.S3({
+    endpoint: "s3.us-east-1.amazonaws.com", // Put you region
+    accessKeyId: "AKIAQOB4DHYAMZONMOVH",
+    secretAccessKey: "B1O6ptlLbj17lCWZvsvio49W6Fhj+OkGX5hy3NkV",
+    region: "us-east-1",
+    Bucket: "circled-videos", // Put your bucket name
+    signatureVersion: "v4",
+    // Put you region
+  });
+  let key=`static/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
+  var params = {
+    ACL: "public-read",
+    Bucket: "circled-videos", // Put your bucket name
+    Key: key,
+    Expires: 24 * 3600,
+    ContentType: req.body.type,
+  };
+  var signedUrlPut = S3.getSignedUrl("putObject", params);
+ new Media({
+  key: key, 
+  createdAt:new Date(),
+  updatedAt:new Date(),
+  UserId:req.userData._id,
+ }).save().then(result => {
+  res.send(signedUrlPut);
+ }).catch(err => {
+  res.status(500).send(err)
+ })
+
+};
 exports.generateToken = (req, res) => {
   jwt.sign(
     { keyFor: "temporaryAuth" },
