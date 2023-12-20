@@ -72,7 +72,8 @@ exports.getSignatureUrl = (req, res) => {
     signatureVersion: "v4",
     // Put you region
   });
-  let key=`videos/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
+  const isVideo=isVideoOrImage(req.body.name)
+  let key=`${isVideo?"videos":"static"}/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
   var params = {
     ACL: "public-read",
     Bucket: "circled-videos", // Put your bucket name
