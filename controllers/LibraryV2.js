@@ -72,8 +72,14 @@ exports.updateVideo=(req,res)=>{
   })
 }
 
-exports.saveVideoToLibrary=(req,res)=>{  
-  Library.findOneAndUpdate({key:req.body.key},{savedToLibrary:true}).then(result=>{
+exports.saveVideoToLibrary=async(req,res)=>{  
+let name=req.body.name
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name})
+
+  if(countExists>0){
+    name=`${name}(${countExists})`
+  }
+  Library.findOneAndUpdate({key:req.body.key},{savedToLibrary:true,title:name}).then(result=>{
     res.status(200).send(result)
   }).catch(err=>{
     res.status(500).send(err)
