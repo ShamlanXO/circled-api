@@ -119,7 +119,7 @@ res.status(200).send(result)
 
 exports.getWorkout=(req, res) => {
  
-  WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic").then(result=>{
+  WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic expertise").then(result=>{
    if(result)
    res.status(200).send(result)
   else
