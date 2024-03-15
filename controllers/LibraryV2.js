@@ -109,6 +109,31 @@ exports.addVideo=(req,res)=>{
   })
 }
 
+exports.editVideo=(req,res)=>{
+  delete req.body.UserId
+ Library.findOneAndUpdate({
+    _id:req.body._id,
+    UserId:req.userData._id,
+ 
+    
+  },{
+    title:req.body.title,
+    triggerMuscle:req.body.triggerMuscle,
+  }).then(result=>{
+    if(result){
+     
+      res.status(200).send({...result,...req.body});
+    }
+    else{
+      res.status(500).send("no record found")
+    }
+
+  }).catch(err=>{
+    console.log(err)
+    res.status(500).send(err)
+  })
+}
+
 exports.getWorkouts=(req,res)=>{
   WorkoutLibrary.find({CreatedBy:req.userData._id}).then(result=>{
 res.status(200).send(result)

@@ -6,6 +6,7 @@ router.route("/get").get(LibraryRoute.FetchVideoLibrary);
 router.route("/getallvideos").get(checkAuth,LibraryRoute.getAllVideos)
 router.route("/updateVideo").put(checkAuth,LibraryRoute.updateVideo)
 router.route("/addVideo").post(checkAuth,LibraryRoute.addVideo)
+// router.route("/editVideo").post(checkAuth,LibraryRoute.editVideo)
 router.route("/savevideotolib").post(checkAuth,LibraryRoute.saveVideoToLibrary)
 router.route("/getWorkouts").get(checkAuth,LibraryRoute.getWorkouts)
 router.route("/getWorkout/:id").get(LibraryRoute.getWorkout)
