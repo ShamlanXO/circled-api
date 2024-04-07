@@ -61,6 +61,11 @@ const ProgramSchema = new mongoose.Schema(
     PlanId: { type: String, default: null },
     ProductId: { type: String, default: null },
     Notes: { type: String, default: null },
+    ScreenStats:{
+      CurrentScreen:{ type: String, default: null },
+      Week:{type:Number,default:null},
+      Day:{type:Number,default:null},
+    }
   },
   { timestamps: true }
 );
