@@ -46,6 +46,7 @@ const ProgramSchema = new mongoose.Schema(
     Requirements: { type: String, default: null },
     Type: { type: String, default: null },
     PaymentType: { type: String },
+    ProgramType:{type:String},
     calendarType:{ type: String, default: null },
     maximumClient:{ type: String, default: null},
     totalClients:{ type: Number},
