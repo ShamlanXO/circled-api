@@ -1,0 +1,10 @@
+const express = require("express");
+const InnviteClientController = require("../controllers/InviteClient");
+const router = express.Router();
+const checkAuth = require("../middleware/CheckAuth");
+router.route("/invite").post(checkAuth, InnviteClientController.InviteClient);
+router.route("/fetch").get(checkAuth, InnviteClientController.FetchInvitedClientsByUser);
+router.route("/fetchInvitations").get(checkAuth, InnviteClientController.FetchInvitations);
+router.route("/accept/:id").patch(checkAuth, InnviteClientController.AcceptInvitation);
+router.route("/reject/:id").delete(checkAuth, InnviteClientController.RejectInvitation);
+module.exports = router;

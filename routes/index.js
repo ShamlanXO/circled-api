@@ -25,4 +25,6 @@ module.exports = function (app) {
   app.use("/api/notification", NotificationRoutes);
   app.use("/api/recent", recentRoutes);
   app.use("/api/progresslog", progressLogRoutes);
+  app.use("/api/inviteClient", require("./InviteClient"));
+  app.use("/api/clients", require("./Clients"));
 };

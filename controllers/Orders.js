@@ -5,6 +5,8 @@ var ObjectID = require("mongodb").ObjectID;
 const diff = require("diff-arrays-of-objects");
 const { detailedDiff } = require("deep-object-diff");
 const { CreateGeneralNotification } = require("./Notification");
+const ClientModel = require("../models/Clients");
+const SentPrograms = require("../models/SentPrograms");
 exports.SearchOrder = (req, res) => {
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
@@ -211,26 +213,25 @@ exports.GetClientsSpecificProgram = (req, res) => {
 };
 
 exports.GetSpecificClients = async (req, res) => {
+  
+ let client=await ClientModel.findOne({ _id: req.params.Id}).populate("client",'-password');
+ let sentProgram=await SentPrograms.findOne({SendTo:client.client.email,SenderId:req.userData._id}).sort({createdAt:-1});
  
   Order.findOne({
-    $or: [{ _id: req.params.Id }, { UserId: req.params.Id }],
- 
+   UserId:client.client._id,
+   isActive:true,
     "Program.createdBy": req.userData._id,
-  })
-    .populate("UserId", "-password")
-    .then(async(result) => {
-      const Biresult = await BodyImageModel.find({ createdBy: result.UserId._id });
-      if (!result) {
-        return res.status(404).send({
-          message: "No order Found",
-        });
-      } else {
+  }).then(async(result) => {
+      const Biresult = await BodyImageModel.find({ createdBy: client.client._id });
+     
         return res.status(200).send({
           message: "List of users",
           clientData: result,
           bodyImages: Biresult,
+          sentProgram:sentProgram,
+          clientDetails: client.client,
         });
-      }
+      
     })
     .catch((error) => {
       return res.status(500).send({
