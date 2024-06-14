@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Client = require('./Clients'); 
+
 const DietPlanSchema = new mongoose.Schema({
   Title: { type: String, default: null },
   File: { type: String, default: null },
@@ -90,11 +92,56 @@ const orderSchema = new mongoose.Schema(
     SubscriptionId: { type: String },
     SentProgramId: { type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
     stats: {},
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: "client"},
     todo: [todoSchema],
     currentWeek: { type: Number, default: 0 },
     currentDay: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+// orderSchema.pre('save',  function(next) {
+//   console.log('pre save hook');
+//   // if (this.isModified('UserId') || this.isNew) {
+//   //   try {
+//   //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+//   //     next();
+//   //   } catch (error) {
+//   //     next(error);
+//   //   }
+ 
+//     next();
+  
+// });
+
+orderSchema.plugin((schema)=>{
+  console.log('plugin hook');
+  schema.pre('save',  function() {
+    console.log('pre save hook');
+    // if (this.isModified('UserId') || this.isNew) {
+    //   try {
+    //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+    //     next();
+    //   } catch (error) {
+    //     next(error);
+    //   }
+   
+      
+    
+  });
+  schema.post('save',  function() {
+    console.log('pre save hook');
+    // if (this.isModified('UserId') || this.isNew) {
+    //   try {
+    //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+    //     next();
+    //   } catch (error) {
+    //     next(error);
+    //   }
+   
+      
+    
+  });
+});
 
 module.exports = mongoose.model("PurchasedProgram", orderSchema);
