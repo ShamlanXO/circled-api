@@ -76,7 +76,7 @@ exports.ProgramsInstructor = (req, res) => {
           },
           {
             $group: {
-              _id: "$UserId",
+              _id: "$clientId",
 
               count: { $sum: 1 },
             },

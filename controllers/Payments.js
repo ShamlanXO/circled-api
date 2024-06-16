@@ -5,7 +5,9 @@ const Order = require("../models/Orders");
 const SendProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 const mongoose = require("mongoose");
+const Client = require("../models/Clients");
 const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
+
 exports.createSubscription = (req, res) => {
   Order.findOne({
     SentProgramId: req.body.id,
@@ -294,13 +296,38 @@ exports.AddFreeOrder = (req, res) => {
           ],
           Amount: 0,
         })
-          .then((data) => {
+          .then(async(data) => {
             if(data){
+             let clientId =''
+                const client = await Client.findOne({ client: req.userData._id , instructor: data.Program.createdBy});
+                if (client) {
+                  // Client already exists, capture client ID
+                   clientId = client._id;
+                  // Continue with the rest of the code
+                  // ...
+                } else {
+                  // Client does not exist, create a new one
+                  const newClient = new Client({
+                    client: req.userData._id,
+                    instructor: data.Program.createdBy,
+                    name: req.userData.name,
+                    email: req.userData.email,
+                    // Add any other required fields for the client
+                  });
+                  const createdClient = await newClient.save();
+                  // Capture the client ID
+                 clientId = createdClient._id;
+                  // Continue with the rest of the code
+                  // ...
+                }
+              
+
               const order = new Order({
                 PaymentId: null,
                 SubscriptionId: null,
                 UserId: req.userData._id,
                 Status: "Active",
+                clientId: clientId,
                 Program: data.Program,
                 SentProgramId: data._id,
               });
@@ -308,6 +335,10 @@ exports.AddFreeOrder = (req, res) => {
                 .save()
   
                 .then(async (result) => {
+
+                  // Check if client exists
+                
+
                   await Notification.create(
                     [
                       {
