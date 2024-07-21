@@ -17,6 +17,7 @@ const MediaFiles=require("./models/MediaUploads")
 const axios = require("axios");
 const fs = require("fs");
 const Program = require("./models/Programs");
+
 var cron = require('node-cron');
 var ObjectID = require("mongodb").ObjectID;
 
@@ -226,6 +227,43 @@ app.get("/service-worker.js", (req, res) => {
   const fileName = req.params.fileName;
   res.sendFile(path.join(__dirname, `build/service-worker.js`));
 });
+
+app.get("/updateSchema", async (req, res) => {
+  
+  Program.find({_id:"66923eb460fb25040e1c71aa"}).then(async(programs) => {
+   
+    programs.map(async(program) => {
+      program.ExercisePlan.weeks.map((week,i1) => {
+        week.days.map((day,i2) => {
+          
+            day.Exercise.map((ex,i3) => {
+              ex.media.map((media,index) => {
+                if (true) {
+                  console.log(media);
+                  newmedia={
+                    file:media,
+                    title:"no title"
+                  }
+           
+               program.ExercisePlan.weeks[i1].days[i2].Exercise[i3].media[index]=newmedia
+                }
+              });
+            });
+        
+        });
+      });
+    await Program.updateOne({_id:program._id},{
+      $set:{
+        ExercisePlan:program.ExercisePlan
+      }
+    })
+    });
+  }
+
+  );
+});
+
+
 app.get("*", (req, res) =>
   res.sendFile(path.join(__dirname, "build/index.html"))
 );
