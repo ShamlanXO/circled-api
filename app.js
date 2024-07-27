@@ -230,7 +230,7 @@ app.get("/service-worker.js", (req, res) => {
 
 app.get("/updateSchema", async (req, res) => {
   
-  Program.find({_id:"66923eb460fb25040e1c71aa"}).then(async(programs) => {
+  Program.find({_id:"669134b160fb25040e1c2ebf"}).then(async(programs) => {
    
     programs.map(async(program) => {
       program.ExercisePlan.weeks.map((week,i1) => {
@@ -241,8 +241,7 @@ app.get("/updateSchema", async (req, res) => {
                 if (true) {
                   console.log(media);
                   newmedia={
-                    file:media,
-                    title:"no title"
+                    ...media.file
                   }
            
                program.ExercisePlan.weeks[i1].days[i2].Exercise[i3].media[index]=newmedia

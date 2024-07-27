@@ -48,13 +48,13 @@
     "static/js/21.dc4465b9.chunk.js.map": "/static/js/21.dc4465b9.chunk.js.map",
     "static/js/22.35b66a3c.chunk.js": "/static/js/22.35b66a3c.chunk.js",
     "static/js/22.35b66a3c.chunk.js.map": "/static/js/22.35b66a3c.chunk.js.map",
-    "static/js/23.dafcac4c.chunk.js": "/static/js/23.dafcac4c.chunk.js",
-    "static/js/23.dafcac4c.chunk.js.map": "/static/js/23.dafcac4c.chunk.js.map",
+    "static/js/23.b0e9fbe7.chunk.js": "/static/js/23.b0e9fbe7.chunk.js",
+    "static/js/23.b0e9fbe7.chunk.js.map": "/static/js/23.b0e9fbe7.chunk.js.map",
     "static/js/24.f3886603.chunk.js": "/static/js/24.f3886603.chunk.js",
     "static/js/24.f3886603.chunk.js.map": "/static/js/24.f3886603.chunk.js.map",
     "main.css": "/static/css/main.e1200190.chunk.css",
-    "main.js": "/static/js/main.c504a8bd.chunk.js",
-    "main.js.map": "/static/js/main.c504a8bd.chunk.js.map",
+    "main.js": "/static/js/main.b10f70dc.chunk.js",
+    "main.js.map": "/static/js/main.b10f70dc.chunk.js.map",
     "reactPlayerDailyMotion.js": "/static/js/reactPlayerDailyMotion.c19f9cf0.chunk.js",
     "reactPlayerDailyMotion.js.map": "/static/js/reactPlayerDailyMotion.c19f9cf0.chunk.js.map",
     "reactPlayerFacebook.js": "/static/js/reactPlayerFacebook.a74077dc.chunk.js",
@@ -83,8 +83,8 @@
     "reactPlayerWistia.js.map": "/static/js/reactPlayerWistia.45425b1c.chunk.js.map",
     "reactPlayerYouTube.js": "/static/js/reactPlayerYouTube.3bbb00c6.chunk.js",
     "reactPlayerYouTube.js.map": "/static/js/reactPlayerYouTube.3bbb00c6.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.bdc6490a.js",
-    "runtime-main.js.map": "/static/js/runtime-main.bdc6490a.js.map",
+    "runtime-main.js": "/static/js/runtime-main.3157bbea.js",
+    "runtime-main.js.map": "/static/js/runtime-main.3157bbea.js.map",
     "static/css/41.2d701b64.chunk.css": "/static/css/41.2d701b64.chunk.css",
     "static/js/41.808d3e98.chunk.js": "/static/js/41.808d3e98.chunk.js",
     "static/js/41.808d3e98.chunk.js.map": "/static/js/41.808d3e98.chunk.js.map",
@@ -374,10 +374,10 @@
     "static/media/slick-theme.css": "/static/media/slick.c94f7671.ttf"
   },
   "entrypoints": [
-    "static/js/runtime-main.bdc6490a.js",
+    "static/js/runtime-main.3157bbea.js",
     "static/css/41.2d701b64.chunk.css",
     "static/js/41.808d3e98.chunk.js",
     "static/css/main.e1200190.chunk.css",
-    "static/js/main.c504a8bd.chunk.js"
+    "static/js/main.b10f70dc.chunk.js"
   ]
 }
