@@ -31,7 +31,9 @@ const clientSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-});
+   
+    
+},{ timestamps: true ,strict:false});
 
 const Client = mongoose.model('ClientInvite', clientSchema);
 

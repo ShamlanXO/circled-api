@@ -54,6 +54,7 @@ exports.GetAllClients = (req, res) => {
       $match: {
         "Program.createdBy": ObjectID(req.userData._id),
         UserId: { $ne: ObjectID(req.userData._id) },
+        isActive:false
       },
     },
 

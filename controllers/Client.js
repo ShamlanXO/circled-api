@@ -1,5 +1,5 @@
 const ClientModel = require("../models/Clients");
-
+const ClientInvite = require("../models/InviteClients")
 exports.getInstructorClient = (req, res) => {
 
    ClientModel.aggregate([
@@ -43,7 +43,7 @@ exports.getInstructorClient = (req, res) => {
     $project: { // optional: to select the fields to include in the final result
       'name': 1,
       'email': 1,
-      'profilePic': 1,
+      'addedOn': 1,
       "client.name": 1,
         "client.email": 1,
         "client.profilePic": 1,
@@ -52,8 +52,13 @@ exports.getInstructorClient = (req, res) => {
     }
   }
 ])
-        .then((result) => {
-            return res.status(200).send(result);
+        .then(async(result) => {
+          let unaccepted = await ClientInvite.find({invitedBy:req.userData._id,accepted:false})
+            return res.status(200).send({
+              clients:result,
+              pending:unaccepted
+            
+            });
         })
         .catch((error) => {
             return res.status(500).send({ ErrorOccured: error });
