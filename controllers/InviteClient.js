@@ -90,6 +90,8 @@ exports.ResendInvite=(req,res)=>{
                 invitedBy: req.userData.name,
                 invitedByEmail: req.userData.email,
             });
+            result.updatedAt=new Date()
+            result.save()
             return res.status(201).send({ message: "Client Invited" });
         }) // Add the 'new' option to return the updated document
         .catch((error) => {
