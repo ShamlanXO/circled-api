@@ -74,7 +74,7 @@ exports.updateVideo=(req,res)=>{
 
 exports.saveVideoToLibrary=async(req,res)=>{  
 let name=req.body.name
-  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name})
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true})
 
   if(countExists>0){
     name=`${name}(${countExists})`
@@ -86,18 +86,25 @@ let name=req.body.name
   })
 }
 
-exports.addVideo=(req,res)=>{
+exports.addVideo=async(req,res)=>{
   delete req.body.UserId
+  let name=req.body.title
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
+console.log(name,countExists,{UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
+  if(countExists>0){
+    name=`${name}(${countExists})`
+  }
  Library.findOneAndUpdate({
     UserId:req.userData._id,
     
     key:req.body.key
   },{
-    ...req.body
+    ...req.body,
+    title:name
   }).then(result=>{
     if(result){
      
-      res.status(200).send({...result,...req.body});
+      res.status(200).send({...result,...req.body,  title:name});
     }
     else{
       res.status(500).send("no record found")
