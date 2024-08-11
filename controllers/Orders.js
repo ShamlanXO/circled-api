@@ -220,9 +220,10 @@ exports.GetSpecificClients = async (req, res) => {
  
   Order.findOne({
    UserId:client.client._id,
-   isActive:true,
+   //isActive:true,
     "Program.createdBy": req.userData._id,
   }).then(async(result) => {
+    console.log(result)
       const Biresult = await BodyImageModel.find({ createdBy: client.client._id });
      
         return res.status(200).send({

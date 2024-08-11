@@ -343,7 +343,7 @@ exports.AddFreeOrder = (req, res) => {
                     [
                       {
                         UserId: data.SenderId,
-            
+                        Link:`/clientProfile/${clientId}`,
                         Type: "SubscribedProgram",
                         Sender: req.userData._id,
                         SentProgramId: data._id,

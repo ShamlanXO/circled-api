@@ -26,6 +26,16 @@ SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.
     });
 };
 
+exports.DeleteProgram=(req, res)=>{
+  SentProgram.deleteOne({_id:req.params.id}).then((result)=>{
+    return res.status(200).send({message:"program deleted successfully"});
+  })  .catch((error) => {
+      return res.status(500).send({
+        ErrorOccured: error,
+      });
+    });
+}
+
 
 exports.SharedProgramId=(req,res) => {
   Program.findById(req.params.id).then((program) => {
