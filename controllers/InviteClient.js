@@ -3,6 +3,7 @@ const aqp = require("api-query-params");
 const User = require("../models/user");
 const SentProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
+const {CreateGeneralNotification} =require("../controllers/Notification")
 const { sendPromoMain } = require("../script/sendPromoMail");
 const jwt = require("jsonwebtoken");
 var ObjectID = require("mongodb").ObjectID;
@@ -28,7 +29,6 @@ exports.InviteClient = async (req, res) => {
         {
             email:email.toLowerCase(),
             name,
-          
             invitedBy: req.userData._id,
             inveitedAt: Date.now(),
             accepted: false
@@ -48,9 +48,12 @@ exports.InviteClient = async (req, res) => {
                 invitedByEmail: req.userData.email,
             });
 
-            Notification.create(
-                [
-                  {
+            CreateGeneralNotification(
+                email,
+                result.invitedBy,
+                "invite-client",
+                "",
+                {
                     To: [email],
                     Title:req.userData.name,
                     Type: "InviteClient",
@@ -59,8 +62,10 @@ exports.InviteClient = async (req, res) => {
                     Link:'/invite/accept-invite/'+result._id
                     
                   },
-                ]
-              )
+               req.app.get("socketService")
+
+            )
+
 
             return res.status(201).send({ message: "Client Invited" });
         }) // Add the 'new' option to return the updated document
@@ -143,9 +148,12 @@ exports.AcceptInvitation = (req, res) => {
                 return res.status(403).send({message:"Invitation already accepted"})
             }
 
-                 Notification.create(
-                [
-                  {
+            CreateGeneralNotification(
+                req.userData._id,
+                result.invitedBy._id,
+                "accept-invite",
+                "",
+                {
                     To: [req.userData.email],
                     Title:`${result.invitedBy.name}`,
                     Description:"Your now on the client list",
@@ -153,19 +161,28 @@ exports.AcceptInvitation = (req, res) => {
                     Sender: result.invitedBy._id,
                     
                   },
-                ])
-                Notification.create(
-                [
-                    {
-                      To: [result.invitedBy.email],
-                      Title:`${req.userData.name}`,
-                      Description:"Added to your client list",
-                      Type: "InviteClient",
-                      Sender: req.userData._id,
-                      
-                    },
-                  ]
-                )
+               req.app.get("socketService")
+
+            )
+
+            CreateGeneralNotification(
+                result.invitedBy._id,
+                req.userData._id,
+                "accept-invite",
+                "",
+                {
+                    To: [result.invitedBy.email],
+                    Title:`${req.userData.name}`,
+                    Description:"Added to your client list",
+                    Type: "InviteClient",
+                    Sender: req.userData._id,
+                    
+                  },
+               req.app.get("socketService")
+
+            )
+
+               
               
 
 

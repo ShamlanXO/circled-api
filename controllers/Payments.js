@@ -6,6 +6,7 @@ const SendProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
 const mongoose = require("mongoose");
 const Client = require("../models/Clients");
+const { CreateGeneralNotification } = require("./Notification");
 const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
 
 exports.createSubscription = (req, res) => {
@@ -338,22 +339,29 @@ exports.AddFreeOrder = (req, res) => {
 
                   // Check if client exists
                 
-
-                  await Notification.create(
-                    [
-                      {
-                        UserId: data.SenderId,
-                        Link:`/clientProfile/${clientId}`,
-                        Type: "SubscribedProgram",
-                        Sender: req.userData._id,
-                        SentProgramId: data._id,
-                      },
-                    ]
-                  );
-                  req.app.get("socketService").sendTo(data.SenderId, data.SenderId, {
-                    type: "new-notification",
-                    data: { name: req.userData.name, type: "sent-program" },
-                  });
+          CreateGeneralNotification(data.SenderId,req.userData._id,"accept-order",'',
+            {
+              UserId: data.SenderId,
+              Link:`/clientProfile/${clientId}`,
+              Type: "SubscribedProgram",
+              Sender: req.userData._id,
+              SentProgramId: data._id,
+          },req.app.get("socketService"))
+                  // await Notification.create(
+                  //   [
+                  //     {
+                  //       UserId: data.SenderId,
+                  //       Link:`/clientProfile/${clientId}`,
+                  //       Type: "SubscribedProgram",
+                  //       Sender: req.userData._id,
+                  //       SentProgramId: data._id,
+                  //     },
+                  //   ]
+                  // );
+                  // req.app.get("socketService").sendTo(data.SenderId, data.SenderId, {
+                  //   type: "new-notification",
+                  //   data: { name: req.userData.name, type: "sent-program" },
+                  // });
                   return res.status(201).send({ message: "Order Created" });
                 })
                 .catch((error) => {

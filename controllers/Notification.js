@@ -101,9 +101,8 @@ exports.DeleteNotification = (req, res) => {
     });
 };
 
-exports.CreateGeneralNotification = (to, from, type, message, data) => {
-  // const type = ["update-todo", "update-program", "edited-diet"];
-  console.log(type, data);
+exports.CreateGeneralNotification = (to, from, type, message, data,socket=null) => {
+ 
   switch (type) {
     case "update-program":
       new Notification({
@@ -254,7 +253,25 @@ exports.CreateGeneralNotification = (to, from, type, message, data) => {
       });
       break;
 
+     
+      case "test":
+        data.socket.sendTo(to, "test-event", {
+          type: "new-notification",
+          data: {
+       
+          },
+        });
+
     default:
+        new Notification({
+          ...data
+        }).save();
+      console.log("invite client notification")
+        socket.sendTo(to, type, {
+          type: type,
+          data,
+        });
+
       break;
   }
 };
