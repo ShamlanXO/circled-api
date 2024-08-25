@@ -4,6 +4,8 @@ const axios = require("axios");
 const Order = require("../models/Orders");
 const SendProgram = require("../models/SentPrograms");
 const Notification = require("../models/Notifications");
+const NotificationHandler = require("../utils/SendNotification")
+const NotificationEvents =require("../constants/NotificationEvents")
 const mongoose = require("mongoose");
 const Client = require("../models/Clients");
 const { CreateGeneralNotification } = require("./Notification");
@@ -279,11 +281,12 @@ exports.ApproveOrder = (req, res) => {
 };
 
 exports.AddFreeOrder = (req, res) => {
+  let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   Order.findOne({
     SentProgramId: req.body.id,
     UserId: req.userData._id,
     Status: "Active",
-  }).then((order) => {
+  }).populate("SenderId").then((order) => {
     if (order) {
       res.status(501).send();
     } else {
@@ -296,7 +299,7 @@ exports.AddFreeOrder = (req, res) => {
             { SendTo: req.userData.email },
           ],
           Amount: 0,
-        })
+        }).populate("SenderId")
           .then(async(data) => {
             if(data){
              let clientId =''
@@ -338,15 +341,57 @@ exports.AddFreeOrder = (req, res) => {
                 .then(async (result) => {
 
                   // Check if client exists
-                
-          CreateGeneralNotification(data.SenderId,req.userData._id,"accept-order",'',
-            {
-              UserId: data.SenderId,
-              Link:`/clientProfile/${clientId}`,
-              Type: "SubscribedProgram",
-              Sender: req.userData._id,
-              SentProgramId: data._id,
-          },req.app.get("socketService"))
+                  NotificationObj.sendNotification(
+                    data.SenderId._id,
+                    NotificationEvents.ACCEPT_PROGRAM,
+                    {
+                      To: [data.SenderId._id],
+                      Type: NotificationEvents.ACCEPT_PROGRAM,
+                      Sender: req.userData._id,
+                      SentProgramId: data._id,
+                      emailTitle:"Have accept the program",
+                      email:data.SenderId.email,
+                      profileImg:req.userData.profilePic,
+                      profileName:req.userData.name,
+                      programImg:data.Program.BannerImage,
+                      programTitle:data.Program.Title,
+                      message:"Your client have accepted the program you can now view, edit your client workouts and diet plan",
+                      Link: `/clientProfile/${clientId}`,
+                      Description:`Accepted ${data.Program.Title}`,
+      
+                    },
+                    data.SenderId.email
+                  )
+                  NotificationObj.sendNotification(
+                    req.userData._id,
+                    NotificationEvents.ACCEPT_PROGRAM,
+                    {
+                      To: [req.userData._id],
+                      Type: NotificationEvents.ACCEPT_PROGRAM,
+                      Sender:  data.SenderId._id,
+                      SentProgramId: data._id,
+                      emailTitle:"Have accept the program",
+                      email:req.userData.email,
+                      profileImg:req.userData.profilePic,
+                      profileName:req.userData.name,
+                      programImg:data.Program.BannerImage,
+                      programTitle:data.Program.Title,
+                      Link:"/client",
+                      Description:`${data.Program.Title} is now active `
+                    },
+                    req.userData.email,{
+                      email:false,
+                      inApp:true
+                    }
+                  )
+          // CreateGeneralNotification(data.SenderId,req.userData._id,"accept-order",'',
+          //   {
+          //     UserId: data.SenderId,
+          //     Link:`/clientProfile/${clientId}`,
+          //     Type: "SubscribedProgram",
+          //     Sender: req.userData._id,
+          //     SentProgramId: data._id,
+          // },req.app.get("socketService"))
                   // await Notification.create(
                   //   [
                   //     {

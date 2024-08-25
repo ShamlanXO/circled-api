@@ -2,7 +2,8 @@ const Order = require("../models/Orders");
 const Log = require("../models/ProgressLogs");
 const Notification = require("../models/Notifications");
 var ObjectID = require("mongodb").ObjectID;
-
+const NotificationHandler = require("../utils/SendNotification")
+const NotificationEvents =require("../constants/NotificationEvents")
 exports.CreateLog = (req, res) => {
   Order.find({
     _id: ObjectID(req.body.orderId),
@@ -47,25 +48,37 @@ exports.CreateLog = (req, res) => {
       })
         .then(async(result) => {
 
-
-
-      await Notification.create(
-        [
-          {
-            To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
-            Type: "log-notification",
-            Sender: req.userData._id,
-            OrderId:req.body.orderId,
-            Title:req.userData.name + " commented on exercise",
-            UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
-            Description:req.body.message,
-          },
-        ]
-      );
-      req.app.get("socketService").sendTo(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId, {
-        type: "log-notification",
-        data: { name: req.userData.name, type: "log-notification" },
-      });
+          let NotificationObj=new NotificationHandler(req.app.get("socketService"))
+          NotificationObj.sendNotification(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+        NotificationEvents.LOG_NOTIFICATION,
+        {
+          To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+          Type: "log-notification",
+          Sender: req.userData._id,
+          OrderId:req.body.orderId,
+          Title:req.userData.name + " commented on exercise",
+          UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+          Description:req.body.message,
+        },
+        ""
+        )
+      // await Notification.create(
+      //   [
+      //     {
+      //       To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+      //       Type: "log-notification",
+      //       Sender: req.userData._id,
+      //       OrderId:req.body.orderId,
+      //       Title:req.userData.name + " commented on exercise",
+      //       UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+      //       Description:req.body.message,
+      //     },
+      //   ]
+      // );
+      // req.app.get("socketService").sendTo(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId, {
+      //   type: "log-notification",
+      //   data: { name: req.userData.name, type: "log-notification" },
+      // });
           orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
             req.body.day
           ].Exercise[req.body.exercise].latestLog = {

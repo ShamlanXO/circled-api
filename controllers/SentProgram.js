@@ -9,7 +9,6 @@ var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 
 
-
 exports.GetProgram = (req, res) => {
 
 SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.createdBy").then((result) => {

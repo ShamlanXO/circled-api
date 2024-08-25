@@ -13,6 +13,9 @@ exports.FetchNotification = (req, res) => {
       {
         To: req.userData.figgsId,
       },
+      {
+        To: req.userData._id,
+      },
 
       {
         UserId: req.userData._id,
@@ -52,6 +55,9 @@ exports.GetUnreadCount = (req, res) => {
 
       {
         UserId: req.userData._id,
+      },
+      {
+        To: req.userData._id,
       },
     ],
     IsRead: false,
@@ -255,13 +261,13 @@ exports.CreateGeneralNotification = (to, from, type, message, data,socket=null) 
 
      
       case "test":
-        data.socket.sendTo(to, "test-event", {
+        socket.sendTo(to, "test-event", {
           type: "new-notification",
           data: {
        
           },
         });
-
+break
     default:
         new Notification({
           ...data
