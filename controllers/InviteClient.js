@@ -176,7 +176,7 @@ exports.AcceptInvitation = (req, res) => {
             Title:`${result.invitedBy.name}`,
             Description:"Your now on the client list",
             email:req.userData.email,
-            emailTitle:`You are now on ${req.userData.name} client list`,
+            emailTitle:`You are now on ${result.invitedBy.name} client list`,
             message:'Your instructor can view your profile now and add or create custom program for you.',
             profileName:result.invitedBy.name,
             profileImg:result.invitedBy.profilePic,

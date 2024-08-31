@@ -747,7 +747,7 @@ exports.SendProgram = async (req, res) => {
               SentProgramId: sentProgram[0]._id,
               emailTitle:"Sent you a program",
               email:item,
-              profileImg:eq.userData.profilePic,
+              profileImg:req.userData.profilePic,
               profileName:req.userData.name,
               programImg:req.body.BannerImage,
               programTitle:req.body.Title,
@@ -758,30 +758,7 @@ exports.SendProgram = async (req, res) => {
               item,
 
             },item)
-            // sendPromoMain({
-            //   email: item,
-            //   name: req.userData.name,
-            //   description: req.body.Description,
-            //   BannerImage: req.body.BannerImage
-            //     ? req.body.BannerImage
-            //     : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-            //   profileImg: req.userData.profilePic
-            //     ? req.userData.profilePic
-            //     : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
-            //   Title: req.body.Title,
-            //   GreetingMessage: req.body.GreetingMessage
-            //     ? req.body.GreetingMessage
-            //     : "No message from the trainer",
-            //   Price: req.body.Price ? req.body.Price : "N/A",
-            //   PaymentType: req.body.PaymentType ? req.body.PaymentType : "N/A",
-            //   Link:
-            //     "https://circled.fit/program/instructorSend/" +
-            //     sentProgram[0]._id +
-            //     "/" +
-            //     item +
-            //     "/" +
-            //     token,
-            // });
+           
           }
         });
       });
