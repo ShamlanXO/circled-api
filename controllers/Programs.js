@@ -17,7 +17,7 @@ exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   Program.find({
     ...filter,
-    IsPublished: true,
+    IsArchived:false,
     IsDraft: false,
     IsDeleted: false,
   })
