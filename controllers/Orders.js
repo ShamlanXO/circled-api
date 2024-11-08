@@ -251,7 +251,7 @@ exports.GetOrder = (req, res) => {
     _id: req.params.id,
     Status: "Active",
   })
-    .populate("Program.createdBy", "name profilePic figgsId _id")
+    .populate("Program.createdBy", "name profilePic banner bio expertise figgsId _id")
     .populate("SentProgramId")
     .then((result) => {
       if (!result) {
