@@ -125,6 +125,7 @@ exports.ProgramsInstructor = (req, res) => {
         clients: { $size: "$clients" },
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
+        ProgramType: 1,
         payment: 1,
         IsArchived: 1,
         Price: 1,
