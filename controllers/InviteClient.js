@@ -42,28 +42,28 @@ exports.InviteClient = async (req, res) => {
           
            let link =`https://circled.fit/invite/accept-invite/${result._id}?userexist=${ExistingUser?true:false}`
            let NotificationObj=new NotificationHandler(req.app.get("socketService"))
-           NotificationObj.sendNotification(email,NotificationEvents.INVITE_CLIENT,{
-            email,
-            link,
-            name: req.userData.name,
-            message: ExistingUser?'You might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
-            profileImg: req.userData.profilePic,
-            invitedBy: req.userData.name,
-            invitedByEmail: req.userData.email,
-            To: [email],
-            Title:req.userData.name,
-            Type: NotificationEvents.INVITE_CLIENT,
-            Description:"Request to add you on his client list",
-            Sender: result.invitedBy,
-            Link:'/invite/accept-invite/'+result._id,
-            message: ExistingUser?'you might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
+        //    NotificationObj.sendNotification(email,NotificationEvents.INVITE_CLIENT,{
+        //     email,
+        //     link,
+        //     name: req.userData.name,
+        //     message: ExistingUser?'You might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
+        //     profileImg: req.userData.profilePic,
+        //     invitedBy: req.userData.name,
+        //     invitedByEmail: req.userData.email,
+        //     To: [email],
+        //     Title:req.userData.name,
+        //     Type: NotificationEvents.INVITE_CLIENT,
+        //     Description:"Request to add you on his client list",
+        //     Sender: result.invitedBy,
+        //     Link:'/invite/accept-invite/'+result._id,
+        //     message: ExistingUser?'you might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
 
 
-           },email)
+        //    },email)
            
 
 
-            return res.status(201).send({ message: "Client Invited" });
+            return res.status(201).send({ message: "Client Invited",id: result._id});
         }) 
         .catch((error) => {
             console.log(error)
@@ -84,24 +84,24 @@ exports.ResendInvite=(req,res)=>{
                     let link =`https://circled.fit/invite/accept-invite/${result._id}?userexist=${ExistingUser?true:false}`
 
                     let NotificationObj=new NotificationHandler(req.app.get("socketService"))
-                    NotificationObj.sendNotification(result.email,NotificationEvents.INVITE_CLIENT,{
+                    // NotificationObj.sendNotification(result.email,NotificationEvents.INVITE_CLIENT,{
                     
-                        email:result.email,
-                        link,
-                        name: req.userData.name,
-                        message: ExistingUser?'you might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
-                        profileImg: req.userData.profilePic,
-                        invitedBy: req.userData.name,
-                        invitedByEmail: req.userData.email,
+                    //     email:result.email,
+                    //     link,
+                    //     name: req.userData.name,
+                    //     message: ExistingUser?'you might need to fill some information for your trainer.':'As new user you might need to fill the information needed for your trainer.',
+                    //     profileImg: req.userData.profilePic,
+                    //     invitedBy: req.userData.name,
+                    //     invitedByEmail: req.userData.email,
          
-                    },result.email,{
-                        email:true,
-                        inApp:false
-                    })
+                    // },result.email,{
+                    //     email:true,
+                    //     inApp:false
+                    // })
           
             result.updatedAt=new Date()
             result.save()
-            return res.status(201).send({ message: "Client Invited" });
+            return res.status(201).send({ message: "Client Invited" ,id: result._id});
         }) // Add the 'new' option to return the updated document
         .catch((error) => {
             console.log(error)
