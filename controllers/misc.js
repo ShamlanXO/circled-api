@@ -14,6 +14,7 @@ const axios = require("axios");
 const {isVideoOrImage} = require("../utils/helpers");
 var ImageKit = require("imagekit");
 const client = require('twilio')(process.env.twillio_SID, process.env.twillio_CRED);
+const packageJson = require('./../package.json');
 
 require("dotenv").config();
 var smtpTransport = nodemailer.createTransport({
@@ -743,4 +744,10 @@ exports.reportBug=async(req,res)=>{
     .status(500)
   });
 
+  
+
+
 }
+exports.GetVersion =async (req, res) => {
+  return res.status(200).send({ version: packageJson.version });
+ };
