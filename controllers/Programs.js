@@ -829,3 +829,24 @@ exports.UnArchiveProgram = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+exports.DuplicateProgram = (req, res) => {
+  Program.findOne({ _id: req.params.id })
+    .then((result) => {
+      if (!result) {
+        return res.status(404).send({ message: "No Program Found" });
+      } else {
+        const newProgram = new Program({
+          ...result.toObject(),
+          Title: result.Title + " - Copy",
+          _id: new ObjectID(),
+        });
+        newProgram.save().then((result) => {
+          return res.status(201).send({ message: "Program Duplicated",program:result });
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).send({ ErrorOccured: error });
+    });
+}
