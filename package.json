@@ -1,6 +1,6 @@
 {
   "name": "lms-api",
-  "version": "2.7.4",
+  "version": "2.7.5",
   "private": true,
   "dependencies": {
     "api-query-params": "^4.14.0",
