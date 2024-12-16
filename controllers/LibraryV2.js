@@ -162,31 +162,44 @@ exports.getWorkout=(req, res) => {
   })
 }
 
-exports.addWorkout=(req,res)=>{
+exports.addWorkout=async (req,res)=>{
 
   let Title = req.body.Title;
 
-  const countExists= WorkoutLibrary.countDocuments({CreatedBy:req.userData._id,Title:req.body.Title})
+  const countExists=await  WorkoutLibrary.countDocuments({CreatedBy:req.userData._id,Title:req.body.Title})
 
   if(countExists>0){
     Title=`${Title} copy`
   }
 
 
- WorkoutLibrary.findOneAndUpdate(
-  {_id:req.body._id},
-  {...req.body,CreatedBy:req.userData._id,Title},
-  {
-    new: true,
-    upsert: true // Make this update into an upsert
-  }
-  
-  ).then(result=>{
-  res.status(200).send(result)
-}).catch(err=>{
-  console.log(err)
+ delete req.body._id
+  const newWorkout = new WorkoutLibrary({
+    ...req.body,
+    CreatedBy:req.userData._id,
+    Title
+  });
+  newWorkout.save().then(result=>{
+    res.status(200).send(result)
+  }).catch(err=>{
+    console.log(err)
     res.status(500).send(err)
   })
+
+//  WorkoutLibrary.findOneAndUpdate(
+//   {_id:req.body._id},
+//   {...req.body,CreatedBy:req.userData._id,Title},
+//   {
+//     new: true,
+//     upsert: true // Make this update into an upsert
+//   }
+  
+//   ).then(result=>{
+//   res.status(200).send(result)
+// }).catch(err=>{
+//   console.log(err)
+//     res.status(500).send(err)
+//   })
 }
 
 exports.updateWorkout=(req,res)=>{
