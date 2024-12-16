@@ -163,9 +163,19 @@ exports.getWorkout=(req, res) => {
 }
 
 exports.addWorkout=(req,res)=>{
+
+  let Title = req.body.Title;
+
+  const countExists= WorkoutLibrary.countDocuments({CreatedBy:req.userData._id,Title:req.body.Title})
+
+  if(countExists>0){
+    Title=`${Title} copy`
+  }
+
+
  WorkoutLibrary.findOneAndUpdate(
   {_id:req.body._id},
-  {...req.body,CreatedBy:req.userData._id},
+  {...req.body,CreatedBy:req.userData._id,Title},
   {
     new: true,
     upsert: true // Make this update into an upsert
