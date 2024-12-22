@@ -163,13 +163,18 @@ exports.getWorkout=(req, res) => {
 }
 
 exports.addWorkout=async (req,res)=>{
-
   let Title = req.body.Title;
 
-  const countExists=await  WorkoutLibrary.countDocuments({CreatedBy:req.userData._id,Title:req.body.Title})
+  const countExists = await WorkoutLibrary.countDocuments({ 
+    CreatedBy: req.userData._id, 
+    $or: [
+      { Title: req.body.Title },
+      { Title: new RegExp(`^${req.body.Title} copy\\(\\d+\\)$`, 'i') }
+    ]
+  });
 
-  if(countExists>0){
-    Title=`${Title} copy`
+  if (countExists > 0) {
+    Title = `${Title} copy(${countExists})`;
   }
 
 
