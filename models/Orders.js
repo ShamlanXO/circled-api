@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Client = require('./Clients'); 
+
 const DietPlanSchema = new mongoose.Schema({
   Title: { type: String, default: null },
   File: { type: String, default: null },
@@ -6,7 +8,7 @@ const DietPlanSchema = new mongoose.Schema({
 });
 
 const ExerciseSchema = new mongoose.Schema({
-  media: [{ type: String }],
+  media: [],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },
@@ -21,6 +23,7 @@ const ExerciseSchema = new mongoose.Schema({
     name: { type: String, default: null },
     profilePic: { type: String, default: null },
     type: { type: String, default: null },
+    media:[{ type: String}]
   },
   triggerMuscle: [{ type: String }],
   isAttempted: { type: Boolean, default: false },
@@ -50,6 +53,7 @@ const ProgramSchema = new mongoose.Schema(
     Requirements: { type: String, default: null },
     Type: { type: String, default: null },
     PaymentType: { type: String },
+    ProgramType:{type:String},
     calendarType:{ type: String, default: null },
     maximumClient:{ type: String, default: null},
     totalClients:{ type: Number},
@@ -88,11 +92,56 @@ const orderSchema = new mongoose.Schema(
     SubscriptionId: { type: String },
     SentProgramId: { type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
     stats: {},
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: "client"},
     todo: [todoSchema],
     currentWeek: { type: Number, default: 0 },
     currentDay: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+// orderSchema.pre('save',  function(next) {
+//   console.log('pre save hook');
+//   // if (this.isModified('UserId') || this.isNew) {
+//   //   try {
+//   //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+//   //     next();
+//   //   } catch (error) {
+//   //     next(error);
+//   //   }
+ 
+//     next();
+  
+// });
+
+orderSchema.plugin((schema)=>{
+  console.log('plugin hook');
+  schema.pre('save',  function() {
+    console.log('pre save hook');
+    // if (this.isModified('UserId') || this.isNew) {
+    //   try {
+    //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+    //     next();
+    //   } catch (error) {
+    //     next(error);
+    //   }
+   
+      
+    
+  });
+  schema.post('save',  function() {
+    console.log('pre save hook');
+    // if (this.isModified('UserId') || this.isNew) {
+    //   try {
+    //     this.clientId = await deriveClientIdFromUserId(this.UserId, this.Program.CreatedBy);
+    //     next();
+    //   } catch (error) {
+    //     next(error);
+    //   }
+   
+      
+    
+  });
+});
 
 module.exports = mongoose.model("PurchasedProgram", orderSchema);

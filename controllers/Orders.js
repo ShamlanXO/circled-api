@@ -5,6 +5,10 @@ var ObjectID = require("mongodb").ObjectID;
 const diff = require("diff-arrays-of-objects");
 const { detailedDiff } = require("deep-object-diff");
 const { CreateGeneralNotification } = require("./Notification");
+const ClientModel = require("../models/Clients");
+const SentPrograms = require("../models/SentPrograms");
+const NotificationEvents =require("../constants/NotificationEvents")
+const NotificationHandler = require("../utils/SendNotification")
 exports.SearchOrder = (req, res) => {
   Order.find(
     { UserId: req.userData._id, Status: "Active" },
@@ -52,6 +56,7 @@ exports.GetAllClients = (req, res) => {
       $match: {
         "Program.createdBy": ObjectID(req.userData._id),
         UserId: { $ne: ObjectID(req.userData._id) },
+        isActive:false
       },
     },
 
@@ -211,26 +216,26 @@ exports.GetClientsSpecificProgram = (req, res) => {
 };
 
 exports.GetSpecificClients = async (req, res) => {
+  
+ let client=await ClientModel.findOne({ _id: req.params.Id}).populate("client",'-password');
+ let sentProgram=await SentPrograms.findOne({SendTo:client.client.email,SenderId:req.userData._id}).sort({createdAt:-1});
  
   Order.findOne({
-    $or: [{ _id: req.params.Id }, { UserId: req.params.Id }],
- 
+   UserId:client.client._id,
+   //isActive:true,
     "Program.createdBy": req.userData._id,
-  })
-    .populate("UserId", "-password")
-    .then(async(result) => {
-      const Biresult = await BodyImageModel.find({ createdBy: result.UserId._id });
-      if (!result) {
-        return res.status(404).send({
-          message: "No order Found",
-        });
-      } else {
+  }).then(async(result) => {
+    console.log(result)
+      const Biresult = await BodyImageModel.find({ createdBy: client.client._id });
+     
         return res.status(200).send({
           message: "List of users",
           clientData: result,
           bodyImages: Biresult,
+          sentProgram:sentProgram,
+          clientDetails: client.client,
         });
-      }
+      
     })
     .catch((error) => {
       return res.status(500).send({
@@ -246,7 +251,7 @@ exports.GetOrder = (req, res) => {
     _id: req.params.id,
     Status: "Active",
   })
-    .populate("Program.createdBy", "name profilePic figgsId _id")
+    .populate("Program.createdBy", "name profilePic banner bio expertise figgsId _id")
     .populate("SentProgramId")
     .then((result) => {
       if (!result) {
@@ -324,7 +329,7 @@ exports.CheckExist = (req, res) => {
 
 exports.UpdateOrder = async (req, res) => {
   let orderData = await Order.findById(req.body._id).populate("UserId").lean();
-
+  let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   Order.updateOne(
     { _id: req.body._id, "Program.createdBy": req.userData._id },
     req.body?.Program
@@ -344,19 +349,36 @@ exports.UpdateOrder = async (req, res) => {
             prdiff.updated?.DietPlan?.Description ||
             prdiff.added?.DietPlan?.Description
           ) {
-            CreateGeneralNotification(
+            NotificationObj.sendNotification(
               orderData.UserId._id,
-              req.userData,
-              "edited-diet",
-              ``,
+              NotificationEvents.EDIT_DIET,
               {
-                ...prdiff,
-                OrderId: req.body._id,
-                planName: orderData.Program.Title,
-                email: orderData.UserId.email,
-                socket: req.app.get("socketService"),
+                To:[orderData.UserId._id],
+                Type:NotificationEvents.EDIT_DIET,
+                Sender:req.userData._id,
+                OrderId:orderData._id,
+                Description:"Updated your diet plan",
+                Link:"/diet-plan"
+              },
+              "",
+              {
+                email:false,
+                inApp:true
               }
-            );
+            )
+            // CreateGeneralNotification(
+            //   orderData.UserId._id,
+            //   req.userData,
+            //   NotificationEvents.EDIT_DIET,
+            //   ``,
+            //   {
+            //     ...prdiff,
+            //     OrderId: req.body._id,
+            //     planName: orderData.Program.Title,
+            //     email: orderData.UserId.email,
+            //     socket: req.app.get("socketService"),
+            //   }
+            // );
           }
 
           if (
@@ -364,19 +386,37 @@ exports.UpdateOrder = async (req, res) => {
             prdiff.added?.ExercisePlan ||
             prdiff.deleted?.ExercisePlan
           ) {
-            CreateGeneralNotification(
+
+            NotificationObj.sendNotification(
               orderData.UserId._id,
-              req.userData,
-              "update-program",
-              ``,
+              NotificationEvents.UPDATE_PROGRAM,
               {
-                ...prdiff,
-                OrderId: req.body._id,
-                planName: orderData.Program.Title,
-                email: orderData.UserId.email,
-                socket: req.app.get("socketService"),
+                To:[orderData.UserId._id],
+                Type:NotificationEvents.UPDATE_PROGRAM,
+                Sender:req.userData._id,
+                OrderId:orderData._id,
+                Description:"Updated your workout plan",
+                Link:"/client/myWorkoutCalendar",
+              },
+              "",
+              {
+                email:false,
+                inApp:true
               }
-            );
+            )
+            // CreateGeneralNotification(
+            //   orderData.UserId._id,
+            //   req.userData,
+            //   NotificationEvents.UPDATE_PROGRAM,
+            //   ``,
+            //   {
+            //     ...prdiff,
+            //     OrderId: req.body._id,
+            //     planName: orderData.Program.Title,
+            //     email: orderData.UserId.email,
+            //     socket: req.app.get("socketService"),
+            //   }
+            // );
           }
         } else {
           let todoDiff = diff(
@@ -387,18 +427,36 @@ exports.UpdateOrder = async (req, res) => {
             }) || [],
             "_id"
           );
-          CreateGeneralNotification(
+
+          NotificationObj.sendNotification(
             orderData.UserId._id,
-            req.userData,
-            "update-todo",
-            ``,
+            NotificationEvents.UPDATE_TODO,
             {
-              ...todoDiff,
-              OrderId: req.body._id,
-              email: orderData.UserId.email,
-              socket: req.app.get("socketService"),
+              To:[orderData.UserId._id],
+              Type:NotificationEvents.UPDATE_TODO,
+              Sender:req.userData._id,
+              OrderId:orderData._id,
+              Link:"/client",
+              Description:"Updated your task list"
+            },
+            "",
+            {
+              email:false,
+              inApp:true
             }
-          );
+          )
+          // CreateGeneralNotification(
+          //   orderData.UserId._id,
+          //   req.userData,
+          //   NotificationEvents.UPDATE_TODO,
+          //   ``,
+          //   {
+          //     ...todoDiff,
+          //     OrderId: req.body._id,
+          //     email: orderData.UserId.email,
+          //     socket: req.app.get("socketService"),
+          //   }
+          // );
         }
 
         return res.status(200).send({ message: "Order Details Updated" });

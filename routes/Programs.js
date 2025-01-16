@@ -4,6 +4,7 @@ const router = express.Router();
 const checkAuth = require("../middleware/CheckAuth");
 router.route("/all").get(ProgramRoute.ProgramsAll);
 router.route("/get/:Id").get(checkAuth, ProgramRoute.FetchSpecificProgram);
+router.route("/duplicate/:id").post(checkAuth, ProgramRoute.DuplicateProgram);
 router.route("/public/:Id").get(ProgramRoute.FetchSpecificProgramPublic);
 router.route("/get").get(checkAuth, ProgramRoute.ProgramsInstructor);
 router.route("/create").post(checkAuth, ProgramRoute.CreateProgram);

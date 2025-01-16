@@ -1,8 +1,17 @@
-const socketIo = require("socket.io");
+
+const  { Server } = require("socket.io");
 const User=require("../models/user")
 class SocketService {
   constructor(server) {
-    this.io = socketIo(server);
+ 
+    this.io = new Server(server, {
+    cors:{
+      origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["*"],
+        credentials: true
+    }
+    });
 
     this.io.use(function (socket, next) {
       if (socket.handshake.query && socket.handshake.query.token) {
@@ -13,22 +22,22 @@ class SocketService {
       }
     });
 
-    this.io.engine.generateId = function (req) {
-      // generate a new custom id here
+//     this.io.engine.generateId =  (req)=> {
+//       // generate a new custom id here
      
-
-      return req._query.token;
-    };
+// //console.log(req._query.token,"query here")
+//       return req._query.token;
+//     };
 
     this.io.on("connection", (socket) => {
-      console.log(socket.handshake.query);
-
+     
+       socket.join(socket.userId+"")
       this.io.emit(socket.id+"", {type:"status",isConnected:true})
-
+   
       if(socket.id)
-      User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
-        console.log(data)
-      })
+      // User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
+      //   console.log(data)
+      // })
       
 
 
@@ -40,9 +49,9 @@ class SocketService {
       socket.on("disconnect",(data) => {
         console.log(socket.handshake.query);
         if(socket.id)
-        User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
-          console.log(data)
-        })
+        // User.updateOne({_id:socket.id},{lastActive:new Date() }).then((data)=>{
+        //   console.log(data)
+        // })
         if (this.io.sockets.sockets[socket.id]&&this.io.sockets.sockets[socket.id].connected) {
            
           this.io.emit(socket.id, {type:"status",isConnected:true})
@@ -149,7 +158,11 @@ callback({type:"status",isConnected:true})
   }
 
   sendTo(id,event, body) {
-    if (body) this.io.to(id).emit(event, body);
+    if (body) {
+      console.log(id)
+      this.io.to(id+"").emit(event, body);
+    
+    }
   }
 }
 

@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const SendOtp = require("../components/sendOtp");
 const aqp = require("api-query-params");
 const _ =require("lodash");
+const NotificationHandler = require("../utils/SendNotification")
 const programs = require("../models/Programs");
 const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
 const sendOtp = new SendOtp(
@@ -565,6 +566,40 @@ let payload=_.pick(req.body,["email","phone"])
       res.status(500).send({ message: "servererror" });
     });
 };
+
+exports.SendNotification=async(req,res)=>{
+  try{
+
+let NotificationObj=new NotificationHandler(req.app.get("socketService"))
+   await NotificationObj.sendNotification(req.userData._id,"test",{
+    To: req.userData._id,
+            Sender: req.userData._id,
+            UserId: req.userData._id,
+            Type: "notification",
+            subject:"test",
+            message:"your message here",
+            //Link: link,
+            Description: `testing`,
+            Title: "You have a test",
+   },"amanjain.3331@gmail.com")
+//   CreateGeneralNotification(
+//     req.userData._id,
+//     req.userData._id,
+//     "test",
+//     "",
+//     {
+     
+        
+//       },
+//    req.app.get("socketService")
+
+// )
+    
+}catch(err){
+  console.log(err)
+}
+  res.status(200).send({})
+}
 
 exports.ChangePasswordPhone = (req, res) => {
   sendOtp.verify(req.body.phone, req.body.otp, function (error, data) {

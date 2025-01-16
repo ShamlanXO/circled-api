@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ExerciseSchema = new mongoose.Schema({
-  media: [{ type: String }],
+  media: [],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },

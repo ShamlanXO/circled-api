@@ -9,7 +9,6 @@ var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 
 
-
 exports.GetProgram = (req, res) => {
 
 SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.createdBy").then((result) => {
@@ -25,6 +24,16 @@ SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.
       });
     });
 };
+
+exports.DeleteProgram=(req, res)=>{
+  SentProgram.deleteOne({_id:req.params.id}).then((result)=>{
+    return res.status(200).send({message:"program deleted successfully"});
+  })  .catch((error) => {
+      return res.status(500).send({
+        ErrorOccured: error,
+      });
+    });
+}
 
 
 exports.SharedProgramId=(req,res) => {

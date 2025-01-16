@@ -2,8 +2,8 @@ const Program = require("../models/Programs");
 const aqp = require("api-query-params");
 const User = require("../models/user");
 const SentProgram = require("../models/SentPrograms");
-const Notification = require("../models/Notifications");
-const { sendPromoMain } = require("../script/sendPromoMail");
+
+
 const jwt = require("jsonwebtoken");
 var ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
@@ -11,11 +11,13 @@ const Chat = require("../models/Chat");
 const { startOfMonth, endOfMonth } = require("date-fns");
 const axios = require("axios");
 const { addTorecent } = require("./RecentController");
+const NotificationHandler = require("../utils/SendNotification")
+const NotificationEvents =require("../constants/NotificationEvents")
 exports.ProgramsAll = (req, res) => {
   const { filter, skip, limit, sort, projection } = aqp(req.query);
   Program.find({
     ...filter,
-    IsPublished: true,
+    IsArchived:false,
     IsDraft: false,
     IsDeleted: false,
   })
@@ -76,7 +78,7 @@ exports.ProgramsInstructor = (req, res) => {
           },
           {
             $group: {
-              _id: "$UserId",
+              _id: "$clientId",
 
               count: { $sum: 1 },
             },
@@ -123,6 +125,7 @@ exports.ProgramsInstructor = (req, res) => {
         clients: { $size: "$clients" },
         weeks: { $size: "$ExercisePlan.weeks" },
         IsDraft: 1,
+        ProgramType: 1,
         payment: 1,
         IsArchived: 1,
         Price: 1,
@@ -190,6 +193,7 @@ exports.CreateProgram = async (req, res) => {
   let isSuccess = true;
   let program = null;
   let sentProgram = null;
+  let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   if (req.body.SendTo.length > 0) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -282,20 +286,20 @@ exports.CreateProgram = async (req, res) => {
         { session: session }
       );
 
-      await Notification.create(
-        [
-          {
-            To: req.body.SendTo,
+      // await Notification.create(
+      //   [
+      //     {
+      //       To: req.body.SendTo,
 
-            Type: "SentProgram",
-            Sender: sentProgram[0].SenderId,
-            SentProgramId: sentProgram[0]._id,
-          },
-        ],
-        {
-          session: session,
-        }
-      );
+      //       Type: "SentProgram",
+      //       Sender: sentProgram[0].SenderId,
+      //       SentProgramId: sentProgram[0]._id,
+      //     },
+      //   ],
+      //   {
+      //     session: session,
+      //   }
+      // );
 
       // save the sender updated balance
       // do not pass the session here
@@ -348,36 +352,54 @@ exports.CreateProgram = async (req, res) => {
                   req.body.SendTo = req.body.SendTo.filter(
                     (i) => i !== item.email
                   );
-                  sendPromoMain({
-                    email: item.email,
-                    name: req.userData.name,
-                    BannerImage: req.body.BannerImage
-                      ? req.body.BannerImage
-                      : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-                    profileImg: req.userData.profilePic
-                      ? req.userData.profilePic
-                      : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
-                    Title: req.body.Title,
-                    description: req.body.Description,
-                    GreetingMessage: req.body.GreetingMessage
-                      ? req.body.GreetingMessage
-                      : "No message from the trainer",
-                    Price: req.body.Price ? req.body.Price : "N/A",
-                    PaymentType: req.body.PaymentType
-                      ? req.body.PaymentType
-                      : "N/A",
-                    Link:
-                      "https://circled.fit/program/instructorSend/" +
-                      sentProgram[0]._id +
-                      "/" +
-                      item.email,
-                  });
+                  NotificationObj.sendNotification(item._id,NotificationEvents.SEND_PROGRAM,{
+                    To: [item._id],
+                    Type: NotificationEvents.SEND_PROGRAM,
+                    Sender: sentProgram[0].SenderId,
+                    SentProgramId: sentProgram[0]._id,
+                    emailTitle:"Sent you a program",
+                    email:item.email,
+                    profileImg:req.userData.profilePic,
+                    profileName:req.userData.name,
+                    programImg:req.body.BannerImage,
+                    programTitle:req.body.Title,
+                    message:req.body.GreetingMessage,
+                    Link: "/program/instructorSend/" +
+                    sentProgram[0]._id +
+                    "/" +
+                    item.email,
+    
+                  },item.email)
+                  // sendPromoMain({
+                  //   email: item.email,
+                  //   name: req.userData.name,
+                  //   BannerImage: req.body.BannerImage
+                  //     ? req.body.BannerImage
+                  //     : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
+                  //   profileImg: req.userData.profilePic
+                  //     ? req.userData.profilePic
+                  //     : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
+                  //   Title: req.body.Title,
+                  //   description: req.body.Description,
+                  //   GreetingMessage: req.body.GreetingMessage
+                  //     ? req.body.GreetingMessage
+                  //     : "No message from the trainer",
+                  //   Price: req.body.Price ? req.body.Price : "N/A",
+                  //   PaymentType: req.body.PaymentType
+                  //     ? req.body.PaymentType
+                  //     : "N/A",
+                  //   Link:
+                  //     "https://circled.fit/program/instructorSend/" +
+                  //     sentProgram[0]._id +
+                  //     "/" +
+                  //     item.email,
+                  // });
                 }
 
-                req.app.get("socketService").sendTo(item._id, item._id, {
-                  type: "new-notification",
-                  data: { name: req.userData.name, type: "sent-program" },
-                });
+                // req.app.get("socketService").sendTo(item._id, item._id, {
+                //   type: "new-notification",
+                //   data: { name: req.userData.name, type: "sent-program" },
+                // });
               }
             });
 
@@ -390,33 +412,50 @@ exports.CreateProgram = async (req, res) => {
                 "s3cr3t",
                 { expiresIn: "1d" }
               );
+              NotificationObj.sendNotification(item._id,NotificationEvents.SEND_PROGRAM,{
+                To: [item._id],
+                Type: NotificationEvents.SEND_PROGRAM,
+                Sender: sentProgram[0].SenderId,
+                SentProgramId: sentProgram[0]._id,
+                emailTitle:"Sent you a program",
+                email:item,
+                profileImg:req.userData.profilePic,
+                profileName:req.userData.name,
+                programImg:req.body.BannerImage,
+                programTitle:req.body.Title,
+                message:req.body.GreetingMessage,
+                Link: "/program/instructorSend/" +
+                sentProgram[0]._id +
+                "/" +
+                item,
 
-              sendPromoMain({
-                email: item,
-                name: req.userData.name,
-                description: req.body.Description,
-                BannerImage: req.body.BannerImage
-                  ? req.body.BannerImage
-                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-                profileImg: req.userData.profilePic
-                  ? req.userData.profilePic
-                  : "https://ik.imagekit.io/figgs/email/Male_soSSHMqHN.png?ik-sdk-version=javascript-1.4.3&updatedAt=1667477819527",
-                Title: req.body.Title,
-                GreetingMessage: req.body.GreetingMessage
-                  ? req.body.GreetingMessage
-                  : "No message from the trainer",
-                Price: req.body.Price ? req.body.Price : "N/A",
-                PaymentType: req.body.PaymentType
-                  ? req.body.PaymentType
-                  : "N/A",
-                Link:
-                  "https://figgs.co/public/payment/" +
-                  sentProgram[0]._id +
-                  "/" +
-                  item +
-                  "/" +
-                  token,
-              });
+              },item)
+              // sendPromoMain({
+              //   email: item,
+              //   name: req.userData.name,
+              //   description: req.body.Description,
+              //   BannerImage: req.body.BannerImage
+              //     ? req.body.BannerImage
+              //     : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
+              //   profileImg: req.userData.profilePic
+              //     ? req.userData.profilePic
+              //     : "https://ik.imagekit.io/figgs/email/Male_soSSHMqHN.png?ik-sdk-version=javascript-1.4.3&updatedAt=1667477819527",
+              //   Title: req.body.Title,
+              //   GreetingMessage: req.body.GreetingMessage
+              //     ? req.body.GreetingMessage
+              //     : "No message from the trainer",
+              //   Price: req.body.Price ? req.body.Price : "N/A",
+              //   PaymentType: req.body.PaymentType
+              //     ? req.body.PaymentType
+              //     : "N/A",
+              //   Link:
+              //     "https://figgs.co/public/payment/" +
+              //     sentProgram[0]._id +
+              //     "/" +
+              //     item +
+              //     "/" +
+              //     token,
+              // });
               addTorecent("sendProgram", {
                 programId: program[0]._id,
                 userId: req.userData._id,
@@ -476,7 +515,7 @@ exports.SendProgram = async (req, res) => {
   let isSuccess = true;
   let program = null;
   let sentProgram = null;
-
+  let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -545,20 +584,20 @@ exports.SendProgram = async (req, res) => {
       { session: session }
     );
 
-    await Notification.create(
-      [
-        {
-          To: req.body.SendTo,
+    // await Notification.create(
+    //   [
+    //     {
+    //       To: req.body.SendTo,
 
-          Type: "SentProgram",
-          Sender: sentProgram[0].SenderId,
-          SentProgramId: sentProgram[0]._id,
-        },
-      ],
-      {
-        session: session,
-      }
-    );
+    //       Type: "SentProgram",
+    //       Sender: sentProgram[0].SenderId,
+    //       SentProgramId: sentProgram[0]._id,
+    //     },
+    //   ],
+    //   {
+    //     session: session,
+    //   }
+    // );
 
     // await Chat.create([{
     //   ReceiverId:item._id,
@@ -609,30 +648,48 @@ exports.SendProgram = async (req, res) => {
                 clientId: item._id,
               });
               req.body.SendTo = req.body.SendTo.filter((i) => i !== item.email);
-              sendPromoMain({
-                email: item.email,
-                name: req.userData.name,
-                description: req.body.Description,
-                BannerImage: req.body.BannerImage
-                  ? req.body.BannerImage
-                  : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-                profileImg: req.userData.profilePic
-                  ? req.userData.profilePic
-                  : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
-                Title: req.body.Title,
-                GreetingMessage: req.body.GreetingMessage
-                  ? req.body.GreetingMessage
-                  : "No message from the trainer",
-                Price: req.body.Price ? req.body.Price : "N/A",
-                PaymentType: req.body.PaymentType
-                  ? req.body.PaymentType
-                  : "N/A",
-                Link:
-                  "https://circled.fit/program/instructorSend/" +
-                  sentProgram[0]._id +
-                  "/" +
-                  item.email,
-              });
+              NotificationObj.sendNotification(item._id,NotificationEvents.SEND_PROGRAM,{
+                To: [item._id],
+                Type: NotificationEvents.SEND_PROGRAM,
+                Sender: sentProgram[0].SenderId,
+                SentProgramId: sentProgram[0]._id,
+                emailTitle:"Sent you a program",
+                email:item.email,
+                profileImg:req.userData.profilePic,
+                profileName:req.userData.name,
+                programImg:req.body.BannerImage,
+                programTitle:req.body.Title,
+                message:req.body.GreetingMessage,
+                Link: "/program/instructorSend/" +
+                sentProgram[0]._id +
+                "/" +
+                item.email,
+
+              },item.email)
+              // sendPromoMain({
+              //   email: item.email,
+              //   name: req.userData.name,
+              //   description: req.body.Description,
+              //   BannerImage: req.body.BannerImage
+              //     ? req.body.BannerImage
+              //     : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
+              //   profileImg: req.userData.profilePic
+              //     ? req.userData.profilePic
+              //     : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
+              //   Title: req.body.Title,
+              //   GreetingMessage: req.body.GreetingMessage
+              //     ? req.body.GreetingMessage
+              //     : "No message from the trainer",
+              //   Price: req.body.Price ? req.body.Price : "N/A",
+              //   PaymentType: req.body.PaymentType
+              //     ? req.body.PaymentType
+              //     : "N/A",
+              //   Link:
+              //     "https://circled.fit/program/instructorSend/" +
+              //     sentProgram[0]._id +
+              //     "/" +
+              //     item.email,
+              // });
             }
 
             if (item._id !== req.userData._id) {
@@ -684,31 +741,25 @@ exports.SendProgram = async (req, res) => {
               "s3cr3t",
               { expiresIn: "1d" }
             );
+            NotificationObj.sendNotification(item._id,NotificationEvents.SEND_PROGRAM,{
+              To: [item],
+              Type: NotificationEvents.SEND_PROGRAM,
+              Sender: sentProgram[0].SenderId,
+              SentProgramId: sentProgram[0]._id,
+              emailTitle:"Sent you a program",
+              email:item,
+              profileImg:req.userData.profilePic,
+              profileName:req.userData.name,
+              programImg:req.body.BannerImage,
+              programTitle:req.body.Title,
+              message:req.body.GreetingMessage,
+              Link: "/program/instructorSend/" +
+              sentProgram[0]._id +
+              "/" +
+              item,
 
-            sendPromoMain({
-              email: item,
-              name: req.userData.name,
-              description: req.body.Description,
-              BannerImage: req.body.BannerImage
-                ? req.body.BannerImage
-                : "https://ik.imagekit.io/figgs/undefined1652090574514_stCrUjSEJ?ik-sdk-version=javascript-1.4.3&updatedAt=1652090576050",
-              profileImg: req.userData.profilePic
-                ? req.userData.profilePic
-                : "https://ik.imagekit.io/figgs/Male_XGOm4LEno.png?ik-sdk-version=javascript-1.4.3&updatedAt=1655045544491",
-              Title: req.body.Title,
-              GreetingMessage: req.body.GreetingMessage
-                ? req.body.GreetingMessage
-                : "No message from the trainer",
-              Price: req.body.Price ? req.body.Price : "N/A",
-              PaymentType: req.body.PaymentType ? req.body.PaymentType : "N/A",
-              Link:
-                "https://circled.fit/program/instructorSend/" +
-                sentProgram[0]._id +
-                "/" +
-                item +
-                "/" +
-                token,
-            });
+            },item)
+           
           }
         });
       });
@@ -719,18 +770,7 @@ exports.SendProgram = async (req, res) => {
     }
   }
 
-  // console.log(req.body)
-  // const ProgramCon = new Program({...req.body,createdBy:req.userData._id});
-  // ProgramCon
-  //   .save()
-  //   .then(result => {
-  //     return res
-  //       .status(201)
-  //       .send({ Message: "Program Created", item: result });
-  //   })
-  //   .catch(error => {
-  //     return res.status(500).send({ ErrorOccured: error });
-  //   });
+
 };
 
 exports.UpdateProgram = (req, res) => {
@@ -789,3 +829,24 @@ exports.UnArchiveProgram = (req, res) => {
       return res.status(500).send({ ErrorOccured: error });
     });
 };
+
+exports.DuplicateProgram = (req, res) => {
+  Program.findOne({ _id: req.params.id })
+    .then((result) => {
+      if (!result) {
+        return res.status(404).send({ message: "No Program Found" });
+      } else {
+        const newProgram = new Program({
+          ...result.toObject(),
+          Title: result.Title + " - Copy",
+          _id: new ObjectID(),
+        });
+        newProgram.save().then((result) => {
+          return res.status(201).send({ message: "Program Duplicated",program:result });
+        });
+      }
+    })
+    .catch((error) => {
+      return res.status(500).send({ ErrorOccured: error });
+    });
+}

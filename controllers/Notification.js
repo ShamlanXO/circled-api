@@ -13,6 +13,9 @@ exports.FetchNotification = (req, res) => {
       {
         To: req.userData.figgsId,
       },
+      {
+        To: req.userData._id,
+      },
 
       {
         UserId: req.userData._id,
@@ -52,6 +55,9 @@ exports.GetUnreadCount = (req, res) => {
 
       {
         UserId: req.userData._id,
+      },
+      {
+        To: req.userData._id,
       },
     ],
     IsRead: false,
@@ -101,9 +107,8 @@ exports.DeleteNotification = (req, res) => {
     });
 };
 
-exports.CreateGeneralNotification = (to, from, type, message, data) => {
-  // const type = ["update-todo", "update-program", "edited-diet"];
-  console.log(type, data);
+exports.CreateGeneralNotification = (to, from, type, message, data,socket=null) => {
+ 
   switch (type) {
     case "update-program":
       new Notification({
@@ -254,7 +259,25 @@ exports.CreateGeneralNotification = (to, from, type, message, data) => {
       });
       break;
 
+     
+      case "test":
+        socket.sendTo(to, "test-event", {
+          type: "new-notification",
+          data: {
+       
+          },
+        });
+break
     default:
+        new Notification({
+          ...data
+        }).save();
+      console.log("invite client notification")
+        socket.sendTo(to, type, {
+          type: type,
+          data,
+        });
+
       break;
   }
 };

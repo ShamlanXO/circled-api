@@ -2,7 +2,8 @@ const Order = require("../models/Orders");
 const Log = require("../models/ProgressLogs");
 const Notification = require("../models/Notifications");
 var ObjectID = require("mongodb").ObjectID;
-
+const NotificationHandler = require("../utils/SendNotification")
+const NotificationEvents =require("../constants/NotificationEvents")
 exports.CreateLog = (req, res) => {
   Order.find({
     _id: ObjectID(req.body.orderId),
@@ -15,7 +16,7 @@ exports.CreateLog = (req, res) => {
       return res.status(401).send({ message: "Unauthorized" });
     } else {
      
-      const log = new Log({
+      const log = {
         ...req.body,
         clientId: orderResult[0].UserId,
         programId: orderResult[0].Program._id,
@@ -36,36 +37,55 @@ exports.CreateLog = (req, res) => {
         id: orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
           req.body.day
         ].Exercise[req.body.exercise]._id,
-      });
-      log
-        .save()
+      }
+
+      Log.findOneAndUpdate(
+        {_id:req.body._id},
+        log, 
+        {
+        new: true,
+        upsert: true 
+      })
         .then(async(result) => {
 
-
-
-      await Notification.create(
-        [
-          {
-            To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
-            Type: "log-notification",
-            Sender: req.userData._id,
-            OrderId:req.body.orderId,
-            Title:req.userData.name + " commented on exercise",
-            UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
-            Description:req.body.message,
-          },
-        ]
-      );
-      req.app.get("socketService").sendTo(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId, {
-        type: "log-notification",
-        data: { name: req.userData.name, type: "log-notification" },
-      });
+          let NotificationObj=new NotificationHandler(req.app.get("socketService"))
+          NotificationObj.sendNotification(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+        NotificationEvents.LOG_NOTIFICATION,
+        {
+          To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+          Type: "log-notification",
+          Sender: req.userData._id,
+          OrderId:req.body.orderId,
+          Title:req.userData.name + " commented on exercise",
+          UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+          Description:req.body.message,
+        },
+        ""
+        )
+      // await Notification.create(
+      //   [
+      //     {
+      //       To: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+      //       Type: "log-notification",
+      //       Sender: req.userData._id,
+      //       OrderId:req.body.orderId,
+      //       Title:req.userData.name + " commented on exercise",
+      //       UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
+      //       Description:req.body.message,
+      //     },
+      //   ]
+      // );
+      // req.app.get("socketService").sendTo(String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId, {
+      //   type: "log-notification",
+      //   data: { name: req.userData.name, type: "log-notification" },
+      // });
           orderResult[0].Program.ExercisePlan.weeks[req.body.week].days[
             req.body.day
           ].Exercise[req.body.exercise].latestLog = {
             _id:result._id,
             createdBy: req.userData._id,
             message: req.body.message,
+            media: req.body.media,
             createdAt: new Date(),
             name: req.userData.name,
             profilePic: req.userData.profilePic,
@@ -80,6 +100,7 @@ exports.CreateLog = (req, res) => {
               createdBy: req.userData._id,
               message: req.body.message,
               createdAt: new Date(),
+              media: req.body.media,
               name: req.userData.name,
               profilePic: req.userData.profilePic,
               type: req.userData.type,
@@ -98,6 +119,9 @@ exports.CreateLog = (req, res) => {
     }
   });
 };
+
+
+
 
 exports.getPerticularLog = (req, res) => {
   Log.find({

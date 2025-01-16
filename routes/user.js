@@ -14,6 +14,7 @@ router.route("/reset-password").post(checkAuth,UserController.ResetPassword);
 router.route("/change-password/").patch(UserController.ChangePassword);
 router.route("/change-password-mail").post(UserController.ChangePasswordEmail);
 router.route("/delete/:UserId").delete(checkAuth, UserController.DeleteUser);
+router.route("/test").post(checkAuth,UserController.SendNotification)
 router
   .route("/updateSensitiveData")
   .patch(checkAuth, UserController.UserSensitiveDataUpdate);

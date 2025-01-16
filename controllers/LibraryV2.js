@@ -72,22 +72,60 @@ exports.updateVideo=(req,res)=>{
   })
 }
 
-exports.saveVideoToLibrary=(req,res)=>{  
-  Library.findOneAndUpdate({key:req.body.key},{savedToLibrary:true}).then(result=>{
+exports.saveVideoToLibrary=async(req,res)=>{  
+let name=req.body.name
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true})
+
+  if(countExists>0){
+    name=`${name}(${countExists})`
+  }
+  Library.findOneAndUpdate({key:req.body.key},{savedToLibrary:true,title:name}).then(result=>{
     res.status(200).send(result)
   }).catch(err=>{
     res.status(500).send(err)
   })
 }
 
-exports.addVideo=(req,res)=>{
+exports.addVideo=async(req,res)=>{
   delete req.body.UserId
+  let name=req.body.title
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
+console.log(name,countExists,{UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
+  if(countExists>0){
+    name=`${name}(${countExists})`
+  }
  Library.findOneAndUpdate({
     UserId:req.userData._id,
     
     key:req.body.key
   },{
-    ...req.body
+    ...req.body,
+    title:name
+  }).then(result=>{
+    if(result){
+     
+      res.status(200).send({...result,...req.body,  title:name});
+    }
+    else{
+      res.status(500).send("no record found")
+    }
+
+  }).catch(err=>{
+    console.log(err)
+    res.status(500).send(err)
+  })
+}
+
+exports.editVideo=(req,res)=>{
+  delete req.body.UserId
+ Library.findOneAndUpdate({
+    _id:req.body._id,
+    UserId:req.userData._id,
+ 
+    
+  },{
+    title:req.body.title,
+    triggerMuscle:req.body.triggerMuscle,
   }).then(result=>{
     if(result){
      
@@ -113,7 +151,7 @@ res.status(200).send(result)
 
 exports.getWorkout=(req, res) => {
  
-  WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic").then(result=>{
+  WorkoutLibrary.findOne({_id:req.params.id}).populate("CreatedBy","name profilePic expertise").then(result=>{
    if(result)
    res.status(200).send(result)
   else
@@ -124,21 +162,49 @@ exports.getWorkout=(req, res) => {
   })
 }
 
-exports.addWorkout=(req,res)=>{
- WorkoutLibrary.findOneAndUpdate(
-  {_id:req.body._id},
-  {...req.body,CreatedBy:req.userData._id},
-  {
-    new: true,
-    upsert: true // Make this update into an upsert
+exports.addWorkout=async (req,res)=>{
+  let Title = req.body.Title;
+
+  const countExists = await WorkoutLibrary.countDocuments({ 
+    CreatedBy: req.userData._id, 
+    $or: [
+      { Title: req.body.Title },
+      { Title: new RegExp(`^${req.body.Title} copy\\(\\d+\\)$`, 'i') }
+    ]
+  });
+
+  if (countExists > 0) {
+    Title = `${Title} copy(${countExists})`;
   }
-  
-  ).then(result=>{
-  res.status(200).send(result)
-}).catch(err=>{
-  console.log(err)
+
+
+ delete req.body._id
+  const newWorkout = new WorkoutLibrary({
+    ...req.body,
+    CreatedBy:req.userData._id,
+    Title
+  });
+  newWorkout.save().then(result=>{
+    res.status(200).send(result)
+  }).catch(err=>{
+    console.log(err)
     res.status(500).send(err)
   })
+
+//  WorkoutLibrary.findOneAndUpdate(
+//   {_id:req.body._id},
+//   {...req.body,CreatedBy:req.userData._id,Title},
+//   {
+//     new: true,
+//     upsert: true // Make this update into an upsert
+//   }
+  
+//   ).then(result=>{
+//   res.status(200).send(result)
+// }).catch(err=>{
+//   console.log(err)
+//     res.status(500).send(err)
+//   })
 }
 
 exports.updateWorkout=(req,res)=>{

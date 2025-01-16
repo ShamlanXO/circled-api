@@ -4,9 +4,14 @@ const DietPlanSchema = new mongoose.Schema({
   File: { type: String, default: null },
   Description: { type: String, default: null },
 });
-
+const MediaSchema = new mongoose.Schema({
+  type: { type: String, default: null },
+  file: { type: String, default: null },
+  title: { type: String, default: null },
+  description: { type: String, default: null },
+});
 const ExerciseSchema = new mongoose.Schema({
-  media: [{ type: String }],
+  media: [],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },
@@ -15,7 +20,7 @@ const ExerciseSchema = new mongoose.Schema({
   banner: { type: String, default: null },
 
   triggerMuscle: [{ type: String }],
-});
+},{strict:false});
 
 const ExercisePlanSchema = new mongoose.Schema({
   Title: { type: String, default: null },
@@ -42,6 +47,7 @@ const ProgramSchema = new mongoose.Schema(
     Requirements: { type: String, default: null },
     Type: { type: String, default: null },
     PaymentType: { type: String },
+    ProgramType:{type:String},
     Price: { type: Number, default: 0 },
     Discount: { type: Number },
     Type: { type: String },
@@ -61,7 +67,12 @@ const ProgramSchema = new mongoose.Schema(
     PlanId: { type: String, default: null },
     ProductId: { type: String, default: null },
     Notes: { type: String, default: null },
+    ScreenStats:{
+      CurrentScreen:{ type: String, default: null },
+      Week:{type:Number,default:null},
+      Day:{type:Number,default:null},
+    }
   },
-  { timestamps: true }
+  { timestamps: true ,strict:false}
 );
 module.exports = mongoose.model("program", ProgramSchema);

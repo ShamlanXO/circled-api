@@ -11,8 +11,10 @@ const User = require("../models/user");
 const Verify = require("../models/Verify");
 const Media = require("../models/MediaUploads");
 const axios = require("axios");
+const {isVideoOrImage} = require("../utils/helpers");
 var ImageKit = require("imagekit");
 const client = require('twilio')(process.env.twillio_SID, process.env.twillio_CRED);
+const packageJson = require('./../package.json');
 
 require("dotenv").config();
 var smtpTransport = nodemailer.createTransport({
@@ -71,7 +73,8 @@ exports.getSignatureUrl = (req, res) => {
     signatureVersion: "v4",
     // Put you region
   });
-  let key=`videos/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
+  const isVideo=isVideoOrImage(req.body.name)
+  let key=`${isVideo?"videos":"static"}/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
   var params = {
     ACL: "public-read",
     Bucket: "circled-videos", // Put your bucket name
@@ -95,6 +98,40 @@ exports.getSignatureUrl = (req, res) => {
 
 };
 
+
+exports.getMediaUploadSignedUrl=async(req, res) => {
+  const S3 = new AWS.S3({
+    endpoint: "s3.us-east-1.amazonaws.com", // Put you region
+    accessKeyId: "AKIAQOB4DHYAMZONMOVH",
+    secretAccessKey: "B1O6ptlLbj17lCWZvsvio49W6Fhj+OkGX5hy3NkV",
+    region: "us-east-1",
+    Bucket: "circled-logs", // Put your bucket name
+    signatureVersion: "v4",
+    // Put you region
+  });
+  const isVideo=isVideoOrImage(req.body.name)
+  let key=`${isVideo?"videos":"static"}/${req.userData._id}/${Date.now()}${"-"}-${req.body.name.replace(/\s/g, "")}`
+  var params = {
+    ACL: "public-read",
+    Bucket: "circled-logs", // Put your bucket name
+    Key: key,
+    Expires: 24 * 3600,
+    ContentType: req.body.type,
+  };
+  var signedUrlPut =await S3.getSignedUrl("putObject", params);
+  res.send(signedUrlPut);
+//  new Media({
+//   key: key, 
+//   createdAt:new Date(),
+//   updatedAt:new Date(),
+//   UserId:req.userData._id,
+//  }).save().then(result => {
+//   res.send(signedUrlPut);
+//  }).catch(err => {
+//   res.status(500).send(err)
+//  })
+
+};
 exports.generateToken = (req, res) => {
   jwt.sign(
     { keyFor: "temporaryAuth" },
@@ -707,4 +744,10 @@ exports.reportBug=async(req,res)=>{
     .status(500)
   });
 
+  
+
+
 }
+exports.GetVersion =async (req, res) => {
+  return res.status(200).send({ version: packageJson.version });
+ };

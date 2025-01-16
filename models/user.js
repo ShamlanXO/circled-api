@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
       medicalNotes: { type: String, default: null },
       allergiesAndReactions: { type: String, default: null },
       medications: { type: String, default: null },
+      history: { type: String, default: null },
       healthDocuments: [{ type: String }],
     },
     supps: {

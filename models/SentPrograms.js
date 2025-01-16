@@ -6,7 +6,7 @@ const DietPlanSchema = new mongoose.Schema({
 });
 
 const ExerciseSchema = new mongoose.Schema({
-  media: [{type:String}],
+  media: [],
   title: { type: String, default: null },
   reps: { type: Number, default: null },
   sets: { type: Number, default: null },
@@ -46,6 +46,7 @@ const ProgramSchema = new mongoose.Schema(
     Requirements: { type: String, default: null },
     Type: { type: String, default: null },
     PaymentType: { type: String },
+    ProgramType:{type:String},
     calendarType:{ type: String, default: null },
     maximumClient:{ type: String, default: null},
     totalClients:{ type: Number},
