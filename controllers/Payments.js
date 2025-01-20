@@ -283,7 +283,7 @@ exports.ApproveOrder = (req, res) => {
 exports.AddFreeOrder = (req, res) => {
   let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   Order.findOne({
-    SentProgramId: req.body.id,
+    "Program._id": req.body.programId,
     UserId: req.userData._id,
     Status: "Active",
   }).populate("SenderId").then((order) => {
@@ -407,7 +407,7 @@ exports.AddFreeOrder = (req, res) => {
                   //   type: "new-notification",
                   //   data: { name: req.userData.name, type: "sent-program" },
                   // });
-                  return res.status(201).send({ message: "Order Created" });
+                  return res.status(201).send({ message: "Order Created" , id:result._id});
                 })
                 .catch((error) => {
                   console.log("order create error")
