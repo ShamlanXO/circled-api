@@ -288,7 +288,7 @@ exports.AddFreeOrder = (req, res) => {
     Status: "Active",
   }).populate("SenderId").then((order) => {
     if (order) {
-      res.status(501).send();
+      res.status(501).send(order);
     } else {
       
      
