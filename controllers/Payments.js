@@ -434,6 +434,23 @@ exports.AddFreeOrder = (req, res) => {
   });
 };
 
+exports.checkIfOrderExists=(req,res)=>{
+  console.log(req.body)
+  Order.findOne({
+    "Program._id": req.body.id,
+    UserId: req.userData._id,
+    Status: "Active",
+  }).then((order) => {
+    if (order) {
+      res.status(200).send({exists:true , orderId:order._id})
+    }
+    else{
+      res.status(200).send({exists:false})
+    }
+  })
+}
+
+
 
 exports.Unsubscribe=(req,res)=>{
   Payment.findOne({ SubscriptionId: req.body.id,User: req.userData._id}).then(data=>{

@@ -7,6 +7,7 @@ router.route("/approveSubscription").post(checkAuth,PaymentController.ApproveSub
 router.route("/createOrder").post(checkAuth,PaymentController.createOrder);
 router.route("/approveOrder").post(checkAuth,PaymentController.ApproveOrder)
 router.route("/addFreeOrder").post(checkAuth,PaymentController.AddFreeOrder)
+router.route("/checkIfOrderExists").post(checkAuth,PaymentController.checkIfOrderExists)
 router.route("/unsubscribe").post(checkAuth,PaymentController.Unsubscribe)
 // router.route("/createOrder").post(PaymentController.createOrder);
 
