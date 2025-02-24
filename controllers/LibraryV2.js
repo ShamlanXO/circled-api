@@ -74,7 +74,7 @@ exports.updateVideo=(req,res)=>{
 
 exports.saveVideoToLibrary=async(req,res)=>{  
 let name=req.body.name
-  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true})
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true,markedForDeletion:false,UploadedSuccess:true})
 
   if(countExists>0){
     name=`${name}(${countExists})`

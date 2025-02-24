@@ -10,7 +10,7 @@ const config = require("./config/config");
 const helmet = require("helmet");
 const Routes = require("./routes/index");
 const Orders = require("./models/Orders");
-
+const Workout=require("./models/WorkoutLibrary")
 const MediaFiles=require("./models/MediaUploads")
 //const swaggerDocument = require("./documentation/swagger.json");
 //redist
@@ -291,23 +291,34 @@ cron.schedule('* 1 * * *', async() => {
     console.log(item.key ,i)
     let regex = new RegExp(item.key)
     let checkPrograms=await Program.findOne({
-      "ExercisePlan.weeks.days.Exercise.media":{ $regex: regex },
+      "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
       "IsDeleted":false
     })
 
+let checkWorkouts=await Workout.findOne({
+  "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
+
+})
+
     let checkOrders=await Orders.findOne({
-      "Program.ExercisePlan.weeks.days.Exercise.media":{ $regex: regex }
+      "Program.ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex }
     })
 
-    if(checkPrograms!==null||checkOrders!==null){
+  
+
+    if(checkPrograms!==null||checkOrders!==null ||checkWorkouts!==null){
       item.markedForDeletion=false
       item.updatedAt=new Date()
       item.save()
     }
     else{
-      item.markedForDeletion=true
-      item.updatedAt=new Date()
-      item.save()
+      if(item.savedToLibrary==true&&item.markedForDeletion==false){
+      return
+      }
+        item.markedForDeletion=true
+        item.updatedAt=new Date()
+        item.save()
+      
     }
   }
 
