@@ -281,9 +281,11 @@ app.use((error, req, res, next) => {
   });
 });
 
-cron.schedule('* 1 * * *', async() => {
+
+
+cron.schedule('*/5 0-5 * * *', async() => {
  console.log("running cron")
-  let mediaItems=await MediaFiles.find().sort({updatedAt:1}).limit(20)
+  let mediaItems=await MediaFiles.find({savedToLibrary:true}).sort({updatedAt:1}).limit(20)
 
   for(let i=0 ;i<mediaItems.length; i++){
 
@@ -304,20 +306,22 @@ let checkWorkouts=await Workout.findOne({
       "Program.ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex }
     })
 
-  
-
     if(checkPrograms!==null||checkOrders!==null ||checkWorkouts!==null){
       item.markedForDeletion=false
       item.updatedAt=new Date()
       item.save()
     }
     else{
-      if(item.savedToLibrary==true&&item.markedForDeletion==false){
-      return
+      if(item.savedToLibrary==true){
+        item.markedForDeletion=false
+        item.updatedAt=new Date()
+        item.save()
       }
+      else{
         item.markedForDeletion=true
         item.updatedAt=new Date()
         item.save()
+      }
       
     }
   }

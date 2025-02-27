@@ -55,7 +55,7 @@ exports.FetchVideoLibrary = (req, res) => {
 };
 
 exports.getAllVideos=(req,res)=>{
-  Library.find({UserId:req.userData._id,UploadedSuccess:true, savedToLibrary:true}).sort({createdAt:-1}).then(result=>{
+  Library.find({UserId:req.userData._id,UploadedSuccess:true, savedToLibrary:true,isDeleted:false}).sort({createdAt:-1}).then(result=>{
     res.status(200).send(result)
   }).catch(err=>{
     res.status(500).send(err)
@@ -74,7 +74,7 @@ exports.updateVideo=(req,res)=>{
 
 exports.saveVideoToLibrary=async(req,res)=>{  
 let name=req.body.name
-  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true,markedForDeletion:false,UploadedSuccess:true})
+  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.name,savedToLibrary:true,markedForDeletion:false,UploadedSuccess:true,isDeleted:false})
 
   if(countExists>0){
     name=`${name}(${countExists})`
@@ -89,11 +89,23 @@ let name=req.body.name
 exports.addVideo=async(req,res)=>{
   delete req.body.UserId
   let name=req.body.title
-  const countExists=await Library.countDocuments({UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
-console.log(name,countExists,{UserId:req.userData._id,title:req.body.title,savedToLibrary:true})
-  if(countExists>0){
-    name=`${name}(${countExists})`
+  const countExists=await Library.countDocuments({
+    UserId:req.userData._id,
+    $or: [
+      { title: req.body.title },
+      { title: new RegExp(`^${req.body.title} copy\\(\\d+\\)$`, 'i') }
+    ],
+    isDeleted:false,
+    UploadedSuccess:true,
+    savedToLibrary:true
+
+  })
+
+ 
+  if (countExists > 0) {
+    name = `${name} copy(${countExists})`;
   }
+
  Library.findOneAndUpdate({
     UserId:req.userData._id,
     
@@ -142,7 +154,7 @@ exports.editVideo=(req,res)=>{
 }
 
 exports.getWorkouts=(req,res)=>{
-  WorkoutLibrary.find({CreatedBy:req.userData._id}).then(result=>{
+  WorkoutLibrary.find({CreatedBy:req.userData._id}).sort({createdAt:-1}).then(result=>{
 res.status(200).send(result)
   }).catch(err=>{
     res.status(500).send(err)
