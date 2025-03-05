@@ -1,0 +1,2 @@
+.rotate{animation:rotation 4s linear infinite}@keyframes rotation{0%{transform:rotate(0deg)}to{transform:rotate(359deg)}}.player-wrapper{background:#000;overflow:hidden}
+/*# sourceMappingURL=main.c6170a68.chunk.css.map */
