@@ -13,4 +13,5 @@ router.route("/getWorkout/:id").get(LibraryRoute.getWorkout)
 router.route("/addworkout").post(checkAuth,LibraryRoute.addWorkout)
 router.route("/updateworkout").post(checkAuth,LibraryRoute.updateWorkout)
 router.route("/deleteworkout/:id").delete(checkAuth,LibraryRoute.deleteWorkout)
+router.route("/getpubliclib").get(checkAuth,LibraryRoute.getPublicVideos)
 module.exports = router;

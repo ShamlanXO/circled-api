@@ -1,6 +1,7 @@
 const Library = require("../models/MediaUploads");
 const Program= require("../models/Programs");
 const WorkoutLibrary=require("../models/WorkoutLibrary");
+const PublicVideos=require("../models/PublicLibrary")
 const aqp = require("api-query-params");
 var ObjectID = require("mongodb").ObjectID;
 exports.FetchVideoLibrary = (req, res) => {
@@ -234,4 +235,16 @@ exports.deleteWorkout=(req,res)=>{
       }).catch(err=>{
         res.status(500).send(err)
       })
+}
+
+
+exports.getPublicVideos=(req,res)=>{
+  PublicVideos.find()
+  .then(result => {
+    res.status(200).send(result);
+    })
+    .catch(err => {
+    res.status(500).send(err);
+    });
+
 }
