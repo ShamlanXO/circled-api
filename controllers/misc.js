@@ -480,7 +480,7 @@ if(req.body.authType=="login"){
 
         
           const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
-            expiresIn: req.body.remember ? "30d" : "7d",
+            expiresIn: req.body.remember ? "30d" : "30d",
           });
 
           return res.status(200).send({
@@ -556,7 +556,7 @@ if(req.body.authType=="login"){
   
           
             const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
-              expiresIn: req.body.remember ? "30d" : "7d",
+              expiresIn: req.body.remember ? "30d" : "30d",
             });
   
             return res.status(200).send({

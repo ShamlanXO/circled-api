@@ -260,7 +260,7 @@ exports.UserLogin = async(req, res) => {
           result[0].authType.includes(req.body.authType)
         ) {
           const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
-            expiresIn: req.body.remember ? "30d" : "7d",
+            expiresIn: req.body.remember ? "30d" : "30d",
           });
 
           return res.status(200).send({
@@ -287,7 +287,7 @@ exports.UserLogin = async(req, res) => {
         //     }
         //     if (same) {
         //       const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
-        //         expiresIn: req.body.remember ? "30d" : "7d",
+        //         expiresIn: req.body.remember ? "30d" : "30d",
         //       });
 
         //       return res.status(200).send({

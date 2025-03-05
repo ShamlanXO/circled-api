@@ -283,12 +283,12 @@ exports.ApproveOrder = (req, res) => {
 exports.AddFreeOrder = (req, res) => {
   let NotificationObj=new NotificationHandler(req.app.get("socketService"))
   Order.findOne({
-    SentProgramId: req.body.id,
+    "Program._id": req.body.programId,
     UserId: req.userData._id,
     Status: "Active",
   }).populate("SenderId").then((order) => {
     if (order) {
-      res.status(501).send();
+      res.status(501).send(order);
     } else {
       
      
@@ -407,7 +407,7 @@ exports.AddFreeOrder = (req, res) => {
                   //   type: "new-notification",
                   //   data: { name: req.userData.name, type: "sent-program" },
                   // });
-                  return res.status(201).send({ message: "Order Created" });
+                  return res.status(201).send({ message: "Order Created" , id:result._id});
                 })
                 .catch((error) => {
                   console.log("order create error")
@@ -433,6 +433,23 @@ exports.AddFreeOrder = (req, res) => {
     return res.status(500).send({ ErrorOccured: error });
   });
 };
+
+exports.checkIfOrderExists=(req,res)=>{
+  console.log(req.body)
+  Order.findOne({
+    "Program._id": req.body.id,
+    UserId: req.userData._id,
+    Status: "Active",
+  }).then((order) => {
+    if (order) {
+      res.status(200).send({exists:true , orderId:order._id})
+    }
+    else{
+      res.status(200).send({exists:false})
+    }
+  })
+}
+
 
 
 exports.Unsubscribe=(req,res)=>{
