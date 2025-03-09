@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../figgs/figgs-v2/src/components/animate/features.js"],"names":["domMax"],"mappings":"kJAAA,mBAEeA,YAAM,M","file":"static/js/139.47a69daa.chunk.js","sourcesContent":["import { domMax } from 'framer-motion/dist/framer-motion';\n\nexport default domMax;\n"],"sourceRoot":""}
