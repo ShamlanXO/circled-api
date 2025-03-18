@@ -191,7 +191,6 @@ exports.addWorkout=async (req,res)=>{
   }
 
 
- delete req.body._id
   const newWorkout = new WorkoutLibrary({
     ...req.body,
     CreatedBy:req.userData._id,
