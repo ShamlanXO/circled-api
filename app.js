@@ -230,37 +230,38 @@ app.get("/service-worker.js", (req, res) => {
 
 app.get("/updateSchema", async (req, res) => {
   
-  Program.find({_id:"669134b160fb25040e1c2ebf"}).then(async(programs) => {
+  Workout.find().then(async(programs) => {
    
     programs.map(async(program) => {
-      program.ExercisePlan.weeks.map((week,i1) => {
-        week.days.map((day,i2) => {
-          
-            day.Exercise.map((ex,i3) => {
-              ex.media.map((media,index) => {
-                if (true) {
-                  console.log(media);
-                  newmedia={
-                    ...media.file
-                  }
-           
-               program.ExercisePlan.weeks[i1].days[i2].Exercise[i3].media[index]=newmedia
-                }
-              });
-            });
-        
-        });
-      });
-    await Program.updateOne({_id:program._id},{
+      program.Exercise.map(i=>{
+      let newMedia=i.media.map(j=>{
+        if(typeof j == "string" )
+        return({
+          file:j
+        })
+        else{
+          return j
+        }
+      })
+      i.media=newMedia
+     
+    })
+
+
+    await Workout.updateOne({_id:program._id},{
       $set:{
-        ExercisePlan:program.ExercisePlan
+        Exercise:program.Exercise
       }
     })
+
+      })
+     
+   
     });
   }
+)
 
-  );
-});
+
 
 
 app.get("*", (req, res) =>
