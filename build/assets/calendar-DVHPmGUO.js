@@ -1,0 +1,1 @@
+import{l as g}from"./index-tWVfh1a_.js";const p=(l,e,f)=>{let r=0,o=0;return g.forEach(l.days,(a,c)=>{a.IsRest||(r=r+1),e!=null&&e[`${f}-${c}`]&&(o=o+1)}),r?o/r:0},h=(l,e)=>{let f=0;return g.forEach(l,(r,o)=>{g.forEach(r.days,(a,c)=>{e!=null&&e[`${o}-${c}`]&&(f=o)})}),f};export{p as a,h as g};

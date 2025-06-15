@@ -1,0 +1,1 @@
+import{r as s,j as c}from"./index-tWVfh1a_.js";function i(e){let[r,t]=s.useState(e.src);return s.useEffect(()=>{t(e.src)},[e.src]),r?c.jsx("img",{src:r,onError:()=>t("/images/instructor/exerciseImage.png"),style:e.style}):null}export{i as I};
