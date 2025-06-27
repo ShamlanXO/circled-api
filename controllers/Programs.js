@@ -40,6 +40,7 @@ exports.ProgramsAll = (req, res) => {
             createdAt: i.createdAt,
             Price: i.Price,
             Duration: i.Duration,
+            Description: i.Description,
             weeks: i.ExercisePlan.length,
           })),
         });
