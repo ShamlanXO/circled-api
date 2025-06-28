@@ -12,6 +12,12 @@ const notificationSchema = new mongoose.Schema(
     SentProgramId: { type: mongoose.Schema.Types.ObjectId, ref: "sentprogram" },
     OrderId: { type: mongoose.Schema.Types.ObjectId, ref: "PurchasedProgram" },
     IsRead: { type: Boolean, default: false },
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: "client" },
+    meta: {
+      week: { type: Number, default: null },
+      day: { type: Number, default: null },
+      exercise: { type: Number, default: null },
+    },
   },
   { timestamps: true }
 );

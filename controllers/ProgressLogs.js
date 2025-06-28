@@ -21,6 +21,7 @@ exports.CreateLog = (req, res) => {
         clientId: orderResult[0].UserId,
         programId: orderResult[0].Program._id,
         orderId: req.body.orderId,
+
         message: req.body.message,
         createdBy: req.userData._id,
         type: req.userData.type,
@@ -56,9 +57,16 @@ exports.CreateLog = (req, res) => {
           Type: "log-notification",
           Sender: req.userData._id,
           OrderId:req.body.orderId,
+          SentProgramId: orderResult[0].SentProgramId,
           Title:req.userData.name + " commented on exercise",
           UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
           Description:req.body.message,
+          clientId:orderResult[0].clientId,
+          meta:{
+            week:req.body.week,
+            day:req.body.day,
+            exercise:req.body.exercise,
+          }
         },
         ""
         )

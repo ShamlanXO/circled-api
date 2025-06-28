@@ -265,7 +265,7 @@ app.get("/updateSchema", async (req, res) => {
 
 
 app.get("*", (req, res) =>
-  res.sendFile(path.join(__dirname, "build/index.html"))
+  res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod/index.html":"build/index.html"))
 );
 
 //Middlewares for error handling and presentation.
