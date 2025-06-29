@@ -127,14 +127,14 @@ mongoose.connect(
 
 app.get("/", function (req, res) {
   console.log("runnning");
-  const filePath = path.resolve(__dirname, "build", "index.html");
+  const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       return console.log(err);
     }
 
     data = data
-      .replace(/__TITLE__/g, "Figgs")
+      .replace(/__TITLE__/g, "Circled.fit")
       .replace(/__DESCRIPTION__/g, "Fitness on demand");
 
     res.send(data);
@@ -146,7 +146,7 @@ app.get("/", function (req, res) {
 app.get("/public/sharedProgram/:id", function (req, res) {
   Program.findById(req.params.id).then((program) => {
     if (program) {
-      const filePath = path.resolve(__dirname, "build", "index.html");
+      const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
           return console.log(err);
@@ -168,17 +168,17 @@ app.get("/public/sharedProgram/:id", function (req, res) {
         res.send(data);
       });
     } else {
-      res.sendFile(path.join(__dirname, "build", "index.html"));
+      res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html"));
     }
   });
 
   //res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build")));
 app.get("/static/js/:fileName", (req, res) => {
   const requestedFileName = req.params.fileName;
-  const filePathWithHash = path.join(__dirname, `build/static/js/${requestedFileName}`);
+  const filePathWithHash = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js/${requestedFileName}`);
   
   // Check if the requested file with the hash exists
   if (fs.existsSync(filePathWithHash)) {
@@ -190,7 +190,7 @@ app.get("/static/js/:fileName", (req, res) => {
     const number = numberPart[1];
 
     // Read the files in the "js" folder
-    const jsFolder = path.join(__dirname, 'build/static/js');
+    const jsFolder = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js`);
     const filesInFolder = fs.readdirSync(jsFolder);
 
     // Find a file that matches the number part
@@ -221,11 +221,11 @@ app.get("/static/js/:fileName", (req, res) => {
 
 app.get("/static/css/:fileName", (req, res) => {
   const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `build/static/css/${fileName}`));
+  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/css/${fileName}`));
 });
 app.get("/service-worker.js", (req, res) => {
   const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `build/service-worker.js`));
+  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/service-worker.js`));
 });
 
 app.get("/updateSchema", async (req, res) => {
