@@ -218,6 +218,11 @@ exports.GetClientsSpecificProgram = (req, res) => {
 exports.GetSpecificClients = async (req, res) => {
   
  let client=await ClientModel.findOne({ _id: req.params.Id}).populate("client",'-password');
+ if(!client){
+  return res.status(404).send({
+    message: "No client Found",
+  });
+ }
  let sentProgram=await SentPrograms.findOne({SendTo:client.client.email,SenderId:req.userData._id}).sort({createdAt:-1});
  
   Order.findOne({

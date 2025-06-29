@@ -182,6 +182,7 @@ exports.getLogHistory = (req, res) => {
             createdBy: "$createdBy",
             type: "$type",
             title: "$title",
+            media: "$media",
             dayTitle: "$dayTitle",
           },
         },
