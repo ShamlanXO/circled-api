@@ -1,6 +1,6 @@
 {
   "name": "lms-api",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "private": true,
   "dependencies": {
     "api-query-params": "^4.14.0",
@@ -52,7 +52,8 @@
     "start": "node app.js",
     "dev": "cross-env NODE_ENV=DEV nodemon app.js",
     "prod": "cross-env NODE_ENV=PROD node app.js",
-    "deploy": "node deploy.js"
+    "deploy": "sudo node deploy.js",
+    "deploy_dev": "cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\""
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
