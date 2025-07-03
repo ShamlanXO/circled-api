@@ -213,23 +213,19 @@ exports.getLogHistory = (req, res) => {
     });
 };
 
-exports.deleteLog =(req, res) => {
-  Log.findOneAndDelete({_id:req.params.id}).then(async(item)=>{
-    if(!item)
-    {
-      res.status(500).send({ message:"Error"})
-    }
-
-
-
-
-
-res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item})
-  }).catch((err)=>{
-    console.log(err)
-    res.status(500).send({ message:"Error"})
-  })
-}
+exports.deleteLog = (req, res) => {
+  Log.findOneAndDelete({ _id: req.params.id })
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Log not found" });
+      }
+      return res.status(200).send({ message: "Log deleted", deleteRecent: false, deletedItem: item });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send({ message: "Error" });
+    });
+};
 
 exports.markAsRead=(req, res) => {
   Log.updateOne({_id:req.body._id},{IsRead:true}).then(async(item)=>{
