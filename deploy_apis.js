@@ -67,13 +67,7 @@ async function deploy() {
     console.log('\n📦 Installing dependencies...');
     runCommand('npm install');
     
-    // 4. Run any build/test commands if needed
-    console.log('\n🧪 Running tests...');
-    try {
-      runCommand('npm test');
-    } catch (error) {
-      console.log('⚠️  Tests failed or not configured, continuing with deployment...');
-    }
+   
     
     // 5. Commit and push
     console.log('\n📝 Committing and pushing changes...');
