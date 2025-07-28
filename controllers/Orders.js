@@ -227,7 +227,7 @@ exports.GetSpecificClients = async (req, res) => {
  
   Order.findOne({
    UserId:client.client._id,
-   //isActive:true,
+   isActive:true,
     "Program.createdBy": req.userData._id,
   }).then(async(result) => {
     console.log(result)
