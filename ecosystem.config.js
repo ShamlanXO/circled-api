@@ -1,6 +1,6 @@
 module.exports = { 
     apps: [{
-      name    : "lms-api",
+      name    : "dev",
       script  : "npm",
       args    : "start"
     }]

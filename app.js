@@ -10,7 +10,7 @@ const config = require("./config/config");
 const helmet = require("helmet");
 const Routes = require("./routes/index");
 const Orders = require("./models/Orders");
-
+const Workout=require("./models/WorkoutLibrary")
 const MediaFiles=require("./models/MediaUploads")
 //const swaggerDocument = require("./documentation/swagger.json");
 //redist
@@ -127,14 +127,14 @@ mongoose.connect(
 
 app.get("/", function (req, res) {
   console.log("runnning");
-  const filePath = path.resolve(__dirname, "build", "index.html");
+  const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       return console.log(err);
     }
 
     data = data
-      .replace(/__TITLE__/g, "Figgs")
+      .replace(/__TITLE__/g, "Circled.fit")
       .replace(/__DESCRIPTION__/g, "Fitness on demand");
 
     res.send(data);
@@ -146,7 +146,7 @@ app.get("/", function (req, res) {
 app.get("/public/sharedProgram/:id", function (req, res) {
   Program.findById(req.params.id).then((program) => {
     if (program) {
-      const filePath = path.resolve(__dirname, "build", "index.html");
+      const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
           return console.log(err);
@@ -168,17 +168,17 @@ app.get("/public/sharedProgram/:id", function (req, res) {
         res.send(data);
       });
     } else {
-      res.sendFile(path.join(__dirname, "build", "index.html"));
+      res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html"));
     }
   });
 
   //res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build")));
 app.get("/static/js/:fileName", (req, res) => {
   const requestedFileName = req.params.fileName;
-  const filePathWithHash = path.join(__dirname, `build/static/js/${requestedFileName}`);
+  const filePathWithHash = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js/${requestedFileName}`);
   
   // Check if the requested file with the hash exists
   if (fs.existsSync(filePathWithHash)) {
@@ -190,7 +190,7 @@ app.get("/static/js/:fileName", (req, res) => {
     const number = numberPart[1];
 
     // Read the files in the "js" folder
-    const jsFolder = path.join(__dirname, 'build/static/js');
+    const jsFolder = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js`);
     const filesInFolder = fs.readdirSync(jsFolder);
 
     // Find a file that matches the number part
@@ -221,50 +221,51 @@ app.get("/static/js/:fileName", (req, res) => {
 
 app.get("/static/css/:fileName", (req, res) => {
   const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `build/static/css/${fileName}`));
+  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/css/${fileName}`));
 });
 app.get("/service-worker.js", (req, res) => {
   const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `build/service-worker.js`));
+  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/service-worker.js`));
 });
 
 app.get("/updateSchema", async (req, res) => {
   
-  Program.find({_id:"669134b160fb25040e1c2ebf"}).then(async(programs) => {
+  Workout.find().then(async(programs) => {
    
     programs.map(async(program) => {
-      program.ExercisePlan.weeks.map((week,i1) => {
-        week.days.map((day,i2) => {
-          
-            day.Exercise.map((ex,i3) => {
-              ex.media.map((media,index) => {
-                if (true) {
-                  console.log(media);
-                  newmedia={
-                    ...media.file
-                  }
-           
-               program.ExercisePlan.weeks[i1].days[i2].Exercise[i3].media[index]=newmedia
-                }
-              });
-            });
-        
-        });
-      });
-    await Program.updateOne({_id:program._id},{
+      program.Exercise.map(i=>{
+      let newMedia=i.media.map(j=>{
+        if(typeof j == "string" )
+        return({
+          file:j
+        })
+        else{
+          return j
+        }
+      })
+      i.media=newMedia
+     
+    })
+
+
+    await Workout.updateOne({_id:program._id},{
       $set:{
-        ExercisePlan:program.ExercisePlan
+        Exercise:program.Exercise
       }
     })
+
+      })
+     
+   
     });
   }
+)
 
-  );
-});
+
 
 
 app.get("*", (req, res) =>
-  res.sendFile(path.join(__dirname, "build/index.html"))
+  res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod/index.html":"build/index.html"))
 );
 
 //Middlewares for error handling and presentation.
@@ -281,9 +282,11 @@ app.use((error, req, res, next) => {
   });
 });
 
-cron.schedule('* 1 * * *', async() => {
+
+
+cron.schedule('*/5 0-5 * * *', async() => {
  console.log("running cron")
-  let mediaItems=await MediaFiles.find().sort({updatedAt:1}).limit(20)
+  let mediaItems=await MediaFiles.find({savedToLibrary:true}).sort({updatedAt:1}).limit(20)
 
   for(let i=0 ;i<mediaItems.length; i++){
 
@@ -291,23 +294,36 @@ cron.schedule('* 1 * * *', async() => {
     console.log(item.key ,i)
     let regex = new RegExp(item.key)
     let checkPrograms=await Program.findOne({
-      "ExercisePlan.weeks.days.Exercise.media":{ $regex: regex },
+      "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
       "IsDeleted":false
     })
 
+let checkWorkouts=await Workout.findOne({
+  "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
+
+})
+
     let checkOrders=await Orders.findOne({
-      "Program.ExercisePlan.weeks.days.Exercise.media":{ $regex: regex }
+      "Program.ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex }
     })
 
-    if(checkPrograms!==null||checkOrders!==null){
+    if(checkPrograms!==null||checkOrders!==null ||checkWorkouts!==null){
       item.markedForDeletion=false
       item.updatedAt=new Date()
       item.save()
     }
     else{
-      item.markedForDeletion=true
-      item.updatedAt=new Date()
-      item.save()
+      if(item.savedToLibrary==true){
+        item.markedForDeletion=false
+        item.updatedAt=new Date()
+        item.save()
+      }
+      else{
+        item.markedForDeletion=true
+        item.updatedAt=new Date()
+        item.save()
+      }
+      
     }
   }
 

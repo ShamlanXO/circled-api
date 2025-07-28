@@ -21,6 +21,7 @@ exports.CreateLog = (req, res) => {
         clientId: orderResult[0].UserId,
         programId: orderResult[0].Program._id,
         orderId: req.body.orderId,
+
         message: req.body.message,
         createdBy: req.userData._id,
         type: req.userData.type,
@@ -56,9 +57,16 @@ exports.CreateLog = (req, res) => {
           Type: "log-notification",
           Sender: req.userData._id,
           OrderId:req.body.orderId,
+          SentProgramId: orderResult[0].SentProgramId,
           Title:req.userData.name + " commented on exercise",
           UserId: String(req.userData._id)==String(orderResult[0].UserId)?orderResult[0].Program.createdBy:orderResult[0].UserId,
           Description:req.body.message,
+          clientId:orderResult[0].clientId,
+          meta:{
+            week:req.body.week,
+            day:req.body.day,
+            exercise:req.body.exercise,
+          }
         },
         ""
         )
@@ -174,6 +182,7 @@ exports.getLogHistory = (req, res) => {
             createdBy: "$createdBy",
             type: "$type",
             title: "$title",
+            media: "$media",
             dayTitle: "$dayTitle",
           },
         },
@@ -204,23 +213,19 @@ exports.getLogHistory = (req, res) => {
     });
 };
 
-exports.deleteLog =(req, res) => {
-  Log.findOneAndDelete({_id:req.params.id}).then(async(item)=>{
-    if(!item)
-    {
-      res.status(500).send({ message:"Error"})
-    }
-
-
-
-
-
-res.status(200).send({ message:"Log deleted",deleteRecent:false,deletedItem:item})
-  }).catch((err)=>{
-    console.log(err)
-    res.status(500).send({ message:"Error"})
-  })
-}
+exports.deleteLog = (req, res) => {
+  Log.findOneAndDelete({ _id: req.params.id })
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Log not found" });
+      }
+      return res.status(200).send({ message: "Log deleted", deleteRecent: false, deletedItem: item });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send({ message: "Error" });
+    });
+};
 
 exports.markAsRead=(req, res) => {
   Log.updateOne({_id:req.body._id},{IsRead:true}).then(async(item)=>{

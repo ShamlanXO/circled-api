@@ -1,0 +1,1 @@
+import{r as e,j as s}from"./index-KGLVV5ey.js";import{R as f}from"./index-y4Gy3bab.js";const m=e.forwardRef(function(t,l){let[c,r]=e.useState(t.src);return e.useEffect(()=>{r(t.url)},[t.url]),s.jsx(f,{...t,ref:l,url:c,onError:a=>{c!==t.raw&&(a!=null&&a.type)&&r(t.raw)}})});export{m as R};

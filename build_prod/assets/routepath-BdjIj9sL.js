@@ -1,0 +1,1 @@
+const c=(t,r,e=null)=>{switch(t){case"workout":return"/shared/workout/"+e+r;case"send":return"/sendProgram/"+e+r;case"edit":return"/editProgram/"+e+r;case"customize":return"/clientProfile/"+e+r;case"create":return"/createProgram"+r}};export{c};

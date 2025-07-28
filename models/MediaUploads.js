@@ -14,6 +14,7 @@ const mediaSchema = new mongoose.Schema({
   title:{type:String,default:"unamed"},
   UploadedSuccess:{type:Boolean,default:false},
   TranscodeComplete:{type:Boolean,default:false},
+  isDeleted:{type:Boolean,default:false},
 },
 { timestamps: true});
 
