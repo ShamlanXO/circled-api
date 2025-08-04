@@ -345,6 +345,9 @@ exports.UpdateOrder = async (req, res) => {
         return res.status(500).send({ ErrorOccured: error });
       }
       if (response) {
+        if(req.body?.silent){
+          return res.status(200).send({ message: "Order Details Updated" });
+        }
         if (req.body?.Program) {
           let prdiff = detailedDiff(
             JSON.parse(JSON.stringify(orderData.Program)),
