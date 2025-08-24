@@ -227,7 +227,7 @@ exports.GetSpecificClients = async (req, res) => {
  
   Order.findOne({
    UserId:client.client._id,
-   //isActive:true,
+   isActive:true,
     "Program.createdBy": req.userData._id,
   }).then(async(result) => {
     console.log(result)
@@ -345,6 +345,9 @@ exports.UpdateOrder = async (req, res) => {
         return res.status(500).send({ ErrorOccured: error });
       }
       if (response) {
+        if(req.body?.silent){
+          return res.status(200).send({ message: "Order Details Updated" });
+        }
         if (req.body?.Program) {
           let prdiff = detailedDiff(
             JSON.parse(JSON.stringify(orderData.Program)),

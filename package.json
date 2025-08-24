@@ -1,6 +1,6 @@
 {
   "name": "lms-api",
-  "version": "3.1.14",
+  "version": "31.1.20",
   "private": true,
   "dependencies": {
     "api-query-params": "^4.14.0",
@@ -55,7 +55,9 @@
     "deploy": "sudo node deploy.js",
     "deploy_dev": "sudo node deploy.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\"",
     "deploy_prod": "cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\"",
-    "deploy_dev_prod": "sudo node deploy.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\""
+    "deploy_dev_prod": "sudo node deploy.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\"",
+    "deploy_dev_api": "sudo node deploy_apis.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\"",
+    "deploy_dev_prod_api": "sudo node deploy_apis.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\""
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
