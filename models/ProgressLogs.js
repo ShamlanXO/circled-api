@@ -19,4 +19,9 @@ const LogSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+LogSchema.index({ orderId: 1, week: 1, day: 1 });
+LogSchema.index({ clientId: 1, IsRead: 1 });
+LogSchema.index({ instructorId: 1 });
+
 module.exports = mongoose.model("progressLog", LogSchema);

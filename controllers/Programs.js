@@ -25,6 +25,7 @@ exports.ProgramsAll = (req, res) => {
     .limit(limit)
     .sort(sort)
     .select(projection)
+    .lean()
     .then((result) => {
       if (result.length < 1) {
         return res.status(404).send({
@@ -175,6 +176,7 @@ exports.FetchSpecificProgramPublic = (req, res) => {
   console.log("fetching specific");
   Program.findOne({ _id: req.params.Id })
     .populate("createdBy", "name profilePic")
+    .lean()
     .then((result) => {
       if (result?.length < 1) {
         return res.status(404).send({ message: "No Program Found" });
@@ -333,7 +335,7 @@ exports.CreateProgram = async (req, res) => {
             ],
           },
           { _id: 1, email: 1 }
-        ).then((userData) => {
+        ).lean().then((userData) => {
           let dataChat = [];
           if (userData.length > 0)
             userData.map((item) => {
@@ -473,42 +475,43 @@ exports.CreateProgram = async (req, res) => {
       }
     }
   } else {
-    axios
-      .post(
-        "https://api.sandbox.paypal.com/v1/catalogs/products",
-
-        {
-          name: req.body.Title,
-          type: "DIGITAL",
-        },
-
-        {
-          headers: {
-            Authorization:
-              "Basic QVFBRWJHOGJmX0FTZGg2S1RtUUpZUGlIVzBsaUtHMXJiVXhNZF8tS3IzbGt4MDN2akV4SDBRNGR0MHg2OGRLQ0tlSFlZYmF4dFpwSnk1Ry06RUFzYVZTVkhIYWpSSGdlTnFjT3NBZldRY2xPV1IyRFpIYkd3MFFNcEFrZ19hVzktUnhxYjVQamlTUnVLNGNMelJGZnRLQnVmTi1mMFJ5RmY=",
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((prdata) => {
-        const ProgramCon = new Program({
-          ...req.body,
-          ProductId: prdata.data.id,
-          createdBy: req.userData._id,
-        });
-        ProgramCon.save()
-          .then((result) => {
-            return res
-              .status(201)
-              .send({ Message: "Program Created", item: result });
-          })
-          .catch((error) => {
-            return res.status(500).send({ ErrorOccured: error });
-          });
-      })
-      .catch((err) => {
-        return res.status(500).send({ ErrorOccured: err });
+    // Save the program immediately so it appears in the UI right away.
+    // The PayPal product registration is fired in the background and updates
+    // ProductId once it completes — it no longer blocks the response.
+    try {
+      const ProgramCon = new Program({
+        ...req.body,
+        createdBy: req.userData._id,
       });
+      const result = await ProgramCon.save();
+
+      // Respond to the client straight away
+      res.status(201).send({ Message: "Program Created", item: result });
+
+      // Register the product with PayPal in the background (non-blocking)
+      axios
+        .post(
+          "https://api.sandbox.paypal.com/v1/catalogs/products",
+          { name: req.body.Title, type: "DIGITAL" },
+          {
+            headers: {
+              Authorization:
+                "Basic QVFBRWJHOGJmX0FTZGg2S1RtUUpZUGlIVzBsaUtHMXJiVXhNZF8tS3IzbGt4MDN2akV4SDBRNGR0MHg2OGRLQ0tlSFlZYmF4dFpwSnk1Ry06RUFzYVZTVkhIYWpSSGdlTnFjT3NBZldRY2xPV1IyRFpIYkd3MFFNcEFrZ19hVzktUnhxYjVQamlTUnVLNGNMelJGZnRLQnVmTi1mMFJ5RmY=",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((prdata) => {
+          Program.updateOne({ _id: result._id }, { ProductId: prdata.data.id }).catch(
+            (err) => console.error("PayPal product id update failed:", err)
+          );
+        })
+        .catch((err) => {
+          console.error("PayPal product registration failed (non-critical):", err?.message);
+        });
+    } catch (error) {
+      return res.status(500).send({ ErrorOccured: error });
+    }
   }
 };
 
@@ -637,7 +640,7 @@ exports.SendProgram = async (req, res) => {
           ],
         },
         { _id: 1, email: 1 }
-      ).then((userData) => {
+      ).lean().then((userData) => {
         let dataChat = [];
         if (userData.length > 0)
           userData.map((item) => {

@@ -1,0 +1,39 @@
+// @mui
+import { SvgIcon } from "@mui/material";
+export default function Icon_Feedback(props) {
+  return (
+    <SvgIcon
+      width="19"
+      height="19"
+      viewBox="0 0 19 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <circle
+        cx="9.45833"
+        cy="9.45833"
+        r="8.45833"
+        fill={"none"}
+        stroke="#14B842"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8.33333 11.9998L6 9.6665"
+        stroke="#14B842"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M13 7.33325L8.33337 11.9999"
+        stroke="#14B842"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </SvgIcon>
+  );
+}

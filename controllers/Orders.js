@@ -51,6 +51,9 @@ exports.CreateOrder = (req, res) => {
 };
 
 exports.GetAllClients = (req, res) => {
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = parseInt(req.query.skip) || 0;
+  
   Order.aggregate([
     {
       $match: {
@@ -91,6 +94,12 @@ exports.GetAllClients = (req, res) => {
         profilePic: "$clientData.profilePic",
       },
     },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
   ])
 
     // Order.find(
@@ -118,6 +127,9 @@ exports.GetAllClients = (req, res) => {
 };
 
 exports.GetClients = (req, res) => {
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = parseInt(req.query.skip) || 0;
+  
   Order.aggregate([
     {
       $match: {
@@ -159,7 +171,13 @@ exports.GetClients = (req, res) => {
         isActive: "$program.isActive",
         profilePic: "$clientData.profilePic",
       },
-    }
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
   ])
 
     // Order.find(

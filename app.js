@@ -1,42 +1,30 @@
+require("dotenv").config();
+
 const express = require("express");
-
 const morgan = require("morgan");
-const app = express();
-const rateLimit = require("express-rate-limit");
 const mongoose = require("mongoose");
-const User = require("./models/user");
 const bodyParser = require("body-parser");
-const config = require("./config/config");
-const helmet = require("helmet");
-const Routes = require("./routes/index");
-const Orders = require("./models/Orders");
-const Workout=require("./models/WorkoutLibrary")
-const MediaFiles=require("./models/MediaUploads")
-//const swaggerDocument = require("./documentation/swagger.json");
-//redist
-const axios = require("axios");
-const fs = require("fs");
-const Program = require("./models/Programs");
-
-var cron = require('node-cron');
-var ObjectID = require("mongodb").ObjectID;
-
 const cors = require("cors");
 const compression = require("compression");
 const path = require("path");
+const fs = require("fs");
+const cron = require("node-cron");
+
+const config = require("./config/config");
+const helmet = require("helmet");
+const Routes = require("./routes/index");
+const CheckAuth = require("./middleware/CheckAuth");
 const SocketService = require("./components/socket");
+const Orders = require("./models/Orders");
+const Workout = require("./models/WorkoutLibrary");
+const MediaFiles = require("./models/MediaUploads");
+const Program = require("./models/Programs");
+
+const app = express();
 const server = require("http").Server(app);
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 150, // limit each IP to 150 requests per windowMs
-//   message: "Too many requests sent from your ip in short span of time"
-// });
 
-// //  apply to all requests
-// app.use(limiter);
+const BUILD_DIR = process.env.NODE_ENV === "PROD" ? "build_prod" : "build";
 global.appRoot = path.resolve(__dirname);
-
-require("dotenv").config();
 
 app.use(compression());
 server.listen(config.port, () => console.log("Express server is running"));
@@ -66,25 +54,14 @@ app.use(morgan("dev"));
 // app.get("/favicon.ico", (req, res) => res.status(204));
 Routes(app);
 
-mongoose.connect(
-  config.db,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    autoIndex: true,
-    useUnifiedTopology: true,
-    poolSize: 10,
-  },
-  function (err) {
-    if (err) {
-      console.log(
-        `Unable to Connect to LMS Database. ${err.name} ${err.message}`
-      );
-      process.exit(1);
-    } else {
-    }
-  }
-);
+mongoose.connect(config.db, {
+  maxPoolSize: 10,
+})
+  .then(() => {})
+  .catch((err) => {
+    console.log(`Unable to connect to database. ${err.name}: ${err.message}`);
+    process.exit(1);
+  });
 
 // const saveData=(firstName,lastName,displayName,email)=>{
 //   new Contact({firstName,lastName,displayName,email}).save((err,newUser)=>{
@@ -125,9 +102,8 @@ mongoose.connect(
 
 
 
-app.get("/", function (req, res) {
-  console.log("runnning");
-  const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
+app.get("/", (req, res) => {
+  const filePath = path.resolve(__dirname, BUILD_DIR, "index.html");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       return console.log(err);
@@ -143,10 +119,10 @@ app.get("/", function (req, res) {
   //res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.get("/public/sharedProgram/:id", function (req, res) {
-  Program.findById(req.params.id).then((program) => {
+app.get("/public/sharedProgram/:id", (req, res) => {
+  Program.findById(req.params.id).lean().then((program) => {
     if (program) {
-      const filePath = path.resolve(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html");
+      const filePath = path.resolve(__dirname, BUILD_DIR, "index.html");
       fs.readFile(filePath, "utf8", (err, data) => {
         if (err) {
           return console.log(err);
@@ -168,51 +144,33 @@ app.get("/public/sharedProgram/:id", function (req, res) {
         res.send(data);
       });
     } else {
-      res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build", "index.html"));
+      res.sendFile(path.join(__dirname, BUILD_DIR, "index.html"));
     }
   });
-
-  //res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(express.static(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod":"build")));
+app.use(express.static(path.join(__dirname, BUILD_DIR)));
 app.get("/static/js/:fileName", (req, res) => {
   const requestedFileName = req.params.fileName;
-  const filePathWithHash = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js/${requestedFileName}`);
-  
-  // Check if the requested file with the hash exists
+  const jsDir = path.join(__dirname, BUILD_DIR, "static/js");
+  const filePathWithHash = path.join(jsDir, requestedFileName);
+
   if (fs.existsSync(filePathWithHash)) {
-    // If the hashed file exists, send it as the response
-    res.sendFile(filePathWithHash);
-  } else {
-    const numberPart = requestedFileName.match(/^(\d+|main)\./);
+    return res.sendFile(filePathWithHash);
+  }
+  const numberPart = requestedFileName.match(/^(\d+|main)\./);
   if (numberPart) {
     const number = numberPart[1];
-
-    // Read the files in the "js" folder
-    const jsFolder = path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/js`);
-    const filesInFolder = fs.readdirSync(jsFolder);
-
-    // Find a file that matches the number part
+    const filesInFolder = fs.readdirSync(jsDir);
     const matchingFile = filesInFolder.find((file) => {
       const fileNumberPart = file.match(/^(\d+|main)\./);
-      return fileNumberPart && fileNumberPart[1] === number&& !file.endsWith(".map");
+      return fileNumberPart && fileNumberPart[1] === number && !file.endsWith(".map");
     });
-
     if (matchingFile) {
-      // If a matching file is found, send it as the response
-      res.sendFile(path.join(jsFolder, matchingFile));
-    } else {
-      // If no matching file is found, return a 404 Not Found response
-      res.status(404).send("File not found");
-    }
-  
-    } else {
-     
-      // If neither file exists, return a 404 Not Found response
-      res.status(404).send("File not found");
+      return res.sendFile(path.join(jsDir, matchingFile));
     }
   }
+  res.status(404).send("File not found");
 });
 
 
@@ -220,63 +178,50 @@ app.get("/static/js/:fileName", (req, res) => {
 
 
 app.get("/static/css/:fileName", (req, res) => {
-  const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/static/css/${fileName}`));
+  res.sendFile(path.join(__dirname, BUILD_DIR, "static/css", req.params.fileName));
 });
-app.get("/service-worker.js", (req, res) => {
-  const fileName = req.params.fileName;
-  res.sendFile(path.join(__dirname, `${process.env.NODE_ENV==="PROD"?"build_prod":"build"}/service-worker.js`));
+app.get("/service-worker.js", (_req, res) => {
+  res.sendFile(path.join(__dirname, BUILD_DIR, "service-worker.js"));
 });
 
-app.get("/updateSchema", async (req, res) => {
-  
-  Workout.find().then(async(programs) => {
-   
-    programs.map(async(program) => {
-      program.Exercise.map(i=>{
-      let newMedia=i.media.map(j=>{
-        if(typeof j == "string" )
-        return({
-          file:j
-        })
-        else{
-          return j
-        }
-      })
-      i.media=newMedia
-     
-    })
-
-
-    await Workout.updateOne({_id:program._id},{
-      $set:{
-        Exercise:program.Exercise
-      }
-    })
-
-      })
-     
-   
-    });
+// B-11 fix: protect the /updateSchema route with authentication so only logged-in users can run it
+app.get("/updateSchema", CheckAuth, async (_req, res) => {
+  try {
+    const programs = await Workout.find();
+    for (const program of programs) {
+      program.Exercise.forEach((i) => {
+        i.media = i.media.map((j) =>
+          typeof j === "string" ? { file: j } : j
+        );
+      });
+      await Workout.updateOne(
+        { _id: program._id },
+        { $set: { Exercise: program.Exercise } }
+      );
+    }
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-)
+});
 
 
 
 
-app.get("*", (req, res) =>
-  res.sendFile(path.join(__dirname, process.env.NODE_ENV==="PROD"?"build_prod/index.html":"build/index.html"))
+app.get("*", (_req, res) =>
+  res.sendFile(path.join(__dirname, BUILD_DIR, "index.html"))
 );
 
 //Middlewares for error handling and presentation.
 app.use((req, res, next) => {
   const error = new Error("Not found");
-  error.status(404);
+  // B-13 fix: error.status is a property, not a function
+  error.status = 404;
   next(error);
 });
 
 app.use((error, req, res, next) => {
-  res.status(error.status);
+  res.status(error.status || 500);
   res.json({
     message: error.message,
   });
@@ -284,50 +229,42 @@ app.use((error, req, res, next) => {
 
 
 
-cron.schedule('*/5 0-5 * * *', async() => {
- console.log("running cron")
-  let mediaItems=await MediaFiles.find({savedToLibrary:true}).sort({updatedAt:1}).limit(20)
+cron.schedule("*/5 0-5 * * *", async () => {
+  const mediaItems = await MediaFiles.find({ savedToLibrary: true })
+    .sort({ updatedAt: 1 })
+    .limit(20)
+    .lean();
 
-  for(let i=0 ;i<mediaItems.length; i++){
+  for (const item of mediaItems) {
+    const regex = new RegExp(item.key);
+    const [checkPrograms, checkWorkouts, checkOrders] = await Promise.all([
+      Program.findOne(
+        {
+          "ExercisePlan.weeks.days.Exercise.media.file": { $regex: regex },
+          IsDeleted: false,
+        },
+        { _id: 1 }
+      ).lean(),
+      Workout.findOne(
+        { "ExercisePlan.weeks.days.Exercise.media.file": { $regex: regex } },
+        { _id: 1 }
+      ).lean(),
+      Orders.findOne(
+        {
+          "Program.ExercisePlan.weeks.days.Exercise.media.file": { $regex: regex },
+        },
+        { _id: 1 }
+      ).lean(),
+    ]);
 
-    item=mediaItems[i]
-    console.log(item.key ,i)
-    let regex = new RegExp(item.key)
-    let checkPrograms=await Program.findOne({
-      "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
-      "IsDeleted":false
-    })
+    const inUse = checkPrograms !== null || checkOrders !== null || checkWorkouts !== null;
+    const markedForDeletion = !inUse && !item.savedToLibrary;
 
-let checkWorkouts=await Workout.findOne({
-  "ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex },
-
-})
-
-    let checkOrders=await Orders.findOne({
-      "Program.ExercisePlan.weeks.days.Exercise.media.file":{ $regex: regex }
-    })
-
-    if(checkPrograms!==null||checkOrders!==null ||checkWorkouts!==null){
-      item.markedForDeletion=false
-      item.updatedAt=new Date()
-      item.save()
-    }
-    else{
-      if(item.savedToLibrary==true){
-        item.markedForDeletion=false
-        item.updatedAt=new Date()
-        item.save()
-      }
-      else{
-        item.markedForDeletion=true
-        item.updatedAt=new Date()
-        item.save()
-      }
-      
-    }
+    await MediaFiles.updateOne(
+      { _id: item._id },
+      { $set: { markedForDeletion, updatedAt: new Date() } }
+    );
   }
-
-
 });
 
 module.exports = app;

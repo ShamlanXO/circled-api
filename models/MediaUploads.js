@@ -18,4 +18,8 @@ const mediaSchema = new mongoose.Schema({
 },
 { timestamps: true});
 
+mediaSchema.index({ UserId: 1, isDeleted: 1 });
+mediaSchema.index({ key: 1 });
+mediaSchema.index({ savedToLibrary: 1 });
+
 module.exports = mongoose.model("uploadlogs", mediaSchema);

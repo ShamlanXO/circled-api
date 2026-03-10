@@ -8,7 +8,8 @@ const aqp = require("api-query-params");
 const _ =require("lodash");
 const NotificationHandler = require("../utils/SendNotification")
 const programs = require("../models/Programs");
-const stripe = require('stripe')('sk_test_51NzgiTKrByvmoNXFBNMnoIYV2fWTAwgzKtW9tXB00vYibQcHMCKrxgTIhwxR48XxMf38pFgpjd5tbORcWNC1e95T00upfdzlOL');
+// B-02 fix: Stripe key loaded from environment variable
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const sendOtp = new SendOtp(
   "295956Ayx1TlMrGo5d8c4054",
   "{{otp}} is your Secret OTP for completing the current process. Do not Share it with Anyone."
@@ -92,7 +93,7 @@ exports.CreateUser = async (req, res) => {
     }
     let userData = await user.findOne({ email: req.body.email });
     if (userData) {
-      const token = jwt.sign({ _id: userData._id }, "s3cr3t", {
+      const token = jwt.sign({ _id: userData._id }, process.env.jwtSecret, {
         expiresIn: "30d",
       });
 
@@ -108,9 +109,8 @@ exports.CreateUser = async (req, res) => {
           }
         });
         
-        result.stripeUserId=customer.id
-        result.save()
-
+        userData.stripeUserId = customer.id;
+        await userData.save();
       }
      
 
@@ -139,12 +139,13 @@ exports.CreateUser = async (req, res) => {
             }
           });
           
-          result.stripeUserId=customer.id
-          result.save()
+          result.stripeUserId=customer.id;
+          // B-12 fix: await the save to prevent race conditions
+          await result.save();
   
         }
 
-        const token = jwt.sign({ _id: result._id }, "s3cr3t", {
+        const token = jwt.sign({ _id: result._id }, process.env.jwtSecret, {
           expiresIn: "30d",
         });
 
@@ -159,7 +160,7 @@ exports.CreateUser = async (req, res) => {
           .send({ message: "Error Creating User", ErrorOccured: error });
       });
   } else {
-    const decoded = jwt.verify(req.body.token, "s3cr3t");
+    const decoded = jwt.verify(req.body.token, process.env.jwtSecret);
    
      
 
@@ -194,11 +195,12 @@ if(decoded.type!=="phone"){
             }
           });
           
-          result.stripeUserId=customer.id
-          result.save()
+          result.stripeUserId=customer.id;
+          // B-12 fix: await the save to prevent race conditions
+          await result.save();
   
         }
-          const token = jwt.sign({ _id: result._id }, "s3cr3t", {
+          const token = jwt.sign({ _id: result._id }, process.env.jwtSecret, {
             expiresIn: "30d",
           });
 
@@ -250,8 +252,9 @@ exports.UserLogin = async(req, res) => {
             }
           });
           
-          result[0].stripeUserId=customer.id
-          result[0].save()
+          result[0].stripeUserId=customer.id;
+          // B-12 fix: await the save to prevent race conditions
+          await result[0].save();
   
         }
 
@@ -259,7 +262,7 @@ exports.UserLogin = async(req, res) => {
           result[0].authType &&
           result[0].authType.includes(req.body.authType)
         ) {
-          const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+          const token = jwt.sign({ _id: result[0]._id }, process.env.jwtSecret, {
             expiresIn: req.body.remember ? "30d" : "30d",
           });
 
@@ -272,7 +275,7 @@ exports.UserLogin = async(req, res) => {
 
         if (req.body.authType) {
           return res.status(408).send({
-            message: "Diffirent mode",
+            message: "Different mode",
           });
         }
         // bcrypt.compare(
@@ -286,7 +289,7 @@ exports.UserLogin = async(req, res) => {
         //       });
         //     }
         //     if (same) {
-        //       const token = jwt.sign({ _id: result[0]._id }, "s3cr3t", {
+        //       const token = jwt.sign({ _id: result[0]._id }, process.env.jwtSecret, {
         //         expiresIn: req.body.remember ? "30d" : "30d",
         //       });
 
@@ -356,7 +359,7 @@ exports.UserUpdateAuth =async (req, res) => {
 
 exports.UserSensitiveDataUpdate = (req, res) => {
   console.log(req.userData);
-  const decoded = jwt.verify(req.body.token, "s3cr3t");
+  const decoded = jwt.verify(req.body.token, process.env.jwtSecret);
   user
     .updateOne(
       { _id: req.userData._id },
@@ -455,7 +458,7 @@ exports.ResetPassword=async(req,res)=>{
 }
 
 exports.ChangePassword = (req, res) => {
-  const decoded = jwt.verify(req.body.token, "s3cr3t");
+  const decoded = jwt.verify(req.body.token, process.env.jwtSecret);
 
   bcrypt
     .hash(req.body.Password, 10)
@@ -491,7 +494,7 @@ exports.ChangePasswordEmail = (req, res) => {
       console.log(":errin us data");
       return res.status(404).send({ message: "No  Data Found" });
     } else {
-      jwt.verify(req.body.token, "s3cr3t", function (err, decoded) {
+      jwt.verify(req.body.token, process.env.jwtSecret, function (err, decoded) {
         console.log(decoded);
         user
           .find({ email: decoded.Email })
@@ -502,11 +505,12 @@ exports.ChangePasswordEmail = (req, res) => {
               console.log(":errin us data n o record");
               return res.status(404).send({ message: "No  Data Found" });
             } else {
-              if (result[0].IsDeleted == true) {
+              // B-10 fix: use lowercase camelCase to match the Mongoose model (isActive, isDeleted)
+              if (result[0].isDeleted == true) {
                 return res.status(406).send({ message: "Deleted" });
               }
 
-              if (result[0].IsActive == true) {
+              if (result[0].isActive == false) {
                 return res.status(406).send({ message: "Disable" });
               }
 

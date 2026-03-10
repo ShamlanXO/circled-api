@@ -144,4 +144,7 @@ orderSchema.plugin((schema)=>{
   });
 });
 
+orderSchema.index({ UserId: 1, Status: 1 });
+orderSchema.index({ 'Program.CreatedBy': 1 });
+
 module.exports = mongoose.model("PurchasedProgram", orderSchema);

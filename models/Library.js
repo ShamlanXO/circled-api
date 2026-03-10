@@ -25,4 +25,9 @@ const objectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+objectSchema.index({ createdBy: 1, type: 1 });
+objectSchema.index({ parent: 1 });
+objectSchema.index({ ancestors: 1 });
+
 module.exports = mongoose.model("library", objectSchema);

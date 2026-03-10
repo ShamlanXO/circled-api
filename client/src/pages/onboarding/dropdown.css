@@ -1,0 +1,133 @@
+.customInput {
+    border: transparent;
+    height: 56px;
+    width: 328px;
+    left: 0px;
+    top: 30px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #f5f5f6;
+  }
+  .calendarOpen {
+    display: inline-flex;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+  }
+  .react-datepicker-wrapper {
+    width: 328px !important;
+    display: block !important;
+  }
+  .customInput label {
+    position: relative;
+  }
+  label {
+    top: 15px;
+    left: 15px;
+    margin-top: 15px;
+    height: 19px;
+    width: 102px;
+    font-family: Noto Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #6267a1;
+  }
+  
+  .test {
+    display: flex;
+    align-items: center;
+  }
+  .arabic-date .errorarabic {
+    left: 38vh;
+    position: relative;
+    display: inline-flex;
+    top: 0px;
+    margin-top: 0px;
+    width: 130px;
+  }
+  .arabic-date .customInput label {
+    left: 40vh;
+    position: relative;
+    display: inline-flex;
+  
+    margin-top: 0px;
+    width: 130px;
+  }
+  .arabic-date .customInput .calendarOpen {
+    right: unset;
+    left: 15px;
+  }
+  .dropdown-picker,
+  .arabic-dropdown-picker {
+    display: flex;
+    flex-direction: column;
+  }
+  .dropdown-picker label,
+  .arabic-dropdown-picker label {
+    width: 100%;
+  }
+  .dropdown-year,
+  .dropdown-day,
+  .dropdown-month {
+    height: 56px;
+    width: 100%;
+    left: 0px;
+    top: 30px;
+    padding-left: 8px;
+    border-radius: 8px;
+    box-sizing: border-box;
+
+
+padding: 8px;
+
+
+height: 56px;
+
+
+background: #F5F7FA;
+/* System/Neutrals/300 */
+
+border: 1px solid #C3CBD9;
+border-radius: 8px;
+font-size: 16px;
+
+  }
+  .option {
+    height: 35px;
+    width: 80px;
+    left: 8px;
+    top: 16px;
+    border-radius: 8px;
+    font-family: Noto Sans;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+  }
+  .dropdown {
+    padding-top: 10px;
+  }
+  .dropdown-year {
+    margin-right: 10px;
+  }
+  .dropdown-month {
+    margin-right: 10px;
+  }
+  .customHeader button {
+    border: none;
+  }
+  .month-navigation {
+    margin: 0 50px;
+  }
+  .customDescription {
+    display: flex;
+    padding-left: 20px;
+    padding-bottom: 15px;
+  }
+  

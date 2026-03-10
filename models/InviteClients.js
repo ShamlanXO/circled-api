@@ -35,6 +35,10 @@ const clientSchema = new mongoose.Schema({
     
 },{ timestamps: true ,strict:false});
 
+clientSchema.index({ invitedBy: 1 });
+clientSchema.index({ email: 1 });
+clientSchema.index({ accepted: 1, invitedBy: 1 });
+
 const Client = mongoose.model('ClientInvite', clientSchema);
 
 module.exports = Client;

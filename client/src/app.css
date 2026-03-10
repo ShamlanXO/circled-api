@@ -1,0 +1,19 @@
+.rotate {
+    animation: rotation 4s infinite linear;
+  }
+  
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+
+  .player-wrapper {
+    background: rgba(0,0,0);
+  
+   
+    overflow: hidden;
+  }

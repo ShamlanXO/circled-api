@@ -27,5 +27,8 @@ const ClientSchema = new mongoose.Schema({
     
 });
 
+ClientSchema.index({ instructor: 1 });
+ClientSchema.index({ client: 1 });
+
 module.exports =
 mongoose.model('client', ClientSchema);

@@ -1,5 +1,3 @@
-
-
 const aqp = require("api-query-params");
 const SentProgram = require("../models/SentPrograms");
 const Order = require("../models/Orders");
@@ -11,7 +9,7 @@ const mongoose = require("mongoose");
 
 exports.GetProgram = (req, res) => {
 
-SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.createdBy").then((result) => {
+SentProgram.find({_id:req.params.id},"-Program.ExercisePlan").populate("Program.createdBy").lean().then((result) => {
       if (result.length < 1) {
         return res.status(404).send([]);
       } else {
@@ -155,7 +153,7 @@ exports.AddProgram=(req,res) => {
 console.log("adding progrma")
 
     SentProgram.findOne({_id:req.params.id
-          }) .then((program) => {
+          }).lean().then((program) => {
               if(program){
                   console.log(program)
                 const order = new Order({UserId:req.userData._id,Program:program.Program,ActualAmount:program.Amount,AmountPaid:program.Amount});

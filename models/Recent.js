@@ -11,4 +11,8 @@ const RecentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+RecentSchema.index({ userId: 1 });
+RecentSchema.index({ orderId: 1 });
+
 module.exports = mongoose.model("recent", RecentSchema);

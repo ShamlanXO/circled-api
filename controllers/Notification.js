@@ -28,6 +28,7 @@ exports.FetchNotification = (req, res) => {
     .sort({ createdAt: -1 })
     .populate("Sender", "name _id profilePic")
     .populate("SentProgramId", "Title Program.BannerImage Program.Price")
+    .lean()
     .then((result) => {
       if (result.length < 1) {
         return res.status(404).send({ message: "No Notifications Found" });

@@ -27,7 +27,7 @@ exports.getRecents = (req, res) => {
       createdAt: -1,
     })
     .populate("clientId", "name profilePic")
-
+    .lean()
     .then((result) => {
       console.log(result);
       if (result.length < 1) {

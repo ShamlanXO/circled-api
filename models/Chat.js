@@ -15,4 +15,7 @@ const chatSchema = new mongoose.Schema({
 },
 { timestamps: true});
 
+chatSchema.index({ ReceiverId: 1, SenderId: 1 });
+chatSchema.index({ IsRead: 1, ReceiverId: 1 });
+
 module.exports = mongoose.model("chat", chatSchema);

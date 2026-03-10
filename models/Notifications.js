@@ -22,4 +22,7 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+notificationSchema.index({ UserId: 1, IsRead: 1 });
+notificationSchema.index({ To: 1 });
+
 module.exports = mongoose.model("notification", notificationSchema);
