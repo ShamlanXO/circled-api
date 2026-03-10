@@ -1,5 +1,5 @@
 {
-  "name": "lms-api",
+  "name": "circled-api",
   "version": "31.1.20",
   "private": true,
   "dependencies": {
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "juice": "^7.0.0",
     "moment": "^2.24.0",
+    "mongodb-memory-server": "^11.0.1",
     "mongoose": "^5.10.0",
     "mongoose-float": "^1.0.4",
     "morgan": "^1.10.0",
@@ -50,16 +51,15 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "cross-env NODE_ENV=DEV node app.js",
-    "prod": "cross-env NODE_ENV=PROD node app.js",
-    "deploy": "sudo node deploy.js",
-    "deploy_dev": "sudo node deploy.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\"",
-    "deploy_prod": "cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\"",
-    "deploy_dev_prod": "sudo node deploy.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\"",
-    "deploy_dev_api": "sudo node deploy_apis.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\"",
-    "deploy_dev_prod_api": "sudo node deploy_apis.js && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_prod.sh\" && cd ../ && sudo ssh -i \"circled.pem\" ubuntu@3.134.113.21 \"./deploy_dev.sh\""
+    "dev": "cross-env NODE_ENV=DEV nodemon app.js",
+    "dev:client": "cd client && npm run dev",
+    "dev:all": "concurrently -n api,client -c blue,green \"npm run dev\" \"npm run dev:client\"",
+    "build:client": "cd client && npm run build && cd .. && rm -rf build && cp -r client/build build",
+    "build:client:prod": "cd client && npm run build:prod && cd .. && rm -rf build_prod && cp -r client/build_prod build_prod",
+    "prod": "cross-env NODE_ENV=PROD node app.js"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3"
   }
 }
